@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../model/user.dart';
 import '../../provider/user_provider.dart';
 import 'components/dropDownMenuRow.dart';
+import 'components/users_listview.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
@@ -18,7 +20,7 @@ class HomePage extends StatelessWidget {
             Expanded(
               flex: 1,
                 child: DropDownMenuRow(
-              values: [
+              values: const [
                 'الكل',
                 '100',
                 '200',
@@ -26,26 +28,9 @@ class HomePage extends StatelessWidget {
               ],
               onChange: () {},
             )),
-            Expanded(
+            const Expanded(
               flex: 7,
-              child: Consumer<UserProvider>(
-                builder:(ctx, userProvider, _)=> ListView.builder(
-                  itemCount: userProvider.filteredUsers.length,
-                  itemBuilder: (context, index) => Card(
-                    child: ListTile(
-                      title: Text('${userProvider.filteredUsers[index].name}'),
-                      subtitle: Container(
-                        width: 1,
-                        height: 10,
-                        color: userProvider.filteredUsers[index].status == 'حاضر'
-                            ? Colors.green
-                            : Colors.red,
-                      ),
-                      trailing: Text('${userProvider.filteredUsers[index].status}'),
-                    ),
-                  ),
-                ),
-              ),
+              child: UsersListview(),
             ),
           ],
         ),

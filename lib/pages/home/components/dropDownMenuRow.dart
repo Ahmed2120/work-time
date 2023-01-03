@@ -6,14 +6,12 @@ import 'package:work_time/provider/user_provider.dart';
 
 class DropDownMenuRow extends StatefulWidget {
   List<String> values;
-  String? value;
   Function onChange;
 
   DropDownMenuRow(
       {Key? key,
       required this.values,
-      required this.onChange,
-        this.value})
+      required this.onChange,})
       : super(key: key);
 
   @override
@@ -21,6 +19,10 @@ class DropDownMenuRow extends StatefulWidget {
 }
 
 class _DropDownMenuRowState extends State<DropDownMenuRow> {
+
+
+  String value = 'الكل';
+
   @override
   Widget build(BuildContext context) {
     final dSize = MediaQuery.of(context).size;
@@ -32,7 +34,7 @@ class _DropDownMenuRowState extends State<DropDownMenuRow> {
           SizedBox(width: 10,),
           DropdownButtonHideUnderline(
             child: DropdownButton<String>(
-                value: widget.value,
+                value: value,
                 iconSize: 40,
                 icon: const Icon(
                   Icons.filter_alt,
@@ -53,7 +55,7 @@ class _DropDownMenuRowState extends State<DropDownMenuRow> {
                   );
                 }).toList(),
                 onChanged: (val) { setState(() {
-                  widget.value = val;
+                  value = val!;
                 });
                   Provider.of<UserProvider>(context, listen: false).filteringUser(val!);
                 }),

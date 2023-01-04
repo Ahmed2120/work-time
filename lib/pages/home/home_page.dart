@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../model/user.dart';
 import '../../provider/user_provider.dart';
+import 'components/custon_add_button.dart';
 import 'components/dropDownMenuRow.dart';
 import 'components/users_listview.dart';
 
@@ -19,15 +20,24 @@ class HomePage extends StatelessWidget {
           children: [
             Expanded(
               flex: 1,
-                child: DropDownMenuRow(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      DropDownMenuRow(
               values: const [
-                'الكل',
-                '100',
-                '200',
-                '300',
+                      'الكل',
+                      '100',
+                      '200',
+                      '300',
               ],
               onChange: () {},
-            )),
+            ),
+                      CustomAddButton(),
+                    ],
+                  ),
+                )),
             const Expanded(
               flex: 7,
               child: UsersListview(),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../model/user.dart';
 import '../../../provider/user_provider.dart';
+import 'custom_status.dart';
 
 class UsersListview extends StatelessWidget {
   const UsersListview({Key? key}) : super(key: key);
@@ -17,18 +18,17 @@ class UsersListview extends StatelessWidget {
           itemCount: users.length,
           itemBuilder: (context, index) => Card(
             child: ListTile(
-              title: Text('${users[index].name}'),
-              subtitle: Container(
-                width: 1,
-                height: 10,
-                color: users[index].status == 'حاضر'
-                    ? Colors.green
-                    : Colors.red,
-              ),
-              trailing: Text('${users[index].status}'),
+              title: Text(users[index].name),
+              subtitle: Text(getHour()),
+              trailing: CustomStatusText(users[index].status),
             ),
           ),
         );},
     );
+  }
+
+  String getHour(){
+    final date = DateTime.now();
+    return date.hour > 12 ? '${date.hour - 12}:${date.minute}  م' : '${date.hour}:${date.minute}  ص';
   }
 }

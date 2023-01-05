@@ -21,6 +21,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'work time',
         theme: ThemeData(
+          fontFamily: 'Cairo',
           primarySwatch: Colors.blue,
         ),
         home: HomePage(),

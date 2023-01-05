@@ -20,7 +20,7 @@ class UsersListview extends StatelessWidget {
             child: ListTile(
               title: Text(users[index].name),
               subtitle: Text(getHour()),
-              trailing: CustomStatusText(users[index].status),
+              // trailing: CustomStatusText(users[index].status),
             ),
           ),
         );},

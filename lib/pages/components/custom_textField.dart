@@ -1,24 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:iconly/iconly.dart';
 
-class CustomTextField extends StatelessWidget {
-  const CustomTextField(
-      {super.key,
-      required TextEditingController controller, required this.label, this.isNumeric = false})
-      : _controller = controller;
-
-  final TextEditingController _controller;
-  final String label;
-  final bool isNumeric;
-
-  @override
-  Widget build(BuildContext context) {
-    final dSize = MediaQuery.of(context).size;
+  SizedBox customTextField({
+  required TextEditingController controller,required String label,TextInputType keyboardType=TextInputType.text
+}) {
     return SizedBox(
       child: TextFormField(
-        controller: _controller,
+        controller: controller,
         textDirection: TextDirection.rtl,
-        keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
             prefixIconColor: const Color(0xFF007C6D),
             contentPadding:
@@ -50,11 +39,11 @@ class CustomTextField extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(15))),
         validator: (val) {
-          if (_controller.text.isEmpty) {
+          if (controller.text.isEmpty) {
             return 'please type $label';
           }
         },
       ),
     );
   }
-}
+

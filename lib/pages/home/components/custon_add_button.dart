@@ -3,21 +3,23 @@ import 'package:flutter/material.dart';
 import 'addingUser_bottomSheet.dart';
 
 class CustomAddButton extends StatelessWidget {
-  const CustomAddButton({Key? key}) : super(key: key);
+  const CustomAddButton(this.keyScaffold,{Key? key}) : super(key: key);
+  final GlobalKey<ScaffoldState> keyScaffold;
 
   @override
   Widget build(BuildContext context) {
     print('we are here');
     return ElevatedButton(
       onPressed: () {
-        showModalBottomSheet(
-            enableDrag: true,
-            isScrollControlled: true,
-            isDismissible: false,
-            context: context, builder: (context)=> AddingUserBottomSheet());
+        keyScaffold.currentState!.showBottomSheet((context) => AddingUserBottomSheet());
+        // showModalBottomSheet(
+        //     enableDrag: true,
+        //     isScrollControlled: true,
+        //     isDismissible: false,
+        //     context: context, builder: (context)=> AddingUserBottomSheet());
       },
       child: Row(
-        children: [
+        children: const [
           Text('اضافة'),
           Icon(Icons.add)
         ],

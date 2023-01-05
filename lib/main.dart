@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context)=> UserProvider())
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'work time',
         theme: ThemeData(
           primarySwatch: Colors.blue,

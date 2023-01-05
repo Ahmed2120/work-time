@@ -16,7 +16,7 @@ class SheetHeader extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.start,
-              style: TextStyle(
+              style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 20,
                   color: Colors.grey),
@@ -26,7 +26,7 @@ class SheetHeader extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                 },
-                child: Icon(Icons.close, size: 30,))
+                child: const Icon(Icons.close, size: 30,))
           ],
         ),
       ),

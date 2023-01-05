@@ -17,27 +17,24 @@ class AddingUserBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height  * 0.9,
+    return SingleChildScrollView(
       child: Column(
         children: [
           const SheetHeader(title: 'اضافة عامل',),
           const SizedBox(height: 40,),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Form(
-                child: ListView(
-                    children: [
-                      CustomTextField(controller: _nameController, label: 'الاسم',),
-                      const SizedBox(height: 10,),
-                      CustomTextField(controller: _jobController, label: 'الوظيفة',),
-                      const SizedBox(height: 10,),
-                      CustomTextField(controller: _salaryController, label: 'الراتب',),
-                      const SizedBox(height: 20,),
-                      buildButton(context)
-                    ],
-                ),
+          Padding(
+            padding: const EdgeInsets.only(left: 15,right: 15,bottom: 20),
+            child: Form(
+              child: Column(
+                  children: [
+                    customTextField(controller: _nameController, label: 'الاسم',),
+                    const SizedBox(height: 10,),
+                    customTextField(controller: _jobController, label: 'الوظيفة',),
+                    const SizedBox(height: 10,),
+                    customTextField(controller: _salaryController, label: 'الراتب',keyboardType: TextInputType.number,),
+                    const SizedBox(height: 20,),
+                    buildButton(context)
+                  ],
               ),
             ),
           )

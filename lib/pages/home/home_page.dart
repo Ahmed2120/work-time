@@ -9,12 +9,14 @@ import 'components/users_listview.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
+  final keyScaffold=GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
+        key: keyScaffold,
         appBar: AppBar(),
         body: Column(
           children: [
@@ -34,7 +36,7 @@ class HomePage extends StatelessWidget {
               ],
               onChange: () {},
             ),
-                      CustomAddButton(),
+                       CustomAddButton(keyScaffold),
                     ],
                   ),
                 )),

@@ -7,6 +7,7 @@ class CustomAddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('we are here');
     return ElevatedButton(
       onPressed: () {
         showModalBottomSheet(

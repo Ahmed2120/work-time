@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../db/userRepository.dart';
 import '../model/user.dart';
 
 class UserProvider with ChangeNotifier{
-  List<User> _users = [
-    User(name: 'أحمد', status: 'حاضر', salary: 100),
-    User(name: 'محمد', status: 'غائب', salary: 200),
-    User(name: 'سعيد', status: 'غائب', salary: 200),
-    User(name: 'أسامة', status: 'حاضر', salary: 100),
-    User(name: 'محمود', status: 'غائب', salary: 300),
+  final List<User> _users = [
+    User(name: 'أحمد', job: 'حاضر', salary: 100),
+    User(name: 'محمد', job: 'غائب', salary: 200),
+    User(name: 'سعيد', job: 'غائب', salary: 200),
+    User(name: 'أسامة', job: 'حاضر', salary: 100),
+    User(name: 'محمود', job: 'غائب', salary: 300),
   ];
 
   List<User> get users{
@@ -19,6 +20,16 @@ class UserProvider with ChangeNotifier{
 
   List<User> get filteredUsers{
     return _filteredUsers;
+  }
+
+  Future<void> addUser(User user) async{
+    final userRepository = UserRepository();
+
+    final int userId = await userRepository.insert(user);
+    user.id = userId;
+    _users.add(user);
+
+    notifyListeners();
   }
 
   void filteringUser(String value){

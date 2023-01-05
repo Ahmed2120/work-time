@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:work_time/model/user.dart';
+import 'package:work_time/provider/user_provider.dart';
 
 import '../../components/custom_textField.dart';
 import '../../components/header_sheet.dart';
@@ -10,27 +13,29 @@ class AddingUserBottomSheet extends StatelessWidget {
   final _jobController = TextEditingController();
   final _salaryController = TextEditingController();
 
+  final GlobalKey<FormState> _formKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height  * 0.8,
+      height: MediaQuery.of(context).size.height  * 0.9,
       child: Column(
         children: [
           const SheetHeader(title: 'اضافة عامل',),
           const SizedBox(height: 40,),
-          Form(
-            child: Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Form(
                 child: ListView(
                     children: [
                       CustomTextField(controller: _nameController, label: 'الاسم',),
                       const SizedBox(height: 10,),
-                      CustomTextField(controller: _nameController, label: 'الوظيفة',),
+                      CustomTextField(controller: _jobController, label: 'الوظيفة',),
                       const SizedBox(height: 10,),
-                      CustomTextField(controller: _nameController, label: 'الراتب',),
+                      CustomTextField(controller: _salaryController, label: 'الراتب',),
                       const SizedBox(height: 20,),
-                      buildButton()
+                      buildButton(context)
                     ],
                 ),
               ),
@@ -41,8 +46,14 @@ class AddingUserBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget buildButton()=> ElevatedButton(
-    onPressed: (){},
+  Widget buildButton(context)=> ElevatedButton(
+    onPressed: (){
+      if (!_formKey.currentState!.validate()) return;
+
+      final user  = User(name: _nameController.text, job: _jobController.text, salary: double.parse(_salaryController.text));
+
+      Provider.of<UserProvider>(context, listen: false).addUser(user);
+    },
     style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFF007C6D),
         minimumSize: const Size(double.infinity, 10),

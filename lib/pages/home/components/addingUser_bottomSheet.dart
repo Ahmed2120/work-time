@@ -25,13 +25,14 @@ class AddingUserBottomSheet extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 15,right: 15,bottom: 20),
             child: Form(
+              key: _formKey,
               child: Column(
                   children: [
-                    customTextField(controller: _nameController, label: 'الاسم',),
+                    CustomTextField(controller: _nameController, label: 'الاسم',),
                     const SizedBox(height: 10,),
-                    customTextField(controller: _jobController, label: 'الوظيفة',),
+                    CustomTextField(controller: _jobController, label: 'الوظيفة',),
                     const SizedBox(height: 10,),
-                    customTextField(controller: _salaryController, label: 'الراتب',keyboardType: TextInputType.number,),
+                    CustomTextField(controller: _salaryController, label: 'الراتب',keyboardType: TextInputType.number,),
                     const SizedBox(height: 20,),
                     buildButton(context)
                   ],

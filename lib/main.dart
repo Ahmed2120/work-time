@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/provider/user_provider.dart';
 
+import 'pages/btm_bar_screen.dart';
 import 'pages/home/home_page.dart';
 
 void main() {
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Cairo',
           primarySwatch: Colors.blue,
         ),
-        home: HomePage(),
+        home: BottomBarScreen(),
       ),
     );
   }

@@ -7,8 +7,8 @@ import '../../../provider/user_provider.dart';
 import '../../users/user_detail.dart';
 import 'custom_status.dart';
 
-class UsersListview extends StatelessWidget {
-  const UsersListview({Key? key}) : super(key: key);
+class UsersStatusListview extends StatelessWidget {
+  const UsersStatusListview({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

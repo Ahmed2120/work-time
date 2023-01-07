@@ -12,8 +12,14 @@ class UserProvider with ChangeNotifier {
     User(name: 'محمود', job: 'غائب', salary: 300),
   ];
 
+  final List<User> _usersTrash = [];
+
   List<User> get users {
     return _users;
+  }
+
+  List<User> get usersTrash {
+    return _usersTrash;
   }
 
   late User _userModel;

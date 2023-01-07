@@ -5,7 +5,7 @@ import '../../model/user.dart';
 import '../../provider/user_provider.dart';
 import 'components/custon_add_button.dart';
 import 'components/dropDownMenuRow.dart';
-import 'components/users_listview.dart';
+import 'components/users_status_listview.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
@@ -42,7 +42,7 @@ class HomePage extends StatelessWidget {
                 )),
             const Expanded(
               flex: 7,
-              child: UsersListview(),
+              child: UsersStatusListview(),
             ),
           ],
         ),

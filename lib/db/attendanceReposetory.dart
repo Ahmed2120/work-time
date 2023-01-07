@@ -26,6 +26,12 @@ class AttendanceRepository{
     return queryResults.map((e) => Attendance.fromMap(e)).toList();
   }
 
+  Future retrieveByUserIdDateTime(int userId,String date) async{
+    final db = await databaseHandler.initializeDB();
+    final List<Map<String, Object?>> queryResults = await db.query(table_name, where: 'userId = ? and todayDate = ?', whereArgs: [userId,date]);
+    return queryResults.map((e) => Attendance.fromMap(e)).toList();
+  }
+
   Future delete(Attendance attendance) async{
     final db = await databaseHandler.initializeDB();
     db.delete(table_name, where: 'id = ?', whereArgs: [attendance.id]);

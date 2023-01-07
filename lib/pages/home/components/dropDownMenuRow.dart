@@ -33,7 +33,7 @@ class _DropDownMenuRowState extends State<DropDownMenuRow> {
         DropdownButtonHideUnderline(
           child: DropdownButton<String>(
               value: value,
-              iconSize: 40,
+              //iconSize: 40,
               icon: const Icon(
                 Icons.filter_alt,
                 color: Color(0xFF00B0BD),

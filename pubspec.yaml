@@ -16,6 +16,7 @@ dependencies:
   sqflite: ^2.2.2
   provider:
   iconly:
+  sliding_sheet: ^0.5.2
 
 dev_dependencies:
   flutter_test:

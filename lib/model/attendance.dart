@@ -1,8 +1,8 @@
 class Attendance {
-  final int? id;
+  late final int? id;
   final int userId;
   final String todayDate;
-  final String status;
+  final int status;
   final double salaryReceived;
 
   Attendance({

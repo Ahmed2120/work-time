@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/pages/components/constant.dart';
 
 import '../../../model/user.dart';
 import '../../../provider/user_provider.dart';
+import '../../users/user_detail.dart';
 import 'custom_status.dart';
 
 class UsersListview extends StatelessWidget {
@@ -18,6 +20,10 @@ class UsersListview extends StatelessWidget {
           itemCount: users.length,
           itemBuilder: (context, index) => Card(
             child: ListTile(
+              onTap: (){
+                userProvider.getUser(users[index].id!);
+                push(screen:  UserDetail(), context: context);
+              },
               title: Text(users[index].name),
               subtitle: Text(getHour()),
               // trailing: CustomStatusText(users[index].status),

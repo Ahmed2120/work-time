@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../db/userRepository.dart';
 import '../model/user.dart';
 
-class UserProvider with ChangeNotifier{
+class UserProvider with ChangeNotifier {
   final List<User> _users = [
     User(name: 'أحمد', job: 'حاضر', salary: 100),
     User(name: 'محمد', job: 'غائب', salary: 200),
@@ -12,17 +12,28 @@ class UserProvider with ChangeNotifier{
     User(name: 'محمود', job: 'غائب', salary: 300),
   ];
 
-  List<User> get users{
+  List<User> get users {
     return _users;
+  }
+
+  late User _userModel;
+
+  User get userModel {
+    return _userModel;
+  }
+
+  getUser(int id) {
+    _userModel = _users.firstWhere((element) => element.id == id);
+    notifyListeners();
   }
 
   List<User> _filteredUsers = [];
 
-  List<User> get filteredUsers{
+  List<User> get filteredUsers {
     return _filteredUsers;
   }
 
-  Future<void> addUser(User user) async{
+  Future<void> addUser(User user) async {
     final userRepository = UserRepository();
 
     final int userId = await userRepository.insert(user);
@@ -32,12 +43,12 @@ class UserProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  void filteringUser(String value){
-    if(value == 'الكل'){
+  void filteringUser(String value) {
+    if (value == 'الكل') {
       _filteredUsers = _users;
-    }
-    else{
-      _filteredUsers = _users.where((user) => double.parse(value) == user.salary).toList();
+    } else {
+      _filteredUsers =
+          _users.where((user) => double.parse(value) == user.salary).toList();
     }
     notifyListeners();
   }

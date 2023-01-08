@@ -1,34 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
+import 'package:work_time/model/attendance.dart';
+import 'package:work_time/pages/components/constant.dart';
+import 'package:work_time/provider/attendance_provider.dart';
 import 'package:work_time/provider/user_provider.dart';
+import 'package:toast/toast.dart';
 
 import 'components/bottomSheet.dart';
 import 'components/build_card.dart';
-import 'components/slid_borrom_sheet.dart';
+import 'components/functions.dart';
+import 'components/slid_bottom_sheet.dart';
 import 'components/text_row.dart';
 
 class UserDetail extends StatelessWidget {
-   UserDetail({Key? key}) : super(key: key);
+  UserDetail({Key? key}) : super(key: key);
 
-   final List<PopupMenuItem<String>> menuItems = [
-     const PopupMenuItem(
-       value: 'add',
-       child: Text("تعديل",style: TextStyle(fontSize: 18),),
-     ),
-     const PopupMenuItem(
-       value: 'remove',
-       child: Text("حذف",style: TextStyle(fontSize: 18),),
-     ),
-   ];
-   final keyScaffold=GlobalKey<ScaffoldState>();
+  final List<PopupMenuItem<String>> menuItems = [
+    const PopupMenuItem(
+      value: 'add',
+      child: Text(
+        "تعديل",
+        style: TextStyle(fontSize: 18),
+      ),
+    ),
+    const PopupMenuItem(
+      value: 'remove',
+      child: Text(
+        "حذف",
+        style: TextStyle(fontSize: 18),
+      ),
+    ),
+  ];
+  final keyScaffold = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
+    final attendanceProvider =
+        Provider.of<AttendanceProvider>(context, listen: true);
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Consumer<UserProvider>(
-        builder: (ctx,userProvider,_){
+        builder: (ctx, userProvider, _) {
           return Scaffold(
             key: keyScaffold,
             appBar: AppBar(
@@ -54,14 +68,74 @@ class UserDetail extends StatelessWidget {
                         label: 'حاضر',
                         color: Colors.green,
                         onPressed: () {
-                         keyScaffold.currentState!.showBottomSheet((context) => RecordAttendance());
+                          if (attendanceProvider.attendanceModel.isEmpty) {
+                            final attendance = Attendance(
+                                userId: userProvider.userModel.id!,
+                                todayDate: '${DateTime.now()}',
+                                status: 1,
+                                salaryReceived: '0');
+                            attendanceProvider.addAttendance(attendance);
+                            attendanceProvider.getAttendanceUserToDay(
+                                userId: userProvider.userModel.id!);
+                          } else if (attendanceProvider
+                                  .attendanceModel.last.status ==
+                              0) {
+                            showDialog(
+                                context: context,
+                                builder: (ctx) => alert(context:context,txt: 'حاضر',color:Colors.green,onPressed: (){
+                                  print("تحديث ${attendanceProvider.attendanceModel.last.id}");
+                                  final attendance = Attendance(
+                                      id: attendanceProvider.attendanceModel.last.id,
+                                      userId: userProvider.userModel.id!,
+                                      todayDate: '${DateTime.now()}',
+                                      status: 0,
+                                      salaryReceived: '0');
+                                  print("تحديث ${attendance.id}");
+                                  attendanceProvider.updateAttendance(attendance: attendance, id: userProvider.userModel.id!);
+                                  attendanceProvider.getAttendanceUserToDay(userId: userProvider.userModel.id!);
+                                  pop(context);
+                                }));
+                          } else {
+                            showToast(context);
+                          }
                         },
                       ),
                       const SizedBox(width: 20),
                       buildElevatedButton(
                         label: 'غائب',
+                        onPressed: () {
+                          if (attendanceProvider.attendanceModel.isEmpty) {
+                            final attendance = Attendance(
+                                userId: userProvider.userModel.id!,
+                                todayDate: '${DateTime.now()}',
+                                status: 0,
+                                salaryReceived: '0');
+                            attendanceProvider.addAttendance(attendance);
+                            attendanceProvider.getAttendanceUserToDay(
+                                userId: attendanceProvider.attendanceModel.last.id!);
+                          } else if (attendanceProvider
+                                  .attendanceModel.last.status ==
+                              1) {
+                            showDialog(
+                                context: context,
+                                builder: (ctx) => alert(context:context,txt: 'حاضر',color:Colors.green,onPressed: (){
+                                  print("تحديث ${attendanceProvider.attendanceModel.last.todayDate}");
+                                  final attendance = Attendance(
+                                    id: attendanceProvider.attendanceModel.last.id,
+                                      userId: userProvider.userModel.id!,
+                                      todayDate: '${DateTime.now()}',
+                                      status: 1,
+                                      salaryReceived: '0');
+                                  print("تحديث ${attendance.id}");
+                                  attendanceProvider.updateAttendance(attendance: attendance, id: userProvider.userModel.id!);
+                                attendanceProvider.getAttendanceUserToDay(userId: userProvider.userModel.id!);
+                                  pop(context);
+                                }));
+                          } else {
+                            showToast(context);
+                          }
+                        },
                         color: Colors.red,
-                        onPressed: () {},
                       ),
                     ],
                   ),
@@ -69,22 +143,46 @@ class UserDetail extends StatelessWidget {
                   BuildCard(Column(
                     children: [
                       TextRow(title: 'الاسم', txt: userProvider.userModel.name),
-                      TextRow(title: 'الوظيفة', txt: userProvider.userModel.job),
-                      TextRow(title: 'الفئة', txt: userProvider.userModel.salary.toString()),
+                      TextRow(
+                          title: 'الوظيفة', txt: userProvider.userModel.job),
+                      TextRow(
+                          title: 'الفئة',
+                          txt: userProvider.userModel.salary.toString()),
                     ],
                   )),
                   const SizedBox(height: 20),
-                  const Text('التمام اليومي',style: TextStyle(fontSize: 22,fontWeight: FontWeight.w700),),
+                  const Text(
+                    'التمام اليومي',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                  ),
                   BuildCard(Column(
                     children: [
-                      TextRow(title: 'الاسم', txt: userProvider.userModel.name),
-                      TextRow(title: 'الوظيفة', txt: userProvider.userModel.job),
-                      TextRow(title: 'الفئة', txt: userProvider.userModel.salary.toString()),
+                      TextRow(
+                          title: 'التمام',
+                          txt: attendanceProvider.attendanceModel.isEmpty
+                              ? 'لم يتم تسجيل التمام'
+                              : attendanceProvider.attendanceText),
+                      if (attendanceProvider.attendanceModel.isNotEmpty &&
+                          attendanceProvider.attendanceModel.last.status == 1)
+                        TextRow(title: 'اليوم', txt: attendanceProvider.date),
+                      if (attendanceProvider.attendanceModel.isNotEmpty &&
+                          attendanceProvider.attendanceModel.last.status == 1)
+                        TextRow(title: 'الساعه', txt: attendanceProvider.time),
+                      if (attendanceProvider.attendanceModel.isNotEmpty &&
+                          attendanceProvider.attendanceModel.last.status == 1)
+                        TextRow(
+                            title: 'المبلغ المسحوب',
+                            txt: attendanceProvider
+                                .attendanceModel.last.salaryReceived),
                     ],
                   )),
                   const SizedBox(height: 30),
-                  buildElevatedButton(label: 'عرض ايام الحضور', color: const Color(
-                      0xec05675e), onPressed: ()=>showSheet(context))
+                  buildElevatedButton(
+                      label: 'عرض ايام الحضور',
+                      color: const Color(0xec05675e),
+                      onPressed: () {
+                        attendanceProvider.getAttendanceUser(userProvider.userModel.id!);
+                        showSheet(context);} )
                 ],
               ),
             ),
@@ -104,4 +202,5 @@ class UserDetail extends StatelessWidget {
       child: Text(label),
     );
   }
+
 }

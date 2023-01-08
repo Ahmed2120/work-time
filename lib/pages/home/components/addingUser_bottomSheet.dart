@@ -48,7 +48,7 @@ class AddingUserBottomSheet extends StatelessWidget {
     onPressed: (){
       if (!_formKey.currentState!.validate()) return;
 
-      final user  = User(name: _nameController.text, job: _jobController.text, salary: double.parse(_salaryController.text));
+      final user  = User(name: _nameController.text, job: _jobController.text, salary: _salaryController.text);
 
       Provider.of<UserProvider>(context, listen: false).addUser(user);
     },

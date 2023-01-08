@@ -2,7 +2,7 @@ class User {
   int? id;
   final String name;
   final String job;
-  final double salary;
+  final String salary;
 
 
   User(
@@ -13,12 +13,12 @@ class User {
       });
 
   User.fromMap(Map<String, dynamic> res)
-      : id = res["id"],
+      : id = res["Id"],
         name = res["name"],
         job = res["job"],
         salary = res["salary"];
 
   Map<String, Object?> toMap() {
-    return {'id':id,'name': name, 'job': job, 'salary': salary};
+    return {'Id':id,'name': name, 'job': job, 'salary': salary};
   }
 }

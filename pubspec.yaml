@@ -17,7 +17,7 @@ dependencies:
   provider:
   iconly:
   sliding_sheet: ^0.5.2
-  fluttertoast: ^8.1.2
+  toast: ^0.3.0
 
 dev_dependencies:
   flutter_test:

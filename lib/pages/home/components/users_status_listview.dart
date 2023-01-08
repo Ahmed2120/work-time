@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/pages/components/constant.dart';
+import 'package:work_time/provider/attendance_provider.dart';
 
 import '../../../model/user.dart';
 import '../../../provider/user_provider.dart';
@@ -21,7 +22,9 @@ class UsersStatusListview extends StatelessWidget {
           itemBuilder: (context, index) => Card(
             child: ListTile(
               onTap: (){
+                print("الاول ${userProvider.users[index].id}");
                 userProvider.getUser(users[index].id!);
+                Provider.of<AttendanceProvider>(context,listen: false).getAttendanceUserToDay(userId: users[index].id!);
                 push(screen:  UserDetail(), context: context);
               },
               title: Text(users[index].name),

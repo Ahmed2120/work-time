@@ -13,12 +13,12 @@ class User {
       });
 
   User.fromMap(Map<String, dynamic> res)
-      : id = res["Id"],
+      : id = res["id"],
         name = res["name"],
         job = res["job"],
         salary = res["salary"];
 
   Map<String, Object?> toMap() {
-    return {'Id':id,'name': name, 'job': job, 'salary': salary};
+    return {'id':id,'name': name, 'job': job, 'salary': salary};
   }
 }

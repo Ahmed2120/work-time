@@ -48,9 +48,9 @@ class AttendanceProvider with ChangeNotifier {
     }
     notifyListeners();
   }
-  Future<void> updateAttendance({required Attendance attendance,required int id}) async {
+  Future<void> updateAttendance({required Attendance attendance}) async {
     final attendanceRepository = AttendanceRepository();
-    attendanceRepository.update(attendance: attendance, id: id,);
+    attendanceRepository.update(attendance: attendance);
     notifyListeners();
   }
 

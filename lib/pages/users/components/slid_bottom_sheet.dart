@@ -39,7 +39,7 @@ Future showSheet(BuildContext context)=>showSlidingBottomSheet(
     final attendanceProvider=Provider.of<AttendanceProvider>(context);
     return Material(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 13.0),
+          padding: const EdgeInsets.symmetric(horizontal: 13.0,vertical: 15),
           child: Table(
               defaultVerticalAlignment:
               TableCellVerticalAlignment.middle,

@@ -14,13 +14,13 @@ class Attendance {
   });
 
   Attendance.fromMap(Map<String, dynamic> res)
-      : id = res["id"],
+      : id = res["Id"],
         userId = res["userId"],
         todayDate = res["todayDate"],
         status = res["status"],
         salaryReceived = res["salaryReceived"];
 
   Map<String, Object?> toMap() {
-    return {'id': id, 'userId': userId, 'todayDate': todayDate, 'status': status, 'salaryReceived': salaryReceived};
+    return {'Id': id, 'userId': userId, 'todayDate': todayDate, 'status': status, 'salaryReceived': salaryReceived};
   }
 }

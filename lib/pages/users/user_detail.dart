@@ -38,7 +38,6 @@ class UserDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final attendanceProvider =
         Provider.of<AttendanceProvider>(context, listen: true);
-
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Consumer<UserProvider>(
@@ -88,15 +87,15 @@ class UserDetail extends StatelessWidget {
                                       id: attendanceProvider.attendanceModel.last.id,
                                       userId: userProvider.userModel.id!,
                                       todayDate: '${DateTime.now()}',
-                                      status: 0,
+                                      status: 1,
                                       salaryReceived: '0');
                                   print("تحديث ${attendance.id}");
-                                  attendanceProvider.updateAttendance(attendance: attendance, id: userProvider.userModel.id!);
+                                  attendanceProvider.updateAttendance(attendance: attendance);
                                   attendanceProvider.getAttendanceUserToDay(userId: userProvider.userModel.id!);
                                   pop(context);
                                 }));
                           } else {
-                            showToast(context);
+                            showToast(context,'تم تسجيل التمام مسبقاً');
                           }
                         },
                       ),
@@ -118,21 +117,21 @@ class UserDetail extends StatelessWidget {
                               1) {
                             showDialog(
                                 context: context,
-                                builder: (ctx) => alert(context:context,txt: 'حاضر',color:Colors.green,onPressed: (){
+                                builder: (ctx) => alert(context:context,txt: 'غائب',color:Colors.green,onPressed: (){
                                   print("تحديث ${attendanceProvider.attendanceModel.last.todayDate}");
                                   final attendance = Attendance(
                                     id: attendanceProvider.attendanceModel.last.id,
                                       userId: userProvider.userModel.id!,
                                       todayDate: '${DateTime.now()}',
-                                      status: 1,
+                                      status: 0,
                                       salaryReceived: '0');
                                   print("تحديث ${attendance.id}");
-                                  attendanceProvider.updateAttendance(attendance: attendance, id: userProvider.userModel.id!);
+                                  attendanceProvider.updateAttendance(attendance: attendance);
                                 attendanceProvider.getAttendanceUserToDay(userId: userProvider.userModel.id!);
                                   pop(context);
                                 }));
                           } else {
-                            showToast(context);
+                            showToast(context,'تم تسجيل التمام مسبقاً');
                           }
                         },
                         color: Colors.red,
@@ -177,6 +176,13 @@ class UserDetail extends StatelessWidget {
                     ],
                   )),
                   const SizedBox(height: 30),
+                  if(attendanceProvider.attendanceModel.isNotEmpty && attendanceProvider.attendanceModel.last.status==1)buildElevatedButton(
+                      label: 'سحب مبلغ',
+                      color: const Color(0xff9d6c0d),
+                      onPressed: () {
+keyScaffold.currentState!.showBottomSheet((context) => DrawFinance());
+                        } ),
+                  const SizedBox(height: 20),
                   buildElevatedButton(
                       label: 'عرض ايام الحضور',
                       color: const Color(0xec05675e),

@@ -36,10 +36,10 @@ AlertDialog alert(
   );
 }
 
-showToast(BuildContext context) {
+showToast(BuildContext context,String txt) {
   final toast = ToastContext();
   toast.init(context);
-  Toast.show('تم تسجيل التمام مسبقاً',
+  Toast.show(txt,
       duration: Toast.lengthLong,
       backgroundColor: const Color(0xFFBB4724),
       textStyle: const TextStyle(color: Color(0xFFFFFFFF)));

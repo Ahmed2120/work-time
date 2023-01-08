@@ -4,7 +4,7 @@ import 'package:work_time/db/attendanceReposetory.dart';
 import '../model/attendance.dart';
 
 class AttendanceProvider with ChangeNotifier {
-  final List<Attendance> _attendanceList = [];
+  List<Attendance> _attendanceList = [];
 
   List<Attendance> get attendanceList {
     return _attendanceList;
@@ -62,6 +62,12 @@ class AttendanceProvider with ChangeNotifier {
   getAttendanceUser(int userId)async{
     final attendanceRepository = AttendanceRepository();
     _attendanceUser=await attendanceRepository.retrieveByUserId(userId);
+    notifyListeners();
+  }
+
+  getAttendanceList()async{
+    final attendanceRepository = AttendanceRepository();
+    _attendanceList = await attendanceRepository.retrieve();
     notifyListeners();
   }
 }

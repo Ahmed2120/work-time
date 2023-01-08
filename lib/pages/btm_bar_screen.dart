@@ -48,15 +48,15 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
         BottomNavigationBarItem(
             icon:
                 Icon(_selectedIndex == 0 ? IconlyBold.home : IconlyLight.home),
-            label: 'Home'),
+            label: 'الرئيسية'),
         BottomNavigationBarItem(
             icon: Icon(_selectedIndex == 1
                 ? IconlyBold.user_3
                 : IconlyLight.user_1),
-            label: 'All Users'),
+            label: 'كل العاملين'),
         BottomNavigationBarItem(
             icon: Icon(
                 _selectedIndex == 2 ? IconlyBold.delete : IconlyLight.delete),
-            label: 'Trashed Users'),
+            label: 'خارج العمل'),
       ];}
 }

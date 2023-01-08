@@ -37,7 +37,7 @@ class RecordAttendance extends StatelessWidget {
                       userId: userProvider.userModel.id!,
                       todayDate: DateTime.now().toString(),
                       status: 1,
-                      salaryReceived: 0,
+                      salaryReceived: '0',
                     );
                     attendanceProvider.addAttendance(attendance);
                   }
@@ -46,7 +46,7 @@ class RecordAttendance extends StatelessWidget {
                       userId: userProvider.userModel.id!,
                       todayDate: DateTime.now().toString(),
                       status: 1,
-                      salaryReceived: 0,
+                      salaryReceived: '0',
                     );
                     attendanceProvider.addAttendance(attendance);
                   }

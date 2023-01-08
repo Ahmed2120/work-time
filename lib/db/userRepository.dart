@@ -16,6 +16,7 @@ class UserRepository{
   Future retrieve() async{
     final db = await databaseHandler.initializeDB();
     final List<Map<String, Object?>> queryResults = await db.query(table_name);
+    print(queryResults);
     return queryResults.map((e) => User.fromMap(e)).toList();
   }
 

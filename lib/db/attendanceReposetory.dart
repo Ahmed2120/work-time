@@ -23,13 +23,24 @@ class AttendanceRepository{
   Future retrieveByUserId(int userId) async{
     final db = await databaseHandler.initializeDB();
     final List<Map<String, Object?>> queryResults = await db.query(table_name, where: 'userId = ?', whereArgs: [userId]);
+
     return queryResults.map((e) => Attendance.fromMap(e)).toList();
   }
 
-  Future retrieveByUserIdDateTime(int userId,String date) async{
+  Future retrieveByUserIdDateTime(int userId) async{
     final db = await databaseHandler.initializeDB();
-    final List<Map<String, Object?>> queryResults = await db.query(table_name, where: 'userId = ? and todayDate = ?', whereArgs: [userId,date]);
+    final String date='${DateTime.now().year}-${DateTime.now().month<10?'0${DateTime.now().month}':'${DateTime.now().month}'}-${DateTime.now().day<10?'0${DateTime.now().day}':'${DateTime.now().day}'}';
+    final List<Map<String, Object?>> queryResults = await db.query(table_name, where: 'userId = ? and todayDate LIKE ?', whereArgs: [userId,'%$date%']);
     return queryResults.map((e) => Attendance.fromMap(e)).toList();
+  }
+  Future update({required Attendance attendance,required int id}) async {
+    int result = 0;
+    final db = await databaseHandler.initializeDB();
+    //final String date='${DateTime.now().year}-${DateTime.now().month<10?'0${DateTime.now().month}':'${DateTime.now().month}'}-${DateTime.now().day<10?'0${DateTime.now().day}':'${DateTime.now().day}'}';
+    result = await db.update(table_name,attendance.toMap() ,where: 'Id = ?', whereArgs: [id]);
+
+   // result = await db.update(table_name, attendance.toMap(),where: 'id = ?', whereArgs: [id]);
+    return result;
   }
 
   Future delete(Attendance attendance) async{

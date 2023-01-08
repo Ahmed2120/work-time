@@ -4,13 +4,7 @@ import '../db/userRepository.dart';
 import '../model/user.dart';
 
 class UserProvider with ChangeNotifier {
-  final List<User> _users = [
-    User(name: 'أحمد', job: 'حاضر', salary: 100),
-    User(name: 'محمد', job: 'غائب', salary: 200),
-    User(name: 'سعيد', job: 'غائب', salary: 200),
-    User(name: 'أسامة', job: 'حاضر', salary: 100),
-    User(name: 'محمود', job: 'غائب', salary: 300),
-  ];
+    List<User> _users = [];
 
   final List<User> _usersTrash = [];
 
@@ -29,6 +23,7 @@ class UserProvider with ChangeNotifier {
   }
 
   getUser(int id) {
+    print(id);
     _userModel = _users.firstWhere((element) => element.id == id);
     notifyListeners();
   }
@@ -46,6 +41,12 @@ class UserProvider with ChangeNotifier {
     user.id = userId;
     _users.add(user);
 
+    notifyListeners();
+  }
+   getUsers()async{
+    final userRepository = UserRepository();
+    print(DateTime.now());
+    _users=await userRepository.retrieve();
     notifyListeners();
   }
 

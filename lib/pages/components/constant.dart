@@ -7,3 +7,6 @@ void push({required Widget screen,required BuildContext context}){
 void pushReplacement({required Widget screen,required BuildContext context}){
   Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (ctx)=>screen));
 }
+void pop(BuildContext context){
+  Navigator.of(context).pop();
+}

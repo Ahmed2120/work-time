@@ -1,9 +1,9 @@
 class Attendance {
-  late final int? id;
+   final int? id;
   final int userId;
   final String todayDate;
   final int status;
-  final double salaryReceived;
+  final String salaryReceived;
 
   Attendance({
     this.id,

@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Cairo',
           primarySwatch: Colors.blue,
         ),
-        home: BottomBarScreen(),
+        home: const BottomBarScreen(),
       ),
     );
   }

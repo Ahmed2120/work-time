@@ -18,6 +18,9 @@ dependencies:
   iconly:
   sliding_sheet: ^0.5.2
   toast: ^0.3.0
+  flutter_localizations:
+    sdk: flutter
+  intl:
 
 dev_dependencies:
   flutter_test:

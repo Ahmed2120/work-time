@@ -91,14 +91,14 @@ class AttendanceProvider with ChangeNotifier {
     return _weekAttendanceMap;
   }
 
-  void getWeeks() async{
+  void getWeeks(int userId) async{
     _weeksList=[];
     final attendanceRepository = AttendanceRepository();
-    _weeksList = await attendanceRepository.retrieveWeeks();
+    _weeksList = await attendanceRepository.retrieveWeeks(userId);
     notifyListeners();
   }
   
-  void getWeeklyAttendance(int userId) async{
+  Future<void> getWeeklyAttendance(int userId) async{
     final attendanceRepository = AttendanceRepository();
     for(var i in _weeksList){
       final x = await attendanceRepository.retrieveAttendByWeekId(weekId: i, userId: userId);

@@ -221,10 +221,11 @@ class UserDetail extends StatelessWidget {
                       label: 'عرض ايام الحضور',
                       color: const Color(0xec05675e),
                       onPressed: () {
-                        attendanceProvider.getWeeklyAttendance(user.id!);
-                        attendanceProvider
-                            .getAttendanceUser(user.id!);
-                        showSheet(context);
+                        attendanceProvider.getWeeklyAttendance(user.id!).then((value) {
+                          attendanceProvider
+                              .getAttendanceUser(user.id!);
+                          showSheet(context);
+                        });
                       })
                 ],
               ),

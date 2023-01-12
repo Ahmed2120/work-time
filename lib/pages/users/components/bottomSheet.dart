@@ -37,6 +37,8 @@ class DrawFinance extends StatelessWidget {
                     final attendance = Attendance(
                       userId: userProvider.userModel.id!,
                       todayDate: attendanceProvider.attendanceModel.last.todayDate,
+                      weekId: attendanceProvider.attendanceModel.last.weekId,
+                      weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
                       status: 1,
                       salaryReceived: '0',
                     );
@@ -49,6 +51,8 @@ class DrawFinance extends StatelessWidget {
                         id: attendanceProvider.attendanceModel.last.id,
                         userId: userProvider.userModel.id!,
                         todayDate: attendanceProvider.attendanceModel.last.todayDate,
+                        weekId: attendanceProvider.attendanceModel.last.weekId,
+                        weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
                         status: 1,
                         salaryReceived: _salaryController.text);
                     attendanceProvider.updateAttendance(attendance: attendance);

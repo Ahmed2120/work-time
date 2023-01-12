@@ -6,6 +6,7 @@ import 'package:work_time/pages/components/constant.dart';
 import 'package:work_time/provider/attendance_provider.dart';
 import 'package:work_time/provider/user_provider.dart';
 import 'package:toast/toast.dart';
+import 'package:work_time/utility/global_methods.dart';
 
 import 'components/bottomSheet.dart';
 import 'components/build_card.dart';
@@ -71,6 +72,8 @@ class UserDetail extends StatelessWidget {
                             final attendance = Attendance(
                                 userId: userProvider.userModel.id!,
                                 todayDate: '${DateTime.now()}',
+                                weekId: attendanceProvider.setWeekId(GlobalMethods.getDayName(DateTime.now())),
+                                weekStatus: 0,
                                 status: 1,
                                 salaryReceived: '0');
                             attendanceProvider.addAttendance(attendance);
@@ -81,21 +84,32 @@ class UserDetail extends StatelessWidget {
                               0) {
                             showDialog(
                                 context: context,
-                                builder: (ctx) => alert(context:context,txt: 'حاضر',color:Colors.green,onPressed: (){
-                                  print("تحديث ${attendanceProvider.attendanceModel.last.id}");
-                                  final attendance = Attendance(
-                                      id: attendanceProvider.attendanceModel.last.id,
-                                      userId: userProvider.userModel.id!,
-                                      todayDate: '${DateTime.now()}',
-                                      status: 1,
-                                      salaryReceived: '0');
-                                  print("تحديث ${attendance.id}");
-                                  attendanceProvider.updateAttendance(attendance: attendance);
-                                  attendanceProvider.getAttendanceUserToDay(userId: userProvider.userModel.id!);
-                                  pop(context);
-                                }));
+                                builder: (ctx) => alert(
+                                    context: context,
+                                    txt: 'حاضر',
+                                    color: Colors.green,
+                                    onPressed: () {
+                                      print(
+                                          "تحديث ${attendanceProvider.attendanceModel.last.id}");
+                                      final attendance = Attendance(
+                                          id: attendanceProvider
+                                              .attendanceModel.last.id,
+                                          userId: userProvider.userModel.id!,
+                                          todayDate: '${DateTime.now()}',
+                                          weekId: attendanceProvider
+                                              .attendanceModel.last.weekId,
+                                          weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
+                                          status: 1,
+                                          salaryReceived: '0');
+                                      print("تحديث ${attendance.id}");
+                                      attendanceProvider.updateAttendance(
+                                          attendance: attendance);
+                                      attendanceProvider.getAttendanceUserToDay(
+                                          userId: userProvider.userModel.id!);
+                                      pop(context);
+                                    }));
                           } else {
-                            showToast(context,'تم تسجيل التمام مسبقاً');
+                            showToast(context, 'تم تسجيل التمام مسبقاً');
                           }
                         },
                       ),
@@ -107,31 +121,44 @@ class UserDetail extends StatelessWidget {
                             final attendance = Attendance(
                                 userId: userProvider.userModel.id!,
                                 todayDate: '${DateTime.now()}',
+                                weekId: attendanceProvider.setWeekId(GlobalMethods.getDayName(DateTime.now())),
+                                weekStatus: 0,
                                 status: 0,
                                 salaryReceived: '0');
                             attendanceProvider.addAttendance(attendance);
                             attendanceProvider.getAttendanceUserToDay(
-                                userId: attendanceProvider.attendanceModel.last.id!);
+                                userId: attendanceProvider
+                                    .attendanceModel.last.id!);
                           } else if (attendanceProvider
                                   .attendanceModel.last.status ==
                               1) {
                             showDialog(
                                 context: context,
-                                builder: (ctx) => alert(context:context,txt: 'غائب',color:Colors.green,onPressed: (){
-                                  print("تحديث ${attendanceProvider.attendanceModel.last.todayDate}");
-                                  final attendance = Attendance(
-                                    id: attendanceProvider.attendanceModel.last.id,
-                                      userId: userProvider.userModel.id!,
-                                      todayDate: '${DateTime.now()}',
-                                      status: 0,
-                                      salaryReceived: '0');
-                                  print("تحديث ${attendance.id}");
-                                  attendanceProvider.updateAttendance(attendance: attendance);
-                                attendanceProvider.getAttendanceUserToDay(userId: userProvider.userModel.id!);
-                                  pop(context);
-                                }));
+                                builder: (ctx) => alert(
+                                    context: context,
+                                    txt: 'غائب',
+                                    color: Colors.green,
+                                    onPressed: () {
+                                      print(
+                                          "تحديث ${attendanceProvider.attendanceModel.last.todayDate}");
+                                      final attendance = Attendance(
+                                          id: attendanceProvider
+                                              .attendanceModel.last.id,
+                                          userId: userProvider.userModel.id!,
+                                          todayDate: '${DateTime.now()}',
+                                          weekId: attendanceProvider.attendanceModel.last.weekId,
+                                          weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
+                                          status: 0,
+                                          salaryReceived: '0');
+                                      print("تحديث ${attendance.id}");
+                                      attendanceProvider.updateAttendance(
+                                          attendance: attendance);
+                                      attendanceProvider.getAttendanceUserToDay(
+                                          userId: userProvider.userModel.id!);
+                                      pop(context);
+                                    }));
                           } else {
-                            showToast(context,'تم تسجيل التمام مسبقاً');
+                            showToast(context, 'تم تسجيل التمام مسبقاً');
                           }
                         },
                         color: Colors.red,
@@ -176,19 +203,24 @@ class UserDetail extends StatelessWidget {
                     ],
                   )),
                   const SizedBox(height: 30),
-                  if(attendanceProvider.attendanceModel.isNotEmpty && attendanceProvider.attendanceModel.last.status==1)buildElevatedButton(
-                      label: 'سحب مبلغ',
-                      color: const Color(0xff9d6c0d),
-                      onPressed: () {
-keyScaffold.currentState!.showBottomSheet((context) => DrawFinance());
-                        } ),
+                  if (attendanceProvider.attendanceModel.isNotEmpty &&
+                      attendanceProvider.attendanceModel.last.status == 1)
+                    buildElevatedButton(
+                        label: 'سحب مبلغ',
+                        color: const Color(0xff9d6c0d),
+                        onPressed: () {
+                          keyScaffold.currentState!
+                              .showBottomSheet((context) => DrawFinance());
+                        }),
                   const SizedBox(height: 20),
                   buildElevatedButton(
                       label: 'عرض ايام الحضور',
                       color: const Color(0xec05675e),
                       onPressed: () {
-                        attendanceProvider.getAttendanceUser(userProvider.userModel.id!);
-                        showSheet(context);} )
+                        attendanceProvider
+                            .getAttendanceUser(userProvider.userModel.id!);
+                        showSheet(context);
+                      })
                 ],
               ),
             ),
@@ -208,5 +240,4 @@ keyScaffold.currentState!.showBottomSheet((context) => DrawFinance());
       child: Text(label),
     );
   }
-
 }

@@ -13,6 +13,7 @@ class UsersStatusListview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+   final pro= Provider.of<AttendanceProvider>(context,listen: false);
     return Consumer<UserProvider>(
       builder:(ctx, userProvider, _){
         List<User> users = userProvider.filteredUsers.isEmpty ? userProvider.users :
@@ -24,7 +25,14 @@ class UsersStatusListview extends StatelessWidget {
               onTap: (){
                 print("الاول ${userProvider.users[index].id}");
                 userProvider.getUser(users[index].id!);
-                Provider.of<AttendanceProvider>(context,listen: false).getAttendanceUserToDay(userId: users[index].id!);
+                pro.getAttendanceUser(users[index].id!).then((value) {
+                  pro.getWeekIdList();
+                  if(pro.attendanceModel.isNotEmpty) {
+
+                  } print("الاسبوع ${pro.attendanceModel.last.id}");
+                });
+                pro.getAttendanceUserToDay(userId: users[index].id!);
+
                 push(screen:  UserDetail(), context: context);
               },
               title: Text(users[index].name),

@@ -18,7 +18,7 @@ class GlobalMethods{
 
   static String getDateFormat(DateTime dateTime) {
 
-    return '${dateTime.day}-${dateTime.month}-${dateTime.year}';
+    return '${dateTime.year}-${dateTime.month<10?'0${dateTime.month}':dateTime.month}-${dateTime.day<10?'0${dateTime.day}':dateTime.day}';
   }
 
 

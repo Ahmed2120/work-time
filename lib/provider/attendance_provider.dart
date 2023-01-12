@@ -95,7 +95,6 @@ class AttendanceProvider with ChangeNotifier {
     _weeksList=[];
     final attendanceRepository = AttendanceRepository();
     _weeksList = await attendanceRepository.retrieveWeeks();
-
     notifyListeners();
   }
   
@@ -105,6 +104,32 @@ class AttendanceProvider with ChangeNotifier {
       final x = await attendanceRepository.retrieveAttendByWeekId(weekId: i, userId: userId);
       _weekAttendanceMap.addEntries([MapEntry(i, x)]);
     }
+  }
+
+  double sumSalaryReceived(List<Attendance> list){
+    double x=0;
+    for(var model in list){
+      x+=double.parse(model.salaryReceived);
+    }
+    return x;
+  }
+
+  double salary=0;
+  setSalary(double value){
+    salary=value;
+    notifyListeners();
+  }
+
+  double sumSalaryRemain(List<Attendance> list){
+    double x=0;
+    double totalSalary=0;
+    for(var model in list){
+      if(model.status==1){
+        totalSalary=totalSalary+salary;
+      }
+    }
+    x=totalSalary-sumSalaryReceived(list);
+    return x;
   }
 
 

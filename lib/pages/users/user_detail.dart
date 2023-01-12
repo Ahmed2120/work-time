@@ -130,8 +130,7 @@ class UserDetail extends StatelessWidget {
                                 salaryReceived: '0');
                             attendanceProvider.addAttendance(attendance);
                             attendanceProvider.getAttendanceUserToDay(
-                                userId: attendanceProvider
-                                    .attendanceModel.last.id!);
+                                userId: user.id!);
                           } else if (attendanceProvider
                                   .attendanceModel.last.status ==
                               1) {

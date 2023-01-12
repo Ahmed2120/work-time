@@ -16,18 +16,6 @@ class UserProvider with ChangeNotifier {
     return _usersTrash;
   }
 
-  late User _userModel;
-
-  User get userModel {
-    return _userModel;
-  }
-
-  getUser(int id) {
-    print(id);
-    _userModel = _users.firstWhere((element) => element.id == id);
-    notifyListeners();
-  }
-
   List<User> _filteredUsers = [];
 
   List<User> get filteredUsers {

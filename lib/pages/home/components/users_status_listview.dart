@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/db/attendanceReposetory.dart';
 import 'package:work_time/pages/components/constant.dart';
 import 'package:work_time/provider/attendance_provider.dart';
 
@@ -22,18 +23,10 @@ class UsersStatusListview extends StatelessWidget {
           itemCount: users.length,
           itemBuilder: (context, index) => Card(
             child: ListTile(
-              onTap: (){
-                print("الاول ${userProvider.users[index].id}");
-                userProvider.getUser(users[index].id!);
-                pro.getAttendanceUser(users[index].id!).then((value) {
-                  pro.getWeekIdList();
-                  if(pro.attendanceModel.isNotEmpty) {
-
-                  } print("الاسبوع ${pro.attendanceModel.last.id}");
-                });
+              onTap: ()async{
                 pro.getAttendanceUserToDay(userId: users[index].id!);
 
-                push(screen:  UserDetail(), context: context);
+                push(screen:  UserDetail(user: users[index],), context: context);
               },
               title: Text(users[index].name),
               subtitle: Text(getHour()),

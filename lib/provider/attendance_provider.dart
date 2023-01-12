@@ -82,20 +82,29 @@ class AttendanceProvider with ChangeNotifier {
     }
   }
 
-  List<Attendance> _weekIdList= [];
-  List<Attendance> get weekIdList {
-    return _weekIdList;
+  List<int> _weeksList= [];
+  final Map<int, List<Attendance>> _weekAttendanceMap = {};
+  List<int> get weeksList {
+    return _weeksList;
   }
-  void getWeekIdList() {
-    _weekIdList=[];
-    final List list=[];
-    for (var element in _attendanceUser) {
-      if (!list.contains(element.weekId)) {
-        list.add(element.weekId);
-        _weekIdList.add(element);
-      }
-    }
+  Map<int, List<Attendance>> get weekAttendanceMap {
+    return _weekAttendanceMap;
+  }
+
+  void getWeeks() async{
+    _weeksList=[];
+    final attendanceRepository = AttendanceRepository();
+    _weeksList = await attendanceRepository.retrieveWeeks();
+
     notifyListeners();
+  }
+  
+  void getWeeklyAttendance(int userId) async{
+    final attendanceRepository = AttendanceRepository();
+    for(var i in _weeksList){
+      final x = await attendanceRepository.retrieveAttendByWeekId(weekId: i, userId: userId);
+      _weekAttendanceMap.addEntries([MapEntry(i, x)]);
+    }
   }
 
 

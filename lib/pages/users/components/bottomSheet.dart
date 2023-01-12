@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/model/user.dart';
 import 'package:work_time/pages/users/components/functions.dart';
 
 import '../../../model/attendance.dart';
 import '../../../provider/attendance_provider.dart';
-import '../../../provider/user_provider.dart';
 import '../../components/custom_textField.dart';
 import '../../components/header_sheet.dart';
 
@@ -15,7 +15,7 @@ class DrawFinance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
+    final user = Provider.of<User>(context);
     final attendanceProvider = Provider.of<AttendanceProvider>(context);
     return SingleChildScrollView(
       child: Column(
@@ -35,7 +35,7 @@ class DrawFinance extends StatelessWidget {
                 buildButton(context,() {
                   if (_salaryController.text.isEmpty) {
                     final attendance = Attendance(
-                      userId: userProvider.userModel.id!,
+                      userId: user.id!,
                       todayDate: attendanceProvider.attendanceModel.last.todayDate,
                       weekId: attendanceProvider.attendanceModel.last.weekId,
                       weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
@@ -43,20 +43,20 @@ class DrawFinance extends StatelessWidget {
                       salaryReceived: '0',
                     );
                     attendanceProvider.updateAttendance(attendance: attendance);
-                    attendanceProvider.getAttendanceUserToDay(userId: userProvider.userModel.id!);
+                    attendanceProvider.getAttendanceUserToDay(userId: user.id!);
                   }
                   else{
 
                     final attendance = Attendance(
                         id: attendanceProvider.attendanceModel.last.id,
-                        userId: userProvider.userModel.id!,
+                        userId: user.id!,
                         todayDate: attendanceProvider.attendanceModel.last.todayDate,
                         weekId: attendanceProvider.attendanceModel.last.weekId,
                         weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
                         status: 1,
                         salaryReceived: _salaryController.text);
                     attendanceProvider.updateAttendance(attendance: attendance);
-                    attendanceProvider.getAttendanceUserToDay(userId: userProvider.userModel.id!);
+                    attendanceProvider.getAttendanceUserToDay(userId: user.id!);
                   showToast(context,' تم سحب${_salaryController.text}');
                   }
 

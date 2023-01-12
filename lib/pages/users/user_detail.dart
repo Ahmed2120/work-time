@@ -8,6 +8,7 @@ import 'package:work_time/provider/user_provider.dart';
 import 'package:toast/toast.dart';
 import 'package:work_time/utility/global_methods.dart';
 
+import '../../model/user.dart';
 import 'components/bottomSheet.dart';
 import 'components/build_card.dart';
 import 'components/functions.dart';
@@ -15,7 +16,9 @@ import 'components/slid_bottom_sheet.dart';
 import 'components/text_row.dart';
 
 class UserDetail extends StatelessWidget {
-  UserDetail({Key? key}) : super(key: key);
+  UserDetail({Key? key, required this.user}) : super(key: key);
+
+  final User user;
 
   final List<PopupMenuItem<String>> menuItems = [
     const PopupMenuItem(
@@ -70,7 +73,7 @@ class UserDetail extends StatelessWidget {
                         onPressed: () {
                           if (attendanceProvider.attendanceModel.isEmpty) {
                             final attendance = Attendance(
-                                userId: userProvider.userModel.id!,
+                                userId: user.id!,
                                 todayDate: '${DateTime.now()}',
                                 weekId: attendanceProvider.setWeekId(GlobalMethods.getDayName(DateTime.now())),
                                 weekStatus: 0,
@@ -78,7 +81,7 @@ class UserDetail extends StatelessWidget {
                                 salaryReceived: '0');
                             attendanceProvider.addAttendance(attendance);
                             attendanceProvider.getAttendanceUserToDay(
-                                userId: userProvider.userModel.id!);
+                                userId: user.id!);
                           } else if (attendanceProvider
                                   .attendanceModel.last.status ==
                               0) {
@@ -94,7 +97,7 @@ class UserDetail extends StatelessWidget {
                                       final attendance = Attendance(
                                           id: attendanceProvider
                                               .attendanceModel.last.id,
-                                          userId: userProvider.userModel.id!,
+                                          userId: user.id!,
                                           todayDate: '${DateTime.now()}',
                                           weekId: attendanceProvider
                                               .attendanceModel.last.weekId,
@@ -105,7 +108,7 @@ class UserDetail extends StatelessWidget {
                                       attendanceProvider.updateAttendance(
                                           attendance: attendance);
                                       attendanceProvider.getAttendanceUserToDay(
-                                          userId: userProvider.userModel.id!);
+                                          userId: user.id!);
                                       pop(context);
                                     }));
                           } else {
@@ -119,7 +122,7 @@ class UserDetail extends StatelessWidget {
                         onPressed: () {
                           if (attendanceProvider.attendanceModel.isEmpty) {
                             final attendance = Attendance(
-                                userId: userProvider.userModel.id!,
+                                userId: user.id!,
                                 todayDate: '${DateTime.now()}',
                                 weekId: attendanceProvider.setWeekId(GlobalMethods.getDayName(DateTime.now())),
                                 weekStatus: 0,
@@ -144,7 +147,7 @@ class UserDetail extends StatelessWidget {
                                       final attendance = Attendance(
                                           id: attendanceProvider
                                               .attendanceModel.last.id,
-                                          userId: userProvider.userModel.id!,
+                                          userId: user.id!,
                                           todayDate: '${DateTime.now()}',
                                           weekId: attendanceProvider.attendanceModel.last.weekId,
                                           weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
@@ -154,7 +157,7 @@ class UserDetail extends StatelessWidget {
                                       attendanceProvider.updateAttendance(
                                           attendance: attendance);
                                       attendanceProvider.getAttendanceUserToDay(
-                                          userId: userProvider.userModel.id!);
+                                          userId: user.id!);
                                       pop(context);
                                     }));
                           } else {
@@ -168,12 +171,12 @@ class UserDetail extends StatelessWidget {
                   const SizedBox(height: 20),
                   BuildCard(Column(
                     children: [
-                      TextRow(title: 'الاسم', txt: userProvider.userModel.name),
+                      TextRow(title: 'الاسم', txt: user.name),
                       TextRow(
-                          title: 'الوظيفة', txt: userProvider.userModel.job),
+                          title: 'الوظيفة', txt: user.job),
                       TextRow(
                           title: 'الفئة',
-                          txt: userProvider.userModel.salary.toString()),
+                          txt: user.salary.toString()),
                     ],
                   )),
                   const SizedBox(height: 20),
@@ -210,15 +213,18 @@ class UserDetail extends StatelessWidget {
                         color: const Color(0xff9d6c0d),
                         onPressed: () {
                           keyScaffold.currentState!
-                              .showBottomSheet((context) => DrawFinance());
+                              .showBottomSheet((context) => ChangeNotifierProvider.value(
+                            value: user,
+                              child: DrawFinance()));
                         }),
                   const SizedBox(height: 20),
                   buildElevatedButton(
                       label: 'عرض ايام الحضور',
                       color: const Color(0xec05675e),
                       onPressed: () {
+                        attendanceProvider.getWeeklyAttendance(user.id!);
                         attendanceProvider
-                            .getAttendanceUser(userProvider.userModel.id!);
+                            .getAttendanceUser(user.id!);
                         showSheet(context);
                       })
                 ],

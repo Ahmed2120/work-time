@@ -24,6 +24,7 @@ class UsersStatusListview extends StatelessWidget {
           itemBuilder: (context, index) => Card(
             child: ListTile(
               onTap: ()async{
+                  pro.getWeeks();
                 pro.getAttendanceUserToDay(userId: users[index].id!);
 
                 push(screen:  UserDetail(user: users[index],), context: context);

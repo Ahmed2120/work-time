@@ -37,6 +37,7 @@ class AttendanceRepository{
   Future<List<int>> retrieveWeeks() async{
     final db = await databaseHandler.initializeDB();
     final List<Map<String, Object?>> queryResults = await db.rawQuery("SELECT DISTINCT weekId FROM $table_name");
+    print(queryResults);
     return queryResults.map((e) => e['weekId'] as int).toList();
   }
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:work_time/db/attendanceReposetory.dart';
+import 'package:work_time/provider/attendance_provider.dart';
 
 import '../db/userRepository.dart';
 import '../model/user.dart';
@@ -6,7 +8,7 @@ import '../model/user.dart';
 class UserProvider with ChangeNotifier {
     List<User> _users = [];
 
-  final List<User> _usersTrash = [];
+   List<User> _usersTrash = [];
 
   List<User> get users {
     return _users;
@@ -34,18 +36,33 @@ class UserProvider with ChangeNotifier {
 
    getUsers()async{
     final userRepository = UserRepository();
-    print(DateTime.now());
     _users=await userRepository.retrieve();
     notifyListeners();
   }
+
+    getTrash()async{
+      final userRepository = UserRepository();
+      _usersTrash=await userRepository.retrieve(trash: 1);
+      notifyListeners();
+    }
 
   updateUser(User user){
     final userRepository = UserRepository();
     userRepository.update(user: user);
     getUsers();
+    getTrash();
     notifyListeners();
   }
+deleteUser(User user){
+  final userRepository = UserRepository();
+  final attendanceRepository = AttendanceRepository();
 
+  attendanceRepository.deleteByUserId(user.id!);
+  userRepository.delete(user);
+  getUsers();
+  getTrash();
+  notifyListeners();
+}
   void filteringUser(String value) {
     if (value == 'الكل') {
       _filteredUsers = _users;

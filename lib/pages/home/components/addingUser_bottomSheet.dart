@@ -21,7 +21,7 @@ class AddingUserBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    fillText();
+   fillText();
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -72,17 +72,17 @@ class AddingUserBottomSheet extends StatelessWidget {
   Widget buildButton(context) => ElevatedButton(
         onPressed: () {
           if (!_formKey.currentState!.validate()) return;
-
-          final user = User(
+          if (onPressed == 'add'){
+          final userModel = User(
               name: _nameController.text,
               job: _jobController.text,
               salary: _salaryController.text);
-          if (onPressed == 'add') {
-            Provider.of<UserProvider>(context, listen: false).addUser(user);
+
+            Provider.of<UserProvider>(context, listen: false).addUser(userModel);
             clearText();
           } else {
-            final userModel=User(id: user.id,name: _nameController.text, job: _jobController.text, salary: _salaryController.text,isDeleted: user.isDeleted);
-            Provider.of<UserProvider>(context,listen: false).updateUser(userModel);
+            Provider.of<UserProvider>(context,listen: false).updateUser(user!);
+
             clearText();
             pop(context);
           }

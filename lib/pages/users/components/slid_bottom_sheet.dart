@@ -10,6 +10,7 @@ import '../../../provider/attendance_provider.dart';
 Future showSheet(BuildContext context) => showSlidingBottomSheet(context,
     builder: (context) => const SlidingSheetDialog(
         cornerRadius: 20,
+        duration: Duration(milliseconds: 200),
         avoidStatusBar: true,
         snapSpec: SnapSpec(
           snappings: [.4, .7],
@@ -44,11 +45,6 @@ Widget buildSheet(context, state) {
         itemBuilder: (BuildContext context, int index) => Padding(
           padding: const EdgeInsets.only(bottom: 15.0),
           child: ExpansionTile(
-                onExpansionChanged: (val) {
-                  print(attendanceProvider
-                      .weekAttendanceMap[weeksList[index]]!.length);
-                  showToast(context, '$val');
-                },
                 title: Text('الاسبوع ${attendanceProvider.weeksList[index]}'),
                 childrenPadding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -60,18 +56,16 @@ Widget buildSheet(context, state) {
                       width: 2,
                     ),
                     columnWidths: const {
-                      0: IntrinsicColumnWidth(flex: 1),
+                      0: IntrinsicColumnWidth(flex: 4),
                       1: IntrinsicColumnWidth(flex: 4),
                       2: IntrinsicColumnWidth(flex: 4),
                       3: IntrinsicColumnWidth(flex: 4),
-                      4: IntrinsicColumnWidth(flex: 4),
                     },
                     defaultColumnWidth: const IntrinsicColumnWidth(),
                     children: [
                       TableRow(children: [
                         headerTable("اليوم"),
                         headerTable("التاريخ"),
-                        headerTable("الوقت"),
                         headerTable("التمام"),
                         headerTable("المبلغ المسحوب"),
                       ]),
@@ -87,7 +81,6 @@ Widget buildSheet(context, state) {
                                 attendanceProvider
                                     .weekAttendanceMap[weeksList[index]]![i]
                                     .todayDate)),
-                            '01:00',
                             attendanceProvider
                                 .weekAttendanceMap[weeksList[index]]![i].status,
                             attendanceProvider
@@ -120,9 +113,9 @@ Widget buildSheet(context, state) {
                             salaryReceived: model.salaryReceived);
                         attendanceProvider.updateAttendance(
                             attendance: attendance);
-                        attendanceProvider.getWeeklyAttendance(model.userId!);
+                        attendanceProvider.getWeeklyAttendance(model.userId);
                         attendanceProvider
-                            .getAttendanceUser(model.userId!);
+                            .getAttendanceUser(model.userId);
                       }, child: const Text('تصفية الساب')):const Text('تم تصفية الحساب',style: TextStyle(fontSize: 22,fontWeight: FontWeight.w900,color: Color(
                       0xFF560404)),)
                 ],
@@ -143,12 +136,10 @@ Padding headerTable(String txt) {
   );
 }
 
-TableRow buildTableRow(String day, String today, String today1, int status,
+TableRow buildTableRow(String day, String today, int status,
     String salaryReceived) {
   DateTime dateTime = DateTime.parse(today);
   String date = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
-  String time =
-      "${dateTime.hour < 10 ? '0${dateTime.hour}' : '${dateTime.hour}'}:${dateTime.minute < 10 ? '0${dateTime.minute}' : '${dateTime.minute}'}:${dateTime.second < 10 ? '0${dateTime.second}' : '${dateTime.second}'}";
   return TableRow(children: [
     Padding(
       padding: const EdgeInsets.all(4),
@@ -159,10 +150,6 @@ TableRow buildTableRow(String day, String today, String today1, int status,
     ),
     Text(
       date,
-      textAlign: TextAlign.center,
-    ),
-    Text(
-      time,
       textAlign: TextAlign.center,
     ),
     Text(

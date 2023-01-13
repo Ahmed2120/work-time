@@ -13,9 +13,9 @@ class UserRepository{
     return result;
   }
 
-  Future retrieve() async{
+  Future retrieve({int trash = 0}) async{
     final db = await databaseHandler.initializeDB();
-    final List<Map<String, Object?>> queryResults = await db.query(table_name,where: 'isDeleted = 0');
+    final List<Map<String, Object?>> queryResults = await db.query(table_name,where: 'isDeleted = ?',whereArgs: [trash]);
     print(queryResults);
     return queryResults.map((e) => User.fromMap(e)).toList();
   }

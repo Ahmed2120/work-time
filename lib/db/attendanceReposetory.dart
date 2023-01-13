@@ -54,8 +54,8 @@ class AttendanceRepository{
     return result;
   }
 
-  Future delete(Attendance attendance) async{
+  Future deleteByUserId(int userId) async{
     final db = await databaseHandler.initializeDB();
-    db.delete(table_name, where: 'id = ?', whereArgs: [attendance.id]);
+    db.delete(table_name, where: 'userId = ?', whereArgs: [userId]);
   }
 }

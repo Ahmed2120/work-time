@@ -59,7 +59,8 @@ class UserDetail extends StatelessWidget {
                       userProvider.updateUser(userModel);
                     }
                     else{
-                      keyScaffold.currentState!.showBottomSheet((context) => AddingUserBottomSheet('edit',user: user,));
+                      final userModel=User(id: user.id,name: user.name, job: user.job, salary: user.salary,isDeleted: user.isDeleted);
+                      keyScaffold.currentState!.showBottomSheet((context) => AddingUserBottomSheet('edit',user: userModel,));
                     }
                   },
                   itemBuilder: (BuildContext context) {

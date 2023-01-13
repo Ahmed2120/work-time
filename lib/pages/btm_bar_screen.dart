@@ -4,7 +4,7 @@ import 'package:iconly/iconly.dart';
 
 import 'home/home_page.dart';
 import 'users/allUsers_page.dart';
-import 'users/trash_page.dart';
+import 'users/trash/trash_page.dart';
 
 class BottomBarScreen extends StatefulWidget {
   const BottomBarScreen({Key? key}) : super(key: key);

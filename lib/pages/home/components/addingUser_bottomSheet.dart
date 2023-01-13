@@ -81,8 +81,14 @@ class AddingUserBottomSheet extends StatelessWidget {
             Provider.of<UserProvider>(context, listen: false).addUser(userModel);
             clearText();
           } else {
-            Provider.of<UserProvider>(context,listen: false).updateUser(user!);
-
+            final userModel = User(
+              id: user!.id,
+                name: _nameController.text,
+                job: _jobController.text,
+                salary: _salaryController.text,
+              isDeleted: user!.isDeleted,
+            );
+            Provider.of<UserProvider>(context,listen: false).updateUser(userModel);
             clearText();
             pop(context);
           }

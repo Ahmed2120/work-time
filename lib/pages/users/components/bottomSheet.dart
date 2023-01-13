@@ -59,8 +59,6 @@ class DrawFinance extends StatelessWidget {
                     attendanceProvider.getAttendanceUserToDay(userId: user.id!);
                   showToast(context,' تم سحب${_salaryController.text}');
                   }
-
-
                 })
               ],
             ),

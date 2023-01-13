@@ -6,6 +6,7 @@ import 'package:work_time/provider/user_provider.dart';
 import 'pages/btm_bar_screen.dart';
 import 'pages/home/home_page.dart';
 import 'provider/attendance_provider.dart';
+import 'provider/note_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context)=> UserProvider()..getUsers()..getTrash()),
-        ChangeNotifierProvider(create: (context)=> AttendanceProvider())
+        ChangeNotifierProvider(create: (context)=> AttendanceProvider()),
+        ChangeNotifierProvider(create: (context)=> NoteProvider()..getNotes())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

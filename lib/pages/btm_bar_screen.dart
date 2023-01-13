@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 
 import 'home/home_page.dart';
-import 'users/allUsers_page.dart';
+import 'note/note_page.dart';
 import 'users/trash/trash_page.dart';
 
 class BottomBarScreen extends StatefulWidget {
@@ -17,7 +17,7 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
   int _selectedIndex = 0;
   List pages = [
     HomePage(),
-    const AllUsersPage(),
+    NotePage(),
     const TrashPage()
   ];
 
@@ -51,9 +51,9 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
             label: 'الرئيسية'),
         BottomNavigationBarItem(
             icon: Icon(_selectedIndex == 1
-                ? IconlyBold.user_3
-                : IconlyLight.user_1),
-            label: 'كل العاملين'),
+                ? IconlyBold.bookmark
+                : IconlyLight.bookmark),
+            label: 'الملاحظات'),
         BottomNavigationBarItem(
             icon: Icon(
                 _selectedIndex == 2 ? IconlyBold.delete : IconlyLight.delete),

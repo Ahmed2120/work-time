@@ -9,6 +9,7 @@ import 'package:toast/toast.dart';
 import 'package:work_time/utility/global_methods.dart';
 
 import '../../model/user.dart';
+import '../home/components/addingUser_bottomSheet.dart';
 import 'components/bottomSheet.dart';
 import 'components/build_card.dart';
 import 'components/functions.dart';
@@ -52,7 +53,15 @@ class UserDetail extends StatelessWidget {
               title: const Text('التفاصيل'),
               actions: [
                 PopupMenuButton<String>(
-                  onSelected: (x) {},
+                  onSelected: (x) {
+                    if(x=='remove'){
+                      final userModel=User(id: user.id,name: user.name, job: user.job, salary: user.salary,isDeleted: 1);
+                      userProvider.updateUser(userModel);
+                    }
+                    else{
+                      keyScaffold.currentState!.showBottomSheet((context) => AddingUserBottomSheet('edit',user: user,));
+                    }
+                  },
                   itemBuilder: (BuildContext context) {
                     return menuItems.toList();
                   },

@@ -50,7 +50,7 @@ class AttendanceRepository{
   Future update({required Attendance attendance}) async {
     int result = 0;
     final db = await databaseHandler.initializeDB();
-    result = await db.update(table_name,attendance.toMap() ,where: 'Id = ?', whereArgs: [attendance.id!]);
+    result = await db.update(table_name,attendance.toMap() ,where: 'id = ?', whereArgs: [attendance.id!]);
     return result;
   }
 

@@ -15,9 +15,16 @@ class UserRepository{
 
   Future retrieve() async{
     final db = await databaseHandler.initializeDB();
-    final List<Map<String, Object?>> queryResults = await db.query(table_name);
+    final List<Map<String, Object?>> queryResults = await db.query(table_name,where: 'isDeleted = 0');
     print(queryResults);
     return queryResults.map((e) => User.fromMap(e)).toList();
+  }
+  Future update({required User user}) async {
+    print('الاي دي ${user.id}');
+    int result = 0;
+    final db = await databaseHandler.initializeDB();
+    result = await db.update(table_name,user.toMap() ,where: 'id = ?', whereArgs: [user.id!]);
+    return result;
   }
 
   Future delete(User user) async{

@@ -31,10 +31,18 @@ class UserProvider with ChangeNotifier {
 
     notifyListeners();
   }
+
    getUsers()async{
     final userRepository = UserRepository();
     print(DateTime.now());
     _users=await userRepository.retrieve();
+    notifyListeners();
+  }
+
+  updateUser(User user){
+    final userRepository = UserRepository();
+    userRepository.update(user: user);
+    getUsers();
     notifyListeners();
   }
 

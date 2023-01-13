@@ -8,15 +8,9 @@ class CustomAddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('we are here');
     return ElevatedButton(
       onPressed: () {
-        keyScaffold.currentState!.showBottomSheet((context) => AddingUserBottomSheet());
-        // showModalBottomSheet(
-        //     enableDrag: true,
-        //     isScrollControlled: true,
-        //     isDismissible: false,
-        //     context: context, builder: (context)=> AddingUserBottomSheet());
+        keyScaffold.currentState!.showBottomSheet((context) => AddingUserBottomSheet('add'));
       },
       child: Row(
         children: const [

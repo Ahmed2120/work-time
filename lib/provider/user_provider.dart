@@ -53,6 +53,7 @@ class UserProvider with ChangeNotifier {
       _filteredUsers =
           _users.where((user) => double.parse(value) == user.salary).toList();
     }
+    print(filteredUsers);
     notifyListeners();
   }
 }

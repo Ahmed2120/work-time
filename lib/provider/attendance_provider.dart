@@ -49,6 +49,13 @@ class AttendanceProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<Attendance> getAttendByUserAndDate({required int userId}) async {
+    final attendanceRepository = AttendanceRepository();
+    final List<Attendance> attend = await attendanceRepository.retrieveByUserIdDateTime(userId);
+    return attend.last;
+
+  }
+
   Future<void> updateAttendance({required Attendance attendance}) async {
     final attendanceRepository = AttendanceRepository();
     attendanceRepository.update(attendance: attendance);

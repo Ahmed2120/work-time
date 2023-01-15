@@ -100,8 +100,6 @@ class UserDetail extends StatelessWidget {
                                   txt: 'حاضر',
                                   color: Colors.green,
                                   onPressed: () {
-                                    print(
-                                        "تحديث ${attendanceProvider.attendanceModel.last.id}");
                                     final attendance = Attendance(
                                         id: attendanceProvider
                                             .attendanceModel.last.id,
@@ -112,7 +110,7 @@ class UserDetail extends StatelessWidget {
                                         weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
                                         status: 1,
                                         salaryReceived: '0');
-                                    print("تحديث ${attendance.id}");
+
                                     attendanceProvider.updateAttendance(
                                         attendance: attendance);
                                     attendanceProvider.getAttendanceUserToDay(
@@ -127,12 +125,12 @@ class UserDetail extends StatelessWidget {
                     const SizedBox(width: 20),
                     buildElevatedButton(
                       label: 'غائب',
-                      onPressed: () {
+                      onPressed: () async{
                         if (attendanceProvider.attendanceModel.isEmpty) {
                           final attendance = Attendance(
                               userId: user.id!,
                               todayDate: '${DateTime.now()}',
-                              weekId: attendanceProvider.setWeekId(),
+                              weekId: await attendanceProvider.setWeekId(),
                               weekStatus: 0,
                               status: 0,
                               salaryReceived: '0');
@@ -150,8 +148,6 @@ class UserDetail extends StatelessWidget {
                                   txt: 'غائب',
                                   color: Colors.green,
                                   onPressed: () {
-                                    print(
-                                        "تحديث ${attendanceProvider.attendanceModel.last.todayDate}");
                                     final attendance = Attendance(
                                         id: attendanceProvider
                                             .attendanceModel.last.id,
@@ -161,7 +157,6 @@ class UserDetail extends StatelessWidget {
                                         weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
                                         status: 0,
                                         salaryReceived: '0');
-                                    print("تحديث ${attendance.id}");
                                     attendanceProvider.updateAttendance(
                                         attendance: attendance);
                                     attendanceProvider.getAttendanceUserToDay(

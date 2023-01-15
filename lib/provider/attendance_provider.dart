@@ -78,9 +78,7 @@ class AttendanceProvider with ChangeNotifier {
 
   setWeekId() async{
     final prefs = await SharedPreferences.getInstance();
-
     final String? endWeek = prefs.getString('endWeek');
-    print(endWeek);
     int weekId=0;
     if(_attendanceUser.isEmpty){
       return weekId=1;
@@ -89,6 +87,10 @@ class AttendanceProvider with ChangeNotifier {
       final getEndWeek = GlobalMethods.getWeekDay(DateTime.parse(_attendanceUser.last.todayDate));
       prefs.setString('endWeek', '$getEndWeek');
       return weekId=1;
+    }
+    else if(GlobalMethods.getDateFormat(DateTime.now())==GlobalMethods.getDateFormat(DateTime.parse(endWeek))){
+      weekId=_attendanceUser.last.weekId;
+      return weekId;
     }
     else if(DateTime.parse(endWeek).isBefore(DateTime.now())){
       final getEndWeek = GlobalMethods.getWeekDay(DateTime.now());

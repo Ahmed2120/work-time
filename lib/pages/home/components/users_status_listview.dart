@@ -29,6 +29,7 @@ class UsersStatusListview extends StatelessWidget {
                 pro.getWeeks(users[index].id!);
                 pro.setSalary(double.parse(users[index].salary));
                 pro.getAttendanceUserToDay(userId: users[index].id!);
+                pro.getAttendanceUser(users[index].id!);
 
                 push(
                     screen: UserDetail(

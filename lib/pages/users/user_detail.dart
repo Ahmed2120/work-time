@@ -130,12 +130,12 @@ class UserDetail extends StatelessWidget {
                       const SizedBox(width: 20),
                       buildElevatedButton(
                         label: 'غائب',
-                        onPressed: () {
+                        onPressed: () async{
                           if (attendanceProvider.attendanceModel.isEmpty) {
                             final attendance = Attendance(
                                 userId: user.id!,
                                 todayDate: '${DateTime.now()}',
-                                weekId: attendanceProvider.setWeekId(),
+                                weekId: await attendanceProvider.setWeekId(),
                                 weekStatus: 0,
                                 status: 0,
                                 salaryReceived: '0');

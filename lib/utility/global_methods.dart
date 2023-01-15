@@ -30,8 +30,11 @@ class GlobalMethods{
 
   static DateTime getWeekDay(DateTime dateTime) {
 
-    var today = DateTime.now();
+    var today = DateTime(dateTime.year, dateTime.month, dateTime.day);
     print(today.next(DateTime.friday));
+    if(today.next(DateTime.friday).isSameDate(DateTime.now())){
+      return today.add(Duration(days: 7));
+    }
     return today.next(DateTime.friday) ;
   }
 
@@ -45,5 +48,12 @@ extension DateTimeExtension on DateTime {
         days: (day - this.weekday) % DateTime.daysPerWeek,
       ),
     );
+  }
+}
+
+extension DateOnlyCompare on DateTime {
+  bool isSameDate(DateTime other) {
+    return year == other.year && month == other.month
+        && day == other.day;
   }
 }

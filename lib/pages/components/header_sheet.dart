@@ -6,29 +6,33 @@ class SheetHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 12),
-        color: Color(0xFF10D7D7),
-        child: Row(
-          children: [
-            Text(
-              title,
-              textAlign: TextAlign.start,
-              style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20,
-                  color: Colors.grey),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 12),
+      color: const Color(0xFF0F3460),
+      child: Row(
+        children: [
+          Text(
+            title,
+            textAlign: TextAlign.start,
+            style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 20,
+                color: Colors.white70),
+          ),
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.all(5),
+            decoration:const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(0xFFE94560)
             ),
-            const Spacer(),
-            InkWell(
+            child: InkWell(
                 onTap: () {
                   Navigator.pop(context);
                 },
-                child: const Icon(Icons.close, size: 30,))
-          ],
-        ),
+                child: const Icon(Icons.close,size: 20,color: Color(0xFF533483),)),
+          )
+        ],
       ),
     );
   }

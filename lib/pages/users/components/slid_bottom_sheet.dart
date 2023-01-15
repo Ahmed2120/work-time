@@ -92,6 +92,9 @@ Widget buildSheet(context, state) {
                   const SizedBox(
                     height: 20
                   ),
+                  Text('المبلغ الكلي : ${attendanceProvider.sumSalaryReceived(attendanceProvider
+                      .weekAttendanceMap[weeksList[index]]!)+attendanceProvider.sumSalaryRemain(attendanceProvider
+                      .weekAttendanceMap[weeksList[index]]!)}'),
                    Text('المبلغ المدفوع : ${attendanceProvider.sumSalaryReceived(attendanceProvider
                        .weekAttendanceMap[weeksList[index]]!)}'),
                   Text("المبلغ المتبقي : ${attendanceProvider.sumSalaryRemain(attendanceProvider

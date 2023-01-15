@@ -28,35 +28,44 @@ class _DropDownMenuRowState extends State<DropDownMenuRow> {
     final dSize = MediaQuery.of(context).size;
     return Row(
       children: [
-        Text('فئة'),
-        SizedBox(width: 10,),
-        DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-              value: value,
-              //iconSize: 40,
-              icon: const Icon(
-                Icons.filter_alt,
-                color: Color(0xFF00B0BD),
-              ),
-              dropdownColor: Colors.white,
-              alignment: Alignment.topRight,
-              // isDense: true,
-              // isExpanded: true,
-              items: widget.values.map((String item) {
-                return DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(
-                    item,
-                    style: const TextStyle(
-                        color: Color(0xFF0F6671), fontSize: 15),
-                  ),
-                );
-              }).toList(),
-              onChanged: (val) { setState(() {
-                value = val!;
-              });
-                Provider.of<UserProvider>(context, listen: false).filteringUser(val!);
-              }),
+        const Text('الفئة',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+        const SizedBox(width: 10,),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: const Color(0xFF533483),
+              width: 1
+            )
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+                value: value,
+                //iconSize: 40,
+                icon: const Icon(
+                  Icons.filter_alt,
+                  color: Color(0xFFE94560),
+                ),
+                dropdownColor: Colors.white,
+                alignment: Alignment.topRight,
+                // isDense: true,
+                // isExpanded: true,
+                items: widget.values.map((String item) {
+                  return DropdownMenuItem<String>(
+                    value: item,
+                    child: Text(
+                      item,
+                      style: const TextStyle(
+                          color: Color(0xFF0F6671), fontSize: 15),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (val) { setState(() {
+                  value = val!;
+                });
+                  Provider.of<UserProvider>(context, listen: false).filteringUser(val!);
+                }),
+          ),
         ),
       ],
     );

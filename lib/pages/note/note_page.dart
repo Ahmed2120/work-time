@@ -17,6 +17,7 @@ class NotePage extends StatelessWidget {
        return Scaffold(
          appBar: AppBar(
            title: const Text("الملاحظات"),
+           centerTitle: true,
          ),
          body: ListView.builder(itemBuilder: (ctx,index)=> Padding(
              padding: const EdgeInsets.symmetric(horizontal: 20),

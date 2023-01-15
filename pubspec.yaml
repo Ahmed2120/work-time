@@ -21,6 +21,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl:
+  path_provider:
+  permission_handler:
+  shared_preferences: ^2.0.16
 
 dev_dependencies:
   flutter_test:

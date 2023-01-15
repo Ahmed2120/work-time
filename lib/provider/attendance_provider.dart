@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/db/attendanceReposetory.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:work_time/utility/global_methods.dart';
 
 import '../model/attendance.dart';
 
@@ -74,14 +76,26 @@ class AttendanceProvider with ChangeNotifier {
   }
 
 
-  int setWeekId(String day){
+  setWeekId() async{
+    final prefs = await SharedPreferences.getInstance();
+
+    final String? endWeek = prefs.getString('endWeek');
+    print(endWeek);
     int weekId=0;
     if(_attendanceUser.isEmpty){
       return weekId=1;
     }
-    else if(day=='السبت'){
-      weekId=_attendanceUser.last.weekId+1;
-      return weekId;
+    else if(endWeek == null){
+      final getEndWeek = GlobalMethods.getWeekDay(DateTime.parse(_attendanceUser.last.todayDate));
+      prefs.setString('endWeek', '$getEndWeek');
+      return weekId=1;
+    }
+    else if(DateTime.parse(endWeek).isBefore(DateTime.now())){
+      final getEndWeek = GlobalMethods.getWeekDay(DateTime.now());
+        weekId=_attendanceUser.last.weekId+1;
+        prefs.clear();
+        prefs.setString('endWeek', '$getEndWeek');
+        return weekId;
     }
     else{
       weekId=_attendanceUser.last.weekId;

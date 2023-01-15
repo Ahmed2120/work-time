@@ -36,11 +36,11 @@ AlertDialog alert(
   );
 }
 
-showToast(BuildContext context,String txt) {
+showToast(BuildContext context,String txt, {Color color = Colors.green}) {
   final toast = ToastContext();
   toast.init(context);
   Toast.show(txt,
       duration: Toast.lengthLong,
-      backgroundColor: const Color(0xFFBB4724),
+      backgroundColor: color,
       textStyle: const TextStyle(color: Color(0xFFFFFFFF)));
 }

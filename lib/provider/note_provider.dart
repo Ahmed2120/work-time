@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:work_time/db/attendanceReposetory.dart';
 
 import '../db/noteRepository.dart';
@@ -23,6 +24,9 @@ class NoteProvider with ChangeNotifier {
 
   getNotes()async{
     final noteRepository = NoteRepository();
+    var databasesPath = await getDatabasesPath();
+    print(databasesPath+'الباص');
+   // String path = join(databasesPath, 'cities.db');
     _notes=await noteRepository.retrieve();
     notifyListeners();
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/pages/components/constant.dart';
+import 'package:work_time/pages/users/components/functions.dart';
 import 'package:work_time/provider/note_provider.dart';
 
 import '../../model/note.dart';
@@ -19,7 +20,8 @@ class NoteEditor extends StatelessWidget {
       builder: (ctx, noteProvider, _) => Scaffold(
         appBar: AppBar(
           elevation: 0,
-          title: const Text('New note'),
+          title:  Text(note==null?'إضافة ملاحظات جديدة':'تعديل ملاحظات'),
+          centerTitle: true,
           actions: [
             IconButton(
                 onPressed: () {
@@ -47,6 +49,8 @@ class NoteEditor extends StatelessWidget {
                           dateCreated: '${DateTime.now()}',
                          ));
                     }
+                    showToast(context, 'تم حفظ الملاحظات');
+                    pop(context);
                   } else {
                     if (_titleController.text.isEmpty &&
                         _descriptionController.text.isEmpty) {
@@ -75,6 +79,7 @@ class NoteEditor extends StatelessWidget {
                           dateCreated: '${DateTime.now()}',
                          ));
                     }
+                    showToast(context, 'تم تعديل الملاحظات');
                     pop(context);
                   }
                 },

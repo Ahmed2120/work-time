@@ -17,7 +17,7 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
   int _selectedIndex = 0;
   List pages = [
     HomePage(),
-    NotePage(),
+    const NotePage(),
     const TrashPage()
   ];
 

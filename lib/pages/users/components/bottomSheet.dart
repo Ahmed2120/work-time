@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/model/user.dart';
+import 'package:work_time/pages/components/constant.dart';
 import 'package:work_time/pages/users/components/functions.dart';
 
 import '../../../model/attendance.dart';
@@ -44,6 +45,8 @@ class DrawFinance extends StatelessWidget {
                     );
                     attendanceProvider.updateAttendance(attendance: attendance);
                     attendanceProvider.getAttendanceUserToDay(userId: user.id!);
+                    showToast(context,'  تم سحب  ${_salaryController.text}');
+                    pop(context);
                   }
                   else{
 
@@ -57,7 +60,8 @@ class DrawFinance extends StatelessWidget {
                         salaryReceived: _salaryController.text);
                     attendanceProvider.updateAttendance(attendance: attendance);
                     attendanceProvider.getAttendanceUserToDay(userId: user.id!);
-                  showToast(context,' تم سحب${_salaryController.text}');
+                    showToast(context,'  تم سحب  ${_salaryController.text}');
+                  pop(context);
                   }
                 })
               ],

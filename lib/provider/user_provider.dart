@@ -39,6 +39,25 @@ class UserProvider with ChangeNotifier {
     _users=await userRepository.retrieve();
     notifyListeners();
   }
+    List<User> searchUsers(String txt) {
+      List<User> usersListSearch = [];
+      if (_users.isNotEmpty) {
+        for (var element in _users) {
+          if (element.name.contains(txt) || element.job.contains(txt)) {
+            usersListSearch.add(element);
+          }
+        }
+      }
+      _users = usersListSearch;
+      notifyListeners();
+      return _users;
+    }
+
+    bool clickSearch=false;
+  void changeClickSearch(){
+    clickSearch=!clickSearch;
+    notifyListeners();
+  }
 
     getTrash()async{
       final userRepository = UserRepository();

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/model/user.dart';
 import 'package:work_time/pages/components/constant.dart';
+import 'package:work_time/pages/users/components/functions.dart';
+import 'package:work_time/provider/attendance_provider.dart';
 import 'package:work_time/provider/user_provider.dart';
 
 import '../../components/custom_textField.dart';
@@ -80,6 +82,7 @@ class AddingUserBottomSheet extends StatelessWidget {
 
             Provider.of<UserProvider>(context, listen: false).addUser(userModel);
             clearText();
+            showToast(context, 'تم إضافة المستخدم بنجاح',);
           } else {
             final userModel = User(
               id: user!.id,
@@ -89,6 +92,7 @@ class AddingUserBottomSheet extends StatelessWidget {
               isDeleted: user!.isDeleted,
             );
             Provider.of<UserProvider>(context,listen: false).updateUser(userModel);
+            showToast(context, 'تم تعديل البيانات بنجاح');
             clearText();
             pop(context);
           }

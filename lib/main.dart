@@ -38,6 +38,9 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           fontFamily: 'Cairo',
           primarySwatch: Colors.blue,
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+            primary: const Color(0xFF16213E)
+          )
         ),
         home: const BottomBarScreen(),
       ),

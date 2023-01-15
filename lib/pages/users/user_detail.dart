@@ -80,18 +80,19 @@ class UserDetail extends StatelessWidget {
                       buildElevatedButton(
                         label: 'حاضر',
                         color: Colors.green,
-                        onPressed: () {
+                        onPressed: () async{
                           if (attendanceProvider.attendanceModel.isEmpty) {
                             final attendance = Attendance(
                                 userId: user.id!,
                                 todayDate: '${DateTime.now()}',
-                                weekId: attendanceProvider.setWeekId(GlobalMethods.getDayName(DateTime.now())),
+                                weekId: await attendanceProvider.setWeekId(),
                                 weekStatus: 0,
                                 status: 1,
                                 salaryReceived: '0');
                             attendanceProvider.addAttendance(attendance);
                             attendanceProvider.getAttendanceUserToDay(
                                 userId: user.id!);
+                            attendanceProvider.getWeeks(user.id!);
                           } else if (attendanceProvider
                                   .attendanceModel.last.status ==
                               0) {
@@ -134,13 +135,14 @@ class UserDetail extends StatelessWidget {
                             final attendance = Attendance(
                                 userId: user.id!,
                                 todayDate: '${DateTime.now()}',
-                                weekId: attendanceProvider.setWeekId(GlobalMethods.getDayName(DateTime.now())),
+                                weekId: attendanceProvider.setWeekId(),
                                 weekStatus: 0,
                                 status: 0,
                                 salaryReceived: '0');
                             attendanceProvider.addAttendance(attendance);
                             attendanceProvider.getAttendanceUserToDay(
                                 userId: user.id!);
+                            attendanceProvider.getWeeks(user.id!);
                           } else if (attendanceProvider
                                   .attendanceModel.last.status ==
                               1) {

@@ -28,5 +28,22 @@ class GlobalMethods{
     return time ;
   }
 
+  static DateTime getWeekDay(DateTime dateTime) {
 
+    var today = DateTime.now();
+    print(today.next(DateTime.friday));
+    return today.next(DateTime.friday) ;
+  }
+
+
+}
+
+extension DateTimeExtension on DateTime {
+  DateTime next(int day) {
+    return this.add(
+      Duration(
+        days: (day - this.weekday) % DateTime.daysPerWeek,
+      ),
+    );
+  }
 }

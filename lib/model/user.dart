@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class User with ChangeNotifier{
   int? id;
-  final String name;
-  final String job;
-  final String salary;
+  String name;
+  String job;
+  String salary;
   int isDeleted;
 
 

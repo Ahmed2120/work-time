@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField(
@@ -19,6 +20,11 @@ class CustomTextField extends StatelessWidget {
         controller: _controller,
         textDirection: TextDirection.rtl,
         keyboardType: keyboardType,
+        inputFormatters: keyboardType == TextInputType.text ? null : [
+          FilteringTextInputFormatter.allow(
+            RegExp('[0-9]'),
+          ),
+        ],
         decoration: InputDecoration(
             prefixIconColor: const Color(0xFF007C6D),
             contentPadding:

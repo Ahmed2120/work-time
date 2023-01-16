@@ -32,9 +32,7 @@ class UsersStatusListview extends StatelessWidget {
                 pro.getAttendanceUser(users[index].id!);
 
                 push(
-                    screen: UserDetail(
-                      user: users[index],
-                    ),
+                    screen: UserDetail(user: users[index],),
                     context: context);
               },
               title: Text(users[index].name),

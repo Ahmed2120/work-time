@@ -9,13 +9,13 @@ import '../../model/user.dart';
 import '../home/components/addingUser_bottomSheet.dart';
 import 'components/bottomSheet.dart';
 import 'components/build_card.dart';
+import 'components/edit_user_bottomsheet.dart';
 import 'components/functions.dart';
 import 'components/slid_bottom_sheet.dart';
 import 'components/text_row.dart';
 
 class UserDetail extends StatelessWidget {
   UserDetail({Key? key, required this.user}) : super(key: key);
-
   final User user;
 
   final List<PopupMenuItem<String>> menuItems = [
@@ -56,8 +56,7 @@ class UserDetail extends StatelessWidget {
                     showToast(context, 'تم حذف العامل ونقله الي خارج العمل',color: const Color(0xFFE94560));
                   }
                   else{
-                    final userModel=User(id: user.id,name: user.name, job: user.job, salary: user.salary,isDeleted: user.isDeleted);
-                    keyScaffold.currentState!.showBottomSheet((context) => ChangeNotifierProvider.value(value: user,child: AddingUserBottomSheet('edit',user: userModel,)));
+                    keyScaffold.currentState!.showBottomSheet((context) => ChangeNotifierProvider.value(value: user,child: EditUserBottomSheet('edit',)));
                   }
                 },
                 itemBuilder: (BuildContext context) {

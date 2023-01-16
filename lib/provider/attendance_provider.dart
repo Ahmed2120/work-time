@@ -81,9 +81,9 @@ class AttendanceProvider with ChangeNotifier {
 
     final String? endWeek = prefs.getString('endWeek');
     int weekId=0;
-    // if(_attendanceUser.isEmpty){
-    //   return weekId=1;
-    // }
+    if(_attendanceUser.isEmpty){
+      return weekId=1;
+    }
     if(endWeek == null){
       final getEndWeek = GlobalMethods.getWeekDay(DateTime.now());
       prefs.setString('endWeek', '$getEndWeek');

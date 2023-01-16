@@ -22,7 +22,7 @@ Widget buildHeader(context, state) => Material(
       child: Container(
         width: double.infinity,
         height: 14,
-        color: Colors.blue,
+        color: Color(0xFF084081),
         child: Center(
           child: Container(
             height: 6,
@@ -104,8 +104,7 @@ Widget buildSheet(context, state) {
                   ),
                   attendanceProvider.weekAttendanceMap[weeksList[index]]![0].weekStatus==0?ElevatedButton(
                       onPressed: () {
-                        final model=attendanceProvider
-                            .attendanceModel.last;
+                        final model=attendanceProvider.weekAttendanceMap[weeksList[index]]![0];
                         final attendance = Attendance(
                             id: model.id,
                             userId: model.userId,

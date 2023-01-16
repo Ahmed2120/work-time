@@ -100,7 +100,7 @@ class NoteEditor extends StatelessWidget {
             controller: _titleController,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             decoration:
-                const InputDecoration(hintText: 'Title', labelText: 'Title'),
+                const InputDecoration(hintText: 'العنوان', labelText: 'العنوان'),
           ),
           TextField(
             controller: _descriptionController,
@@ -109,7 +109,7 @@ class NoteEditor extends StatelessWidget {
             decoration: const InputDecoration(
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
-              hintText: 'Description',
+              hintText: 'الوصف',
             ),
           )
         ],

@@ -18,13 +18,13 @@ class CustomAddButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFE94560)
+        backgroundColor: const Color.fromARGB(255, 29, 53, 87)
       ),
       onPressed: () async{
         keyScaffold.currentState!.showBottomSheet((context) => AddingUserBottomSheet('add'));
       },
       icon: const Text('اضافة'),
-      label: const Icon(Icons.add),
+      label: const Icon(Icons.add,color: Colors.white,),
     );
   }
 

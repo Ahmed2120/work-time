@@ -24,15 +24,7 @@ class HomePage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    DropDownMenuRow(
-            values: const [
-                    'الكل',
-                    '100',
-                    '200',
-                    '300',
-            ],
-            onChange: () {},
-          ),
+                    DropDownMenuRow(),
                      CustomAddButton(keyScaffold),
                   ],
                 ),

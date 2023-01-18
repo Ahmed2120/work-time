@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context)=> UserProvider()..getUsers()..getTrash()),
+        ChangeNotifierProvider(create: (context)=> UserProvider()..getUsers()..getTrash()..getSalaries()),
         ChangeNotifierProvider(create: (context)=> AttendanceProvider()),
         ChangeNotifierProvider(create: (context)=> NoteProvider()..getNotes())
       ],

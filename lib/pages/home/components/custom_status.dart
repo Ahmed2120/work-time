@@ -9,17 +9,31 @@ class CustomStatusText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title,
-      style: TextStyle(color:  getColor(title), fontSize: 20, fontWeight: FontWeight.w700),);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Container(
+        width: 80,
+        decoration: BoxDecoration(
+          color: getColor(title),
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: const [BoxShadow(
+            blurRadius: 1
+          )]
+        ),
+        child: Center(
+          child: Text(title,
+            style: const TextStyle(color:  Colors.white, fontSize: 14, fontWeight: FontWeight.w500),),
+        ),
+      ),
+    );
   }
-
   getColor(title){
     if(title == 'حاضر') {
-      return Colors.green;
+      return const Color(0xFF33D448);
     } else if(title == 'غائب') {
-      return Colors.red;
+      return const Color(0xFFE8110F);
     } else {
-      return Colors.grey;
+      return const Color(0xFCAFAAAA);
     }
 
   }

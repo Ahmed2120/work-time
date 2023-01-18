@@ -5,6 +5,7 @@ class CustomTextField extends StatelessWidget {
   const CustomTextField(
       {super.key,
         this.keyboardType=TextInputType.text,
+        this.border=10,this.focusBorder=10,
       required TextEditingController controller, required this.label, this.isNumeric = false})
       : _controller = controller;
 
@@ -12,11 +13,15 @@ class CustomTextField extends StatelessWidget {
   final String label;
   final bool isNumeric;
   final TextInputType keyboardType;
+  final double border;
+  final double focusBorder;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       child: TextFormField(
+
+        style: const TextStyle(color: Color(0xFF0F3460),fontSize: 16),
         controller: _controller,
         textDirection: TextDirection.rtl,
         keyboardType: keyboardType,
@@ -26,14 +31,14 @@ class CustomTextField extends StatelessWidget {
           ),
         ],
         decoration: InputDecoration(
-            prefixIconColor: const Color(0xFF007C6D),
+            prefixIconColor: const Color(0xF9D5CFCF),
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
             filled: true,
-            fillColor: const Color(0xFF007C6D).withOpacity(0.09),
+            fillColor: const Color(0xF9D5CFCF).withOpacity(.3),
             label: Text(
               label,
-              style: const TextStyle(fontSize: 18, color: Colors.grey),
+              style: const TextStyle(fontSize: 18, color: Color(0xFF0F3460)),
             ),
             focusedBorder: OutlineInputBorder(
                 borderSide: const BorderSide(
@@ -57,7 +62,7 @@ class CustomTextField extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15))),
         validator: (val) {
           if (_controller.text.isEmpty) {
-            return 'please type $label';
+            return ' من فضلك اكتب $label';
           }
         },
       ),

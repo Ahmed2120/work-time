@@ -10,29 +10,27 @@ final User user;
   @override
   Widget build(BuildContext context) {
     final userProvider=Provider.of<UserProvider>(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 0,horizontal: 15),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  IconButton(onPressed: (){
-                    //final userModel=
-                    userProvider.deleteUser(user);
-                  }, icon: const Icon(Icons.delete,color: Colors.red,)),
-                  IconButton(onPressed: (){
-                    final userModel=User(id: user.id,name: user.name, job: user.job, salary: user.salary,isDeleted: 0);
-                    userProvider.updateUser(userModel);
-                  }, icon: const Icon(Icons.restore,color: Colors.green,)),
-                ],
-              ),
-              Text(user.name,style: const TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-            ],),
-        ),
+    return Card(
+      color: const Color(0xF5F5F5F5),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(user.name,style: const TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+            Row(
+              children: [
+                 IconButton(onPressed: (){
+                  final userModel=User(id: user.id,name: user.name, job: user.job, salary: user.salary,isDeleted: 0);
+                  userProvider.updateUser(userModel);
+                }, icon: const Icon(Icons.restore,color: Colors.green,)),
+                IconButton(onPressed: (){
+                  //final userModel=
+                  userProvider.deleteUser(user);
+                }, icon: const Icon(Icons.delete_outline,color: Colors.red,)),
+              ],
+            ),
+          ],),
       ),
     );
   }

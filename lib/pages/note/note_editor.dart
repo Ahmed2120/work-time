@@ -5,6 +5,7 @@ import 'package:work_time/pages/users/components/functions.dart';
 import 'package:work_time/provider/note_provider.dart';
 
 import '../../model/note.dart';
+import 'color.dart';
 
 class NoteEditor extends StatelessWidget {
   NoteEditor({this.note, Key? key}) : super(key: key);
@@ -17,77 +18,78 @@ class NoteEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     fillText();
     return Consumer<NoteProvider>(
-      builder: (ctx, noteProvider, _) => Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          title:  Text(note==null?'إضافة ملاحظات جديدة':'تعديل ملاحظات'),
-          centerTitle: true,
-          actions: [
-            IconButton(
-                onPressed: () {
-                  if (note == null) {
-                    if (_titleController.text.isEmpty &&
-                        _descriptionController.text.isEmpty) {
-                      noteProvider.addNote(Note(
+      builder: (ctx, noteProvider, _) {
+        return Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            title:  Text(note==null?'إضافة ملاحظات جديدة':'تعديل ملاحظات'),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    if (note == null) {
+                      if (_titleController.text.isEmpty &&
+                          _descriptionController.text.isEmpty) {
+                        noteProvider.addNote(Note(
                           title: 'بدون عنوان',
                           description: _descriptionController.text,
-                          dateCreated: '${DateTime.now()}',
-                         ));
-                    } else if (_titleController.text.isEmpty &&
-                        _descriptionController.text.isNotEmpty) {
-                      final List<String> lines =
-                          _descriptionController.text.split('\n');
-                      noteProvider.addNote(Note(
+                          dateCreated: '${DateTime.now()}', color: noteProvider.colorVal,
+                        ));
+                      } else if (_titleController.text.isEmpty &&
+                          _descriptionController.text.isNotEmpty) {
+                        final List<String> lines =
+                        _descriptionController.text.split('\n');
+                        noteProvider.addNote(Note(
                           title: lines[0],
                           description: _descriptionController.text,
-                          dateCreated: '${DateTime.now()}',
-                          ));
-                    } else {
-                      noteProvider.addNote(Note(
+                          dateCreated: '${DateTime.now()}', color: noteProvider.colorVal,
+                        ));
+                      } else {
+                        noteProvider.addNote(Note(
                           title: _titleController.text,
                           description: _descriptionController.text,
-                          dateCreated: '${DateTime.now()}',
-                         ));
-                    }
-                    showToast(context, 'تم حفظ الملاحظات');
-                    pop(context);
-                  } else {
-                    if (_titleController.text.isEmpty &&
-                        _descriptionController.text.isEmpty) {
-
-                      noteProvider.updateNote(Note(
-                        id: note!.id,
+                          dateCreated: '${DateTime.now()}', color: noteProvider.colorVal,
+                        ));
+                      }
+                      showToast(context, 'تم حفظ الملاحظات');
+                      pop(context);
+                    } else {
+                      if (_titleController.text.isEmpty &&
+                          _descriptionController.text.isEmpty) {
+                        noteProvider.updateNote(Note(
+                          id: note!.id,
                           title: 'بدون عنوان',
                           description: _descriptionController.text,
-                          dateCreated: '${DateTime.now()}',
-                          ));
-                    } else if (_titleController.text.isEmpty &&
-                        _descriptionController.text.isNotEmpty) {
-                      final List<String> lines =
-                      _descriptionController.text.split('\n');
-                      noteProvider.updateNote(Note(
-                        id: note!.id,
+                          dateCreated: '${DateTime.now()}', color: noteProvider.colorVal,
+                        ));
+                      } else if (_titleController.text.isEmpty &&
+                          _descriptionController.text.isNotEmpty) {
+                        final List<String> lines =
+                        _descriptionController.text.split('\n');
+                        noteProvider.updateNote(Note(
+                          id: note!.id,
                           title: lines[0],
                           description: _descriptionController.text,
-                          dateCreated: '${DateTime.now()}',
-                          ));
-                    } else {
-                      noteProvider.updateNote(Note(
-                        id: note!.id,
+                          dateCreated: '${DateTime.now()}', color: noteProvider.colorVal,
+                        ));
+                      } else {
+                        noteProvider.updateNote(Note(
+                          id: note!.id,
                           title: _titleController.text,
                           description: _descriptionController.text,
-                          dateCreated: '${DateTime.now()}',
-                         ));
+                          dateCreated: '${DateTime.now()}', color: noteProvider.colorVal,
+                        ));
+                      }
+                      showToast(context, 'تم تعديل الملاحظات');
+                      pop(context);
                     }
-                    showToast(context, 'تم تعديل الملاحظات');
-                    pop(context);
-                  }
-                },
-                icon: const Icon(Icons.save))
-          ],
-        ),
-        body: buildPadding(),
-      ),
+                  },
+                  icon: const Icon(Icons.save))
+            ],
+          ),
+          body: buildPadding(),
+        );
+      },
     );
   }
 
@@ -96,6 +98,7 @@ class NoteEditor extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
       child: ListView(
         children: [
+          SwitchColor(),
           TextField(
             controller: _titleController,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

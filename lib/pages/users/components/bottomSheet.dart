@@ -42,6 +42,7 @@ class DrawFinance extends StatelessWidget {
                       weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
                       status: 1,
                       salaryReceived: '0',
+                      workPlace: attendanceProvider.attendanceModel.last.workPlace
                     );
                     attendanceProvider.updateAttendance(attendance: attendance);
                     attendanceProvider.getAttendanceUserToDay(userId: user.id!);
@@ -57,7 +58,9 @@ class DrawFinance extends StatelessWidget {
                         weekId: attendanceProvider.attendanceModel.last.weekId,
                         weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
                         status: 1,
-                        salaryReceived: _salaryController.text);
+                        salaryReceived: _salaryController.text,
+                        workPlace: attendanceProvider.attendanceModel.last.workPlace
+                    );
                     attendanceProvider.updateAttendance(attendance: attendance);
                     attendanceProvider.getAttendanceUserToDay(userId: user.id!);
                     showToast(context,'  تم سحب  ${_salaryController.text}');
@@ -76,16 +79,17 @@ class DrawFinance extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF007C6D),
+          backgroundColor: const Color(0xFFF9BBB0),
           minimumSize: const Size(double.infinity, 10),
           elevation: 0,
           textStyle: const TextStyle(fontSize: 20),
           padding: const EdgeInsets.symmetric(vertical: 10),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
       child: const Text('اضافة',
           style: TextStyle(
-            color: Colors.white,
+            color: Color(0xFF16213E),
+              fontSize: 22,
+              fontWeight: FontWeight.bold
           )),
     );
   }

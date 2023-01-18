@@ -4,68 +4,43 @@ import 'package:provider/provider.dart';
 import 'package:work_time/provider/user_provider.dart';
 
 
-class DropDownMenuRow extends StatefulWidget {
-  List<String> values;
-  Function onChange;
-
-  DropDownMenuRow(
-      {Key? key,
-      required this.values,
-      required this.onChange,})
-      : super(key: key);
-
-  @override
-  State<DropDownMenuRow> createState() => _DropDownMenuRowState();
-}
-
-class _DropDownMenuRowState extends State<DropDownMenuRow> {
-
-
-  String value = 'الكل';
+class DropDownMenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dSize = MediaQuery.of(context).size;
+    final userProvider=Provider.of<UserProvider>(context, listen: true);
     return Row(
       children: [
-        const Text('الفئة',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+        const Text('الفئة',style: TextStyle(color:Color.fromARGB(255, 29, 53, 87),fontWeight: FontWeight.bold,fontSize: 18),),
         const SizedBox(width: 10,),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: const Color(0xFF533483),
-              width: 1
-            )
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-                value: value,
-                //iconSize: 40,
-                icon: const Icon(
-                  Icons.filter_alt,
-                  color: Color(0xFFE94560),
-                ),
-                dropdownColor: Colors.white,
-                alignment: Alignment.topRight,
-                // isDense: true,
-                // isExpanded: true,
-                items: widget.values.map((String item) {
-                  return DropdownMenuItem<String>(
-                    value: item,
-                    child: Text(
-                      item,
-                      style: const TextStyle(
-                          color: Color(0xFF0F6671), fontSize: 15),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (val) { setState(() {
-                  value = val!;
+        DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+              value: userProvider.dropDownValue,
+              //iconSize: 40,
+              icon: const Icon(
+                Icons.filter_alt,
+                color: Color(0xFFE94560),
+              ),
+              dropdownColor: Colors.white,
+              alignment: Alignment.topRight,
+              // isDense: true,
+              // isExpanded: true,
+              items: Provider.of<UserProvider>(context, listen: false).filteredUsers.map((String item) {
+                return DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(
+                    item,
+                    style: const TextStyle(
+                        color: Color(0xFF533483), fontSize: 15),
+                  ),
+                );
+              }).toList(),
+              onChanged: (val){
+                userProvider.getUsers().then((value) {
+                  userProvider.dropDownChane(val!);
                 });
-                  Provider.of<UserProvider>(context, listen: false).filteringUser(val!);
-                }),
-          ),
+
+              } ),
         ),
       ],
     );

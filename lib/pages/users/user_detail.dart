@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/model/attendance.dart';
 import 'package:work_time/pages/components/constant.dart';
+import 'package:work_time/pages/components/custom_textField.dart';
 import 'package:work_time/provider/attendance_provider.dart';
 import 'package:work_time/provider/user_provider.dart';
 
@@ -34,16 +35,17 @@ class UserDetail extends StatelessWidget {
       ),
     ),
   ];
-  final keyScaffold = GlobalKey<ScaffoldState>();
+  final _keyScaffold = GlobalKey<ScaffoldState>();
+  final _formKey=GlobalKey<FormState>();
+  final _workPlaceController=TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    final attendanceProvider =
-    Provider.of<AttendanceProvider>(context, listen: true);
+    final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: true);
     return Consumer<UserProvider>(
       builder: (ctx, userProvider, _) {
         return Scaffold(
-          key: keyScaffold,
+          key: _keyScaffold,
           appBar: AppBar(
             title: const Text('التفاصيل'),
             actions: [
@@ -56,7 +58,7 @@ class UserDetail extends StatelessWidget {
                     showToast(context, 'تم حذف العامل ونقله الي خارج العمل',color: const Color(0xFFE94560));
                   }
                   else{
-                    keyScaffold.currentState!.showBottomSheet((context) => ChangeNotifierProvider.value(value: user,child: EditUserBottomSheet('edit',)));
+                    _keyScaffold.currentState!.showBottomSheet((context) => ChangeNotifierProvider.value(value: user,child: EditUserBottomSheet('edit',)));
                   }
                 },
                 itemBuilder: (BuildContext context) {
@@ -77,10 +79,12 @@ class UserDetail extends StatelessWidget {
                       label: 'حاضر',
                       color: Colors.green,
                       onPressed: () async{
-                        if (attendanceProvider.attendanceModel.isEmpty) {
+                        if(_formKey.currentState!.validate()) {
+                          if (attendanceProvider.attendanceModel.isEmpty) {
                           final attendance = Attendance(
                               userId: user.id!,
                               todayDate: '${DateTime.now()}',
+                              workPlace: _workPlaceController.text,
                               weekId: await attendanceProvider.setWeekId(),
                               weekStatus: 0,
                               status: 1,
@@ -89,7 +93,8 @@ class UserDetail extends StatelessWidget {
                           attendanceProvider.getAttendanceUserToDay(
                               userId: user.id!);
                           attendanceProvider.getWeeks(user.id!);
-                        } else if (attendanceProvider
+                        } else {
+                          if (attendanceProvider
                             .attendanceModel.last.status ==
                             0) {
                           showDialog(
@@ -102,6 +107,7 @@ class UserDetail extends StatelessWidget {
                                     final attendance = Attendance(
                                         id: attendanceProvider
                                             .attendanceModel.last.id,
+                                        workPlace: _workPlaceController.text,
                                         userId: user.id!,
                                         todayDate: '${DateTime.now()}',
                                         weekId: attendanceProvider
@@ -119,6 +125,8 @@ class UserDetail extends StatelessWidget {
                         } else {
                           showToast(context, 'تم تسجيل التمام مسبقاً');
                         }
+                        }
+                        }
                       },
                     ),
                     const SizedBox(width: 20),
@@ -129,6 +137,7 @@ class UserDetail extends StatelessWidget {
                           final attendance = Attendance(
                               userId: user.id!,
                               todayDate: '${DateTime.now()}',
+                              workPlace: 'لا يوجد',
                               weekId: await attendanceProvider.setWeekId(),
                               weekStatus: 0,
                               status: 0,
@@ -145,11 +154,12 @@ class UserDetail extends StatelessWidget {
                               builder: (ctx) => alert(
                                   context: context,
                                   txt: 'غائب',
-                                  color: Colors.green,
+                                  color: Colors.red,
                                   onPressed: () {
                                     final attendance = Attendance(
                                         id: attendanceProvider
                                             .attendanceModel.last.id,
+                                        workPlace: 'لا يوجد',
                                         userId: user.id!,
                                         todayDate: '${DateTime.now()}',
                                         weekId: attendanceProvider.attendanceModel.last.weekId,
@@ -171,6 +181,11 @@ class UserDetail extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20),
+                Form(key: _formKey,
+                    child: CustomTextField(
+                  controller: _workPlaceController, label: 'مكان العمل',
+                )),
+                const SizedBox(height: 30),
                 BuildCard(Column(
                   children: [
                     TextRow(title: 'الاسم', txt: user.name),
@@ -201,6 +216,9 @@ class UserDetail extends StatelessWidget {
                       TextRow(title: 'الساعه', txt: attendanceProvider.time),
                     if (attendanceProvider.attendanceModel.isNotEmpty &&
                         attendanceProvider.attendanceModel.last.status == 1)
+                      TextRow(title: 'مكان العمل ', txt: attendanceProvider.attendanceModel.last.workPlace),
+                    if (attendanceProvider.attendanceModel.isNotEmpty &&
+                        attendanceProvider.attendanceModel.last.status == 1)
                       TextRow(
                           title: 'المبلغ المسحوب',
                           txt: attendanceProvider
@@ -212,9 +230,9 @@ class UserDetail extends StatelessWidget {
                     attendanceProvider.attendanceModel.last.status == 1)
                   buildElevatedButton(
                       label: 'سحب مبلغ',
-                      color: const Color(0xff9d6c0d),
+                      color: const Color(0xffE94560),
                       onPressed: () {
-                        keyScaffold.currentState!
+                        _keyScaffold.currentState!
                             .showBottomSheet((context) => ChangeNotifierProvider.value(
                             value: user,
                             child: DrawFinance()));
@@ -222,7 +240,7 @@ class UserDetail extends StatelessWidget {
                 const SizedBox(height: 20),
                 buildElevatedButton(
                     label: 'عرض ايام الحضور',
-                    color: const Color(0xec05675e),
+                    color: const Color(0xFF533483),
                     onPressed: () {
                       attendanceProvider.getWeeklyAttendance(user.id!).then((value) {
                         attendanceProvider
@@ -238,14 +256,15 @@ class UserDetail extends StatelessWidget {
     );
   }
 
-  ElevatedButton buildElevatedButton(
+  TextButton buildElevatedButton(
       {required String label,
         required Color color,
+
         required VoidCallback onPressed}) {
-    return ElevatedButton(
+    return TextButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(backgroundColor: color),
-      child: Text(label),
+      child: Text(label,style: const TextStyle(color: Colors.white,fontSize: 17),),
     );
   }
 }

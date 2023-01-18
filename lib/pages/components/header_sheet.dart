@@ -17,21 +17,14 @@ class SheetHeader extends StatelessWidget {
             style: const TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 20,
-                color: Colors.white70),
+                color: Colors.white,)
           ),
           const Spacer(),
-          Container(
-            padding: const EdgeInsets.all(5),
-            decoration:const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFFE94560)
-            ),
-            child: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: const Icon(Icons.close,size: 20,color: Color(0xFF533483),)),
-          )
+          InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: const Icon(Icons.close,size: 25,color: Colors.white,))
         ],
       ),
     );

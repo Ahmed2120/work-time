@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_sheet/sliding_sheet.dart';
-import 'package:work_time/pages/users/components/functions.dart';
 import 'package:work_time/utility/global_methods.dart';
 
 import '../../../model/attendance.dart';
@@ -19,17 +18,12 @@ Future showSheet(BuildContext context) => showSlidingBottomSheet(context,
         headerBuilder: buildHeader));
 
 Widget buildHeader(context, state) => Material(
-      child: Container(
-        width: double.infinity,
-        height: 14,
-        color: Color(0xFF084081),
-        child: Center(
-          child: Container(
-            height: 6,
-            width: 40,
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(20)),
-          ),
+      child: SizedBox(
+        height: 10,
+        child:Container(
+          width: 60,
+          decoration: BoxDecoration(
+              color: const Color(0xFF533483), borderRadius: BorderRadius.circular(20)),
         ),
       ),
     );
@@ -60,12 +54,14 @@ Widget buildSheet(context, state) {
                       1: IntrinsicColumnWidth(flex: 4),
                       2: IntrinsicColumnWidth(flex: 4),
                       3: IntrinsicColumnWidth(flex: 4),
+                      4: IntrinsicColumnWidth(flex: 4),
                     },
                     defaultColumnWidth: const IntrinsicColumnWidth(),
                     children: [
                       TableRow(children: [
                         headerTable("اليوم"),
                         headerTable("التاريخ"),
+                        headerTable("مكان العمل"),
                         headerTable("التمام"),
                         headerTable("المبلغ المسحوب"),
                       ]),
@@ -81,6 +77,8 @@ Widget buildSheet(context, state) {
                                 attendanceProvider
                                     .weekAttendanceMap[weeksList[index]]![i]
                                     .todayDate)),
+                            attendanceProvider
+                                .weekAttendanceMap[weeksList[index]]![i].workPlace,
                             attendanceProvider
                                 .weekAttendanceMap[weeksList[index]]![i].status,
                             attendanceProvider
@@ -111,6 +109,7 @@ Widget buildSheet(context, state) {
                             todayDate: model.todayDate,
                             weekId: model.weekId,
                             weekStatus: 1,
+                            workPlace: model.workPlace,
                             status: model.status,
                             salaryReceived: model.salaryReceived);
                         attendanceProvider.updateAttendance(
@@ -132,35 +131,25 @@ Padding headerTable(String txt) {
     child: Text(
       txt,
       style: const TextStyle(
-          fontSize: 12, color: Color(0xad047d82), fontWeight: FontWeight.bold),
+          fontSize: 12, color: Color(0xFF084081), fontWeight: FontWeight.bold),
       textAlign: TextAlign.center,
     ),
   );
 }
 
-TableRow buildTableRow(String day, String today, int status,
+TableRow buildTableRow(String day, String today,String workPlace, int status,
     String salaryReceived) {
   DateTime dateTime = DateTime.parse(today);
   String date = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
   return TableRow(children: [
-    Padding(
-      padding: const EdgeInsets.all(4),
-      child: Text(
-        day,
-        textAlign: TextAlign.center,
-      ),
-    ),
-    Text(
-      date,
-      textAlign: TextAlign.center,
-    ),
-    Text(
-      status == 1 ? 'حاضر' : 'غائب',
-      textAlign: TextAlign.center,
-    ),
-    Text(
-      salaryReceived,
-      textAlign: TextAlign.center,
-    ),
+   buildText(day, 8),
+    buildText(date,8),
+    buildText(workPlace,8),
+    buildText( status == 1 ? 'حاضر' : 'غائب',0),
+    buildText(salaryReceived,0),
   ]);
 }
+Padding buildText(String txt,double padding)=>Padding(
+  padding: EdgeInsets.symmetric(horizontal: padding),
+  child:   Text(txt, textAlign: TextAlign.center),
+);

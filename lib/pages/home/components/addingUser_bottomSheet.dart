@@ -31,7 +31,7 @@ class AddingUserBottomSheet extends StatelessWidget {
             title: 'اضافة عامل',
           ),
           const SizedBox(
-            height: 40,
+            height: 40
           ),
           Padding(
             padding: const EdgeInsets.only(left: 15, right: 15, bottom: 20),
@@ -55,7 +55,7 @@ class AddingUserBottomSheet extends StatelessWidget {
                   ),
                   CustomTextField(
                     controller: _salaryController,
-                    label: 'الراتب',
+                    label: 'الفئة',
                     keyboardType: TextInputType.number,
                   ),
                   const SizedBox(
@@ -98,16 +98,17 @@ class AddingUserBottomSheet extends StatelessWidget {
           }
         },
         style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF007C6D),
+            backgroundColor: const Color(0xFFF9BBB0),
             minimumSize: const Size(double.infinity, 10),
             elevation: 0,
-            textStyle: const TextStyle(fontSize: 20),
             padding: const EdgeInsets.symmetric(vertical: 10),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10))),
         child: const Text('اضافة',
             style: TextStyle(
-              color: Colors.white,
+              color: Color(0xFF16213E),
+                fontSize: 22,
+              fontWeight: FontWeight.bold
             )),
       );
 

@@ -10,7 +10,7 @@ AlertDialog alert(
       children: const [
         Icon(
           Icons.warning_amber,
-          color: Colors.yellow,
+          color: Color(0xFF2C0202),
         ),
         Text(
           'تعديل تمام',

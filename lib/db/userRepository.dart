@@ -16,11 +16,15 @@ class UserRepository{
   Future retrieve({int trash = 0}) async{
     final db = await databaseHandler.initializeDB();
     final List<Map<String, Object?>> queryResults = await db.query(table_name,where: 'isDeleted = ?',whereArgs: [trash]);
-    print(queryResults);
     return queryResults.map((e) => User.fromMap(e)).toList();
   }
+  Future<List<String>> retrieveSalaries() async{
+    final db = await databaseHandler.initializeDB();
+    final List<Map<String, Object?>> queryResults = await db.rawQuery("SELECT DISTINCT salary FROM $table_name WHERE isDeleted = ? ",[0]);
+    return queryResults.map((e) => e['salary'] as String).toList();
+  }
+
   Future update({required User user}) async {
-    print('الاي دي ${user.id}');
     int result = 0;
     final db = await databaseHandler.initializeDB();
     result = await db.update(table_name,user.toMap() ,where: 'id = ?', whereArgs: [user.id!]);

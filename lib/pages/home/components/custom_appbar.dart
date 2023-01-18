@@ -12,7 +12,7 @@ AppBar customAppBar(BuildContext context) {
       onPressed: () => userProvider.changeClickSearch(),
       icon: const Icon(
         Icons.search,
-        color: Colors.blue,
+        color: Colors.white,
       ),
     ),
           actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.settings))],
@@ -20,7 +20,7 @@ AppBar customAppBar(BuildContext context) {
             '${GlobalMethods.getDayName(DateTime.now())} ${GlobalMethods.getDateFormat(DateTime.now())}',
             style: const TextStyle(
                 fontSize: 22,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w600,
                 color: Colors.white),
           ),
     centerTitle: true,

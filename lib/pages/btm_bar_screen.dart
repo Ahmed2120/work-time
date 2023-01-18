@@ -17,7 +17,7 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
   int _selectedIndex = 0;
   List pages = [
     HomePage(),
-    const NotePage(),
+    NotePage(),
     const TrashPage()
   ];
 
@@ -33,9 +33,9 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
     return Scaffold(
       body: pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        unselectedItemColor: Colors.black38,
-        selectedItemColor: Colors.black87,
+        backgroundColor: const Color(0xFFF5F5F5),
+        unselectedItemColor: const Color(0xFFC4C4C2),
+        selectedItemColor: const Color(0xFF162640),
         onTap: _selectedPage,
         currentIndex: _selectedIndex,
         items: bottomNavigationBarItems(),
@@ -49,10 +49,8 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
             icon:
                 Icon(_selectedIndex == 0 ? IconlyBold.home : IconlyLight.home),
             label: 'الرئيسية'),
-        BottomNavigationBarItem(
-            icon: Icon(_selectedIndex == 1
-                ? IconlyBold.bookmark
-                : IconlyLight.bookmark),
+        const BottomNavigationBarItem(
+            icon: Icon( Icons.menu_book_outlined),
             label: 'الملاحظات'),
         BottomNavigationBarItem(
             icon: Icon(

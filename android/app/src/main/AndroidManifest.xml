@@ -1,7 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ahmad.work_time">
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    // Android devices prior to Android 11
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    // Optional on Android devices from Android 11
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
    <application
         android:label="work_time"
         android:name="${applicationName}"

@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/pages/splash_page.dart';
 import 'package:work_time/pages/start_page.dart';
 import 'package:work_time/provider/user_provider.dart';
 
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
             primary: const Color(0xFF16213E)
           )
         ),
-        home: StartPage(),
+        home: const SplashPage(),
       ),
     );
   }

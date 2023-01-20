@@ -51,7 +51,7 @@ class _StartPageState extends State<StartPage> {
       final prefs = await SharedPreferences.getInstance();
       prefs.setBool('isExist', isExist);
       if(isExist) {
-            push(context: context, screen: const BottomBarScreen());
+            pushReplacement(context: context, screen: const BottomBarScreen());
           }
       else{
         showMessageDialog(context, 'لا تستطيع الدخول بهذا الايميل');

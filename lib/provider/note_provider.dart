@@ -16,15 +16,16 @@ class NoteProvider with ChangeNotifier {
   Future<void> addNote(Note note) async {
     final noteRepository = NoteRepository();
 
-    final int userId = await noteRepository.insert(note);
-    note.id = userId;
-    _notes.add(note);
+    await noteRepository.insert(note);
+   getNotes();
+
     notifyListeners();
   }
 
   getNotes()async{
     final noteRepository = NoteRepository();
     _notes=await noteRepository.retrieve();
+    _notes=_notes.reversed.toList();
     notifyListeners();
   }
   List<Note> searchNote(txt){

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/BackupDB/backup_page.dart';
+import 'package:work_time/pages/components/constant.dart';
 
 import '../../../provider/user_provider.dart';
 import '../../../utility/global_methods.dart';
@@ -15,7 +17,9 @@ AppBar customAppBar(BuildContext context) {
         color: Colors.white,
       ),
     ),
-          actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.settings))],
+          actions: [IconButton(onPressed: () {
+            push(screen: const BackupPage(), context: context);
+          }, icon: const Icon(Icons.settings))],
           title: Text(
             '${GlobalMethods.getDayName(DateTime.now())} ${GlobalMethods.getDateFormat(DateTime.now())}',
             style: const TextStyle(

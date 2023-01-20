@@ -33,6 +33,7 @@ dependencies:
   firebase_messaging: ^14.2.1
   firebase_core: ^2.4.1
   device_info_plus: ^3.2.3
+  file_picker:
 
 dev_dependencies:
   flutter_test:

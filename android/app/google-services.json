@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "577113528629",
+    "project_id": "worktime-33fa5",
+    "storage_bucket": "worktime-33fa5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:577113528629:android:86e536e3184dea4098147c",
+        "android_client_info": {
+          "package_name": "com.ahmad.work_time"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "577113528629-bqmntmaet43aljq47tgjnotnhh490r6k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwHjoAlkJQsJ35GUr9qwFkvGpiM2AJyM4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "577113528629-bqmntmaet43aljq47tgjnotnhh490r6k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

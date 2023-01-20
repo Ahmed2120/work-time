@@ -27,9 +27,7 @@ class EditUserBottomSheet extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const SheetHeader(
-            title: 'تعديل عامل',
-          ),
+          const SheetHeader(title: 'تعديل عامل'),
           const SizedBox(
             height: 40,
           ),
@@ -41,26 +39,18 @@ class EditUserBottomSheet extends StatelessWidget {
                 children: [
                   CustomTextField(
                     controller: _nameController,
-                    label: 'الاسم',
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                    label: 'الاسم'),
+                  const SizedBox(height: 10),
                   CustomTextField(
                     controller: _jobController,
-                    label: 'الوظيفة',
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                    label: 'الوظيفة'),
+                  const SizedBox(height: 10),
                   CustomTextField(
                     controller: _salaryController,
                     label: 'الراتب',
                     keyboardType: TextInputType.number,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   buildButton(context, user)
                 ],
               ),

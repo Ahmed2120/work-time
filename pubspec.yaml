@@ -32,12 +32,13 @@ dependencies:
   device_info_plus: ^3.2.3
   file_picker:
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.11.0
 
-flutter_icon:
+flutter_icons:
   android: true
   image_path: 'assets/images/LogoIcon.png'
 

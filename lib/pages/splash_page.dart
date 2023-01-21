@@ -34,7 +34,7 @@ class _SplashPageState extends State<SplashPage> {
       decoration: const BoxDecoration(
        color: Colors.white
           ),
-      child: Center(child: Image.asset('assets/images/Logo.png',fit: BoxFit.cover,)),
+      child: Center(child: Image.asset('assets/images/logo.png',fit: BoxFit.cover,)),
     ));
   }
 }

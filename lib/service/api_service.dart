@@ -24,12 +24,14 @@ print('uniqueDeviceId:----- $uniqueDeviceId');
   Future<bool> getUser(String email) async{
     const url = 'https://worktime-33fa5-default-rtdb.firebaseio.com/users.json';
 
+    final deviceToken = await getDeviceToken();
+
     final response = await http.get(Uri.parse(url));
     final users = json.decode(response.body) as Map<String, dynamic>;
     String? userId;
     users.forEach((key, value) {
       if(value['email'] == email) {
-        if(value['deviceToken'] == '') {
+        if(value['deviceToken'] == '' || value['deviceToken'] == deviceToken) {
           userId = key;
           return;
         }

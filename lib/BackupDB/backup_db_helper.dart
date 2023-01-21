@@ -63,9 +63,8 @@ class BackupHelper{
         if(listString.last=='dgi.db'){
           await fileDBPath.copy('/data/data/com.ahmad.work_time/databases/dgi.db').then((value) {
             showToast(context,'تم استعادة النسخة الاحتياطية',);
-            Provider.of<UserProvider>(context).getUsers();
             pop(context);
-
+            Provider.of<UserProvider>(context).getUsers();
           });
         }
         else{

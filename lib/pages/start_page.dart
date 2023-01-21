@@ -23,19 +23,31 @@ class _StartPageState extends State<StartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CustomTextField(controller: _emailController, label: 'الايميل',),
-                const SizedBox(height: 30,),
-                isLoading ? const CircularProgressIndicator() : buildButton(context)
-              ],
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 400,
+                    decoration: const BoxDecoration(
+                        image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: AssetImage('assets/images/Logo.png',)
+                        )
+                    ),
+                  ),
+                  CustomTextField(controller: _emailController, label: 'الايميل',icon: const Icon(Icons.email,size: 30,color:Color(0xFF1d3557) ,),),
+                  const SizedBox(height: 30),
+                  isLoading ? const CircularProgressIndicator() : buildButton(context)
+                ],
+              ),
             ),
+
           ),
         ),
       ),
@@ -51,7 +63,7 @@ class _StartPageState extends State<StartPage> {
       final prefs = await SharedPreferences.getInstance();
       prefs.setBool('isExist', isExist);
       if(isExist) {
-            push(context: context, screen: const BottomBarScreen());
+            pushReplacement(context: context, screen: const BottomBarScreen());
           }
       else{
         showMessageDialog(context, 'لا تستطيع الدخول بهذا الايميل');
@@ -59,7 +71,7 @@ class _StartPageState extends State<StartPage> {
           setState(()=> isLoading = false);
     },
     style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFF9BBB0),
+        backgroundColor: const Color(0xFF1d3557),
         minimumSize: const Size(double.infinity, 10),
         elevation: 0,
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -67,7 +79,7 @@ class _StartPageState extends State<StartPage> {
             borderRadius: BorderRadius.circular(10))),
     child: const Text('ابدا',
         style: TextStyle(
-            color: Color(0xFF16213E),
+            color: Colors.white,
             fontSize: 22,
             fontWeight: FontWeight.bold
         )),

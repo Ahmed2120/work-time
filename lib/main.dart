@@ -7,6 +7,7 @@ import 'package:work_time/provider/user_provider.dart';
 
 import 'pages/btm_bar_screen.dart';
 import 'pages/home/home_page.dart';
+import 'pages/splash_page.dart';
 import 'provider/attendance_provider.dart';
 import 'provider/note_provider.dart';
 
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
             primary: const Color(0xFF16213E)
           )
         ),
-        home: const BottomBarScreen(),
+        home: const SplashPage(),
       ),
     );
   }

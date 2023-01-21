@@ -5,6 +5,7 @@ class CustomTextField extends StatelessWidget {
   const CustomTextField(
       {super.key,
         this.keyboardType=TextInputType.text,
+        this.icon,
         this.border=10,this.focusBorder=10,
       required TextEditingController controller, required this.label, this.isNumeric = false})
       : _controller = controller;
@@ -15,12 +16,12 @@ class CustomTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final double border;
   final double focusBorder;
+  final Widget? icon;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       child: TextFormField(
-
         style: const TextStyle(color: Color(0xFF0F3460),fontSize: 16),
         controller: _controller,
         textDirection: TextDirection.rtl,
@@ -31,9 +32,10 @@ class CustomTextField extends StatelessWidget {
           ),
         ],
         decoration: InputDecoration(
+            suffix: icon,
             prefixIconColor: const Color(0xF9D5CFCF),
             contentPadding:
-                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
             filled: true,
             fillColor: const Color(0xF9D5CFCF).withOpacity(.3),
             label: Text(

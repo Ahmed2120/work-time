@@ -37,7 +37,7 @@ class _StartPageState extends State<StartPage> {
                     decoration: const BoxDecoration(
                         image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: AssetImage('assets/images/Logo.png',)
+                            image: AssetImage('assets/images/logo.png',)
                         )
                     ),
                   ),

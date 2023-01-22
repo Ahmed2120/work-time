@@ -6,17 +6,21 @@ class CustomTextField extends StatelessWidget {
       {super.key,
         this.keyboardType=TextInputType.text,
         this.icon,
+        this.prefixIcon,
+        this.hint,
         this.border=10,this.focusBorder=10,
-      required TextEditingController controller, required this.label, this.isNumeric = false})
+      required TextEditingController controller,this.label, this.isNumeric = false})
       : _controller = controller;
 
   final TextEditingController _controller;
-  final String label;
+  final String? label;
   final bool isNumeric;
   final TextInputType keyboardType;
   final double border;
   final double focusBorder;
   final Widget? icon;
+  final Widget? prefixIcon;
+  final String? hint;
 
   @override
   Widget build(BuildContext context) {
@@ -32,16 +36,16 @@ class CustomTextField extends StatelessWidget {
           ),
         ],
         decoration: InputDecoration(
+          prefix:prefixIcon,
             suffix: icon,
-            prefixIconColor: const Color(0xF9D5CFCF),
+            hintText: hint,
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
             filled: true,
             fillColor: const Color(0xF9D5CFCF).withOpacity(.3),
-            label: Text(
-              label,
-              style: const TextStyle(fontSize: 18, color: Color(0xFF0F3460)),
-            ),
+            labelText: label,
+            hintStyle:const TextStyle(fontSize: 18, color: Color(0xFF0F3460)) ,
+            labelStyle:const TextStyle(fontSize: 18, color: Color(0xFF0F3460)),
             focusedBorder: OutlineInputBorder(
                 borderSide: const BorderSide(
                   color: Colors.grey,

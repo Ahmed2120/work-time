@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/db/attendanceReposetory.dart';
+import 'package:work_time/pages/EmptyScreen/epmty_screen.dart';
 import 'package:work_time/pages/components/constant.dart';
 import 'package:work_time/provider/attendance_provider.dart';
 import 'package:work_time/utility/global_methods.dart';
@@ -19,7 +20,7 @@ class UsersStatusListview extends StatelessWidget {
     return Consumer<UserProvider>(
       builder: (ctx, userProvider, _) {
         List<User> users = userProvider.users;
-        return ListView.builder(
+        return users.isNotEmpty?ListView.builder(
           itemCount: users.length,
           itemBuilder: (context, index) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 2.0,horizontal: 10),
@@ -51,7 +52,7 @@ class UsersStatusListview extends StatelessWidget {
               ),
             ),
           ),
-        );
+        ):SingleChildScrollView(child: EmptyScreen(title: 'من فضلك اضف عملاء'));
       },
     );
   }

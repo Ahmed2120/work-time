@@ -1,4 +1,3 @@
-import 'package:work_time/model/user.dart';
 
 import '../model/attendance.dart';
 import 'DatabaseHandler.dart';

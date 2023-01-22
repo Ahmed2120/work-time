@@ -16,29 +16,22 @@ class CustomAddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color.fromARGB(255, 29, 53, 87)
+    return Container(
+        constraints: BoxConstraints(
+            maxHeight: 50,
+            maxWidth: 100
+        ),
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color.fromARGB(255, 29, 53, 87)
+        ),
+        onPressed: () async{
+          keyScaffold.currentState!.showBottomSheet((context) => AddingUserBottomSheet('add'));
+        },
+        icon: const Text('اضافة',),
+        label: const Icon(Icons.add,color: Colors.white,),
       ),
-      onPressed: () async{
-        keyScaffold.currentState!.showBottomSheet((context) => AddingUserBottomSheet('add'));
-      },
-      icon: const Text('اضافة'),
-      label: const Icon(Icons.add,color: Colors.white,),
     );
-  }
-
-  Future<bool> _requestPermission(Permission permission) async{
-if(await permission.isGranted){
-  return true;
-}else{
-  var result = await permission.request();
-  if( result == PermissionStatus.granted){
-    return true;
-  }else{
-    return false;
-  }
-}
   }
 
 }

@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
 import 'package:toast/toast.dart';
 
 AlertDialog alert(
@@ -9,12 +10,13 @@ AlertDialog alert(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: const [
         Icon(
-          Icons.warning_amber,
-          color: Color(0xFF2C0202),
+            IconlyBold.danger,
+          color: Colors.amber,
+          size: 40,
         ),
         Text(
           'تعديل تمام',
-          style: TextStyle(fontSize: 14),
+          style: TextStyle(fontSize: 20,fontWeight: FontWeight.w700),
         ),
       ],
     ),
@@ -31,7 +33,7 @@ AlertDialog alert(
             Navigator.of(context).pop();
           },
           child: Text('Cancel')),
-      TextButton(onPressed: onPressed, child: Text('Ok')),
+      TextButton(onPressed: onPressed, child: Text('Ok',style: TextStyle(color: Color(0xFFE94560)),)),
     ],
   );
 }

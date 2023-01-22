@@ -97,19 +97,7 @@ class AddingUserBottomSheet extends StatelessWidget {
             pop(context);
           }
         },
-        style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFF9BBB0),
-            minimumSize: const Size(double.infinity, 10),
-            elevation: 0,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10))),
-        child: const Text('اضافة',
-            style: TextStyle(
-              color: Color(0xFF16213E),
-                fontSize: 22,
-              fontWeight: FontWeight.bold
-            )),
+        child: Text('اضافة',style: bootElevatedStyle,),
       );
 
   fillText(){

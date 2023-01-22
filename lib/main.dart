@@ -2,11 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:work_time/pages/start_page.dart';
+import 'package:work_time/pages/btm_bar_screen.dart';
 import 'package:work_time/provider/user_provider.dart';
 
-import 'pages/btm_bar_screen.dart';
-import 'pages/home/home_page.dart';
 import 'pages/splash_page.dart';
 import 'provider/attendance_provider.dart';
 import 'provider/note_provider.dart';
@@ -43,13 +41,22 @@ class MyApp extends StatelessWidget {
         ],
         title: 'work time',
         theme: ThemeData(
+          elevatedButtonTheme:ElevatedButtonThemeData(
+            style:  ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFF9BBB0),
+                minimumSize: const Size(double.infinity, 10),
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)))
+          ),
           fontFamily: 'Cairo',
           primarySwatch: Colors.blue,
           colorScheme: ColorScheme.fromSwatch().copyWith(
             primary: const Color(0xFF16213E)
           )
         ),
-        home: const SplashPage(),
+        home: const BottomBarScreen(),
       ),
     );
   }

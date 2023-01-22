@@ -72,18 +72,7 @@ class EditUserBottomSheet extends StatelessWidget {
       clearText();
       pop(context);
     },
-    style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF007C6D),
-        minimumSize: const Size(double.infinity, 10),
-        elevation: 0,
-        textStyle: const TextStyle(fontSize: 20),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10))),
-    child: const Text('تعديل',
-        style: TextStyle(
-          color: Colors.white,
-        )),
+    child: Text('تعديل',style: bootElevatedStyle,),
   );
 
   fillText(user){

@@ -4,6 +4,7 @@ import 'package:work_time/pages/components/custom_textField.dart';
 import 'package:work_time/provider/note_provider.dart';
 import 'package:work_time/utility/global_methods.dart';
 
+import '../EmptyScreen/epmty_screen.dart';
 import '../components/constant.dart';
 import 'note_editor.dart';
 import 'search_note.dart';
@@ -28,7 +29,8 @@ class NotePage extends StatelessWidget {
                padding: const EdgeInsets.only(top: 20.0,bottom: 15,right: 20,left: 20),
                child: SearchNote(controller: _searchController)
              ),
-             ...notes.map((note) => Padding(
+            if(notes.isEmpty)EmptyScreen(title:'قائمة الملاحظلات فاغة \n أضف بعض الملاحظات'),
+              ...notes.map((note) =>Padding(
                padding: const EdgeInsets.symmetric(horizontal: 20),
                child: Card(
                    color: const Color(0xFFF7F7F7),
@@ -42,7 +44,6 @@ class NotePage extends StatelessWidget {
                    )
                ),
              )).toList()
-             ,
            ],
          ),
          floatingActionButton: FloatingActionButton(

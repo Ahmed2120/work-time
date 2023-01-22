@@ -4,6 +4,7 @@ import 'package:work_time/pages/users/trash/components/card_trash.dart';
 
 import '../../../model/user.dart';
 import '../../../provider/user_provider.dart';
+import '../../EmptyScreen/epmty_screen.dart';
 
 class TrashPage extends StatelessWidget {
   const TrashPage({Key? key}) : super(key: key);
@@ -20,9 +21,9 @@ class TrashPage extends StatelessWidget {
       List<User> userTrash = userProvider.usersTrash;
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 20.0,horizontal: 15),
-        child: ListView.builder(
+        child: userTrash.isNotEmpty?ListView.builder(
           itemCount: userTrash.length
-        ,itemBuilder: (ctx,index)=>CustomCardTrash(userTrash[index])),
+        ,itemBuilder: (ctx,index)=>CustomCardTrash(userTrash[index])):EmptyScreen(title: 'لا يوجد عملاء خارج العمل',),
       );}),
     );
   }

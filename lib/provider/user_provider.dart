@@ -37,6 +37,8 @@ class UserProvider with ChangeNotifier {
    Future getUsers()async{
     final userRepository = UserRepository();
     _users=await userRepository.retrieve();
+    getTrash();
+    getSalaries();
     notifyListeners();
   }
     List<User> searchUsers(String txt) {

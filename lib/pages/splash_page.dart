@@ -30,11 +30,11 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
-          padding: const EdgeInsets.only(right: 25),
+          height: double.infinity,
+         width: double.infinity,
       decoration: const BoxDecoration(
-       color: Colors.white
+        image: DecorationImage(image: AssetImage('assets/images/Logo.png'),fit: BoxFit.contain),
           ),
-      child: Center(child: Image.asset('assets/images/logo.png',fit: BoxFit.cover,)),
     ));
   }
 }

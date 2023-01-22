@@ -33,11 +33,12 @@ class _StartPageState extends State<StartPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    height: 400,
+                    height: MediaQuery.of(context).size.height*.5,
+                    width: double.infinity,
                     decoration: const BoxDecoration(
                         image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: AssetImage('assets/images/logo.png',)
+                            image: AssetImage('assets/images/Logo.png',)
                         )
                     ),
                   ),

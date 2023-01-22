@@ -10,3 +10,5 @@ void pushReplacement({required Widget screen,required BuildContext context}){
 void pop(BuildContext context){
   Navigator.of(context).pop();
 }
+
+TextStyle bootElevatedStyle= TextStyle(fontSize: 22,color: Color(0xFF16213E),fontWeight: FontWeight.bold);

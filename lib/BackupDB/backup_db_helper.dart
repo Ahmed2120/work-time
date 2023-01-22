@@ -1,17 +1,17 @@
 
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:work_time/pages/components/constant.dart';
+import 'package:work_time/pages/users/components/functions.dart';
 import 'package:work_time/provider/note_provider.dart';
 import 'package:work_time/provider/user_provider.dart';
-
-import '../pages/users/components/functions.dart';
 
 class BackupHelper{
   getDbPath()async{
@@ -20,8 +20,7 @@ class BackupHelper{
     Directory? externalStoragePath=await getExternalStorageDirectory();
     print('===============externalStoragePath= $externalStoragePath');
   }
-
-  void backupDB(BuildContext context)async{
+  backupDB(BuildContext context)async{
     var status=await Permission.manageExternalStorage.status;
     if(!status.isGranted){
       await Permission.manageExternalStorage.request();
@@ -30,24 +29,22 @@ class BackupHelper{
     if(!status1.isGranted){
       await Permission.storage.request();
     }
+
     try{
       File ourDbFile=File('/data/data/com.ahmad.work_time/databases/dgi.db');
-      Directory? folderPathForDBFile=Directory('/storage/emulated/0/Download/WorkTime/BackUp');
+      Directory? folderPathForDBFile=Directory('/storage/emulated/0/Download/WorkTime');
       await folderPathForDBFile.create();
-      final file=File('/storage/emulated/0/Download/WorkTime/BackUp/dgi.db');
-      await file.delete();
-      await ourDbFile.copy('/storage/emulated/0/Download/WorkTime/BackUp/dgi.db').then((value) {
-        showToast(context, '   تم عمل نسخ إحتياطي في المسار المحدد\n ${'/storage/emulated/0/Download/WorkTime/BackUp'}');
-        pop(context);
-      });
+      await ourDbFile.copy('/storage/emulated/0/Download/WorkTime/dgi.db');
+      showToast(context, 'storage/emulated/0/WorkTime/dgi.db تمت عملية النسخ الاحتساطي بنجاح في المسار المحدد \n ');
+    pop(context);
     }
     catch(e){
-      showToast(context, 'خطأ',color: Colors.red);
+      showToast(context, 'حدث خطأ اعد فتح التطبيق وحاول مرة اخري',color: Colors.red);
+      print('======================================error ${e.toString()}');
     }
   }
 
-
-  Future restoreDB(BuildContext context)async{
+  restoreDB(BuildContext context)async{
     var status=await Permission.manageExternalStorage.status;
     if(!status.isGranted){
       await Permission.manageExternalStorage.request();
@@ -58,29 +55,28 @@ class BackupHelper{
     }
 
     try{
-      FilePickerResult? result = await FilePicker.platform.pickFiles(allowMultiple: false);
-      if(result !=null){
-        PlatformFile file = result.files.first;
-        File fileDBPath=File(file.path!);
-        List<String> listString=fileDBPath.path.toString().split('/');
-        if(listString.last=='dgi.db'){
-          final file=File('/data/data/com.ahmad.work_time/databases/dgi.db');
-          await file.delete();
-          await fileDBPath.copy('/data/data/com.ahmad.work_time/databases/dgi.db').then((value) {
-            showToast(context,'تم استعادة النسخة الاحتياطية',);
-            Provider.of<NoteProvider>(context).getNotes();
-            Provider.of<UserProvider>(context).getUsers();
-            pop(context);
-          });
+    String path='/storage/emulated/0/Download/WorkTime/dgi.db';
+        List<String> listPath=path.split('/');
+        if(listPath.last=='dgi.db'){
+         File saveBDFile=File(path);
+          await saveBDFile.copy('/data/data/com.ahmad.work_time/databases/dgi.db');
+          Provider.of<UserProvider>(context,listen: false).getUsers();
+         Provider.of<NoteProvider>(context,listen: false).getNotes();
+          showToast(context, 'تم استرجاع النسخة الاحتياطية');
+          pop(context);
         }
-        else{
-          showToast(context, 'هذا ليس ملف الداتا',color: Colors.red);
-        }
-
       }
-
+    catch(e){
+      showToast(context, 'storage/emulated/0/Download/WorkTime/dgi.db خطأ تأكد من وجود ملف البيانات في المسار المحدد \n ',color: Colors.red);
+      print('======================================error ${e.toString()}');
     }
-    catch(e){}
   }
 
+  deleteDB()async{
+    try{
+      deleteDatabase('/data/data/com.ahmad.work_time/databases/dgi.db');
+    }catch(e){
+      print('======================================error ${e.toString()}');
+    }
+  }
 }

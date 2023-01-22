@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:work_time/pages/components/constant.dart';
+import 'package:work_time/provider/user_provider.dart';
 
+import '../provider/note_provider.dart';
 import 'backup_db_helper.dart';
 
 class BackupPage extends StatelessWidget {
@@ -16,6 +20,29 @@ class BackupPage extends StatelessWidget {
        body:Column(
         mainAxisAlignment:MainAxisAlignment.center,
         children: [
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 20,horizontal: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                width: 3,
+                color: const Color(0xFF315fbb)
+              )
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('خطوات استرجاع النسخة الاحتياطية',style: TextStyle(color: const Color(0xFF315fbb),fontWeight: FontWeight.w700,fontSize: 20),textAlign: TextAlign.center),
+                SizedBox(height: 10),
+                Text('1 تحميل الملف من جوجل دريف '),
+                Text('2 نسخ الملف في المسار المحدد '),
+                Text('3 المسار \n storage/emulated/0/WorkTime/dgi.db '),
+                Text('4 الضغط علي استرجاع النسخة الاحتياطية '),
+              ],
+            ),
+          ),
+          SizedBox(height: 30),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Container(
@@ -47,9 +74,12 @@ class BackupPage extends StatelessWidget {
                 ),
                 child: ListTile(
                   trailing: const Icon(Icons.cloud_download_rounded,size: 35,color: Color(0xFF315fbb),),
-                  onTap:()=>BackupHelper().restoreDB(context),
+                  onTap:(){
+                    BackupHelper().restoreDB(context);
+                  },
                   title:  const FittedBox(child: Text('إستعادة النسخة الاحتياطية',style: TextStyle(color: Color(0xFF315fbb),fontWeight: FontWeight.bold),)),
-                )),
+                ),
+            ),
           ),
         ],
       ),

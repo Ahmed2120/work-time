@@ -2,11 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  var fbm = FirebaseMessaging.instance;
 
   Future<String> getDeviceToken() async {
     String uniqueDeviceId = '';

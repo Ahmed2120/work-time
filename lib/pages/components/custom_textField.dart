@@ -8,6 +8,7 @@ class CustomTextField extends StatelessWidget {
         this.icon,
         this.prefixIcon,
         this.hint,
+        this.isPassword = false,
         this.border=10,this.focusBorder=10,
       required TextEditingController controller,this.label, this.isNumeric = false})
       : _controller = controller;
@@ -15,6 +16,7 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController _controller;
   final String? label;
   final bool isNumeric;
+  final bool isPassword;
   final TextInputType keyboardType;
   final double border;
   final double focusBorder;
@@ -35,6 +37,7 @@ class CustomTextField extends StatelessWidget {
             RegExp('[0-9]'),
           ),
         ],
+        obscureText: isPassword,
         decoration: InputDecoration(
           prefix:prefixIcon,
             suffix: icon,

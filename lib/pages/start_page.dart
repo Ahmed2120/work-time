@@ -60,6 +60,7 @@ class _StartPageState extends State<StartPage> {
       if (!_formKey.currentState!.validate()) return;
       setState(()=> isLoading = true);
       final api = ApiService();
+      try{
       final bool isExist = await api.getUser(_emailController.text.trim());
       final prefs = await SharedPreferences.getInstance();
       prefs.setBool('isExist', isExist);
@@ -68,6 +69,11 @@ class _StartPageState extends State<StartPage> {
           }
       else{
         showMessageDialog(context, 'لا تستطيع الدخول بهذا الايميل');
+      }
+      }catch(e){
+        final error = e.toString().replaceAll(RegExp("[Exception:]"), "");
+        showMessageDialog(context, error);
+        setState(()=> isLoading = false);
       }
           setState(()=> isLoading = false);
     },

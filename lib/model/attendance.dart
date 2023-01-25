@@ -7,6 +7,8 @@ class Attendance {
   final int status;
   final String salaryReceived;
   final String workPlace ;
+  final int overTimeStatus;
+  final String salary;
 
   Attendance({
     this.id,
@@ -16,7 +18,9 @@ class Attendance {
     required this.weekStatus,
     required this.status,
     required this.salaryReceived,
-    required this.workPlace
+    required this.workPlace,
+    required this.overTimeStatus,
+    required this.salary
   });
 
   Attendance.fromMap(Map<String, dynamic> res)
@@ -27,10 +31,12 @@ class Attendance {
   weekStatus=res['weekStatus'],
         status = res["status"],
         salaryReceived = res["salaryReceived"],
+  overTimeStatus=res['overTimeStatus'],
+        salary=res['salary'],
    workPlace=res['workPlace'];
 
 
   Map<String, Object?> toMap() {
-    return {'id': id, 'userId': userId, 'todayDate': todayDate,'weekId':weekId,'weekStatus':weekStatus, 'status': status, 'salaryReceived': salaryReceived,'workPlace':workPlace};
+    return {'id': id, 'userId': userId,'overTimeStatus':overTimeStatus,'salary':salary, 'todayDate': todayDate,'weekId':weekId,'weekStatus':weekStatus, 'status': status, 'salaryReceived': salaryReceived,'workPlace':workPlace};
   }
 }

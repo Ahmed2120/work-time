@@ -29,7 +29,6 @@ class GlobalMethods{
   }
 
   static DateTime getWeekDay(DateTime dateTime) {
-
     var today = DateTime(dateTime.year, dateTime.month, dateTime.day);
     print(today.next(DateTime.friday));
     if(today.next(DateTime.friday).isSameDate(DateTime.now())){
@@ -37,8 +36,6 @@ class GlobalMethods{
     }
     return today.next(DateTime.friday) ;
   }
-
-
 }
 
 extension DateTimeExtension on DateTime {

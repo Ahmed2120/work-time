@@ -14,11 +14,8 @@ class AttendanceProvider with ChangeNotifier {
 
   Future<void> addAttendance(Attendance attendance) async {
     final attendanceRepository = AttendanceRepository();
-
-    final int userId = await attendanceRepository.insert(attendance);
-    //  attendance.id = userId;
-    _attendanceList.add(attendance);
-
+    await attendanceRepository.insert(attendance);
+      _attendanceList.add(attendance);
     notifyListeners();
   }
 
@@ -32,7 +29,7 @@ class AttendanceProvider with ChangeNotifier {
   String time = '';
   String attendanceText = 'غائب';
 
-  void getAttendanceUserToDay({required int userId}) async {
+  Future getAttendanceUserToDay({required int userId}) async {
     final attendanceRepository = AttendanceRepository();
     _attendanceModel =
         await attendanceRepository.retrieveByUserIdDateTime(userId);
@@ -139,28 +136,38 @@ class AttendanceProvider with ChangeNotifier {
     return x;
   }
 
-  double salary=0;
-  setSalary(double value){
-    salary=value;
-    notifyListeners();
-  }
 
-  double sumSalaryRemain(List<Attendance> list){
-    double x=0;
-    double totalSalary=0;
-    for(var model in list){
-      if(model.status==1){
-        totalSalary=totalSalary+salary;
-      }
-    }
-    x=totalSalary-sumSalaryReceived(list);
-    return x;
+double totalSalary(List<Attendance> list){
+  double totalSalary=0;
+  for(var model in list){
+    totalSalary=totalSalary+double.parse(model.salary);
   }
+  return totalSalary;
+}
 
 
   getAttendanceList()async{
     final attendanceRepository = AttendanceRepository();
     _attendanceList = await attendanceRepository.retrieve();
+    notifyListeners();
+  }
+
+  bool isOverTimeStatus=false;
+  void changeCheckBox(bool newVal){
+    isOverTimeStatus=newVal;
+    notifyListeners();
+  }
+
+  void checkOverTime(Attendance model){
+    if(model==null){
+      isOverTimeStatus=false;
+    }
+    else if(model.overTimeStatus==0){
+      isOverTimeStatus=false;
+    }
+    else{
+      isOverTimeStatus=true;
+    }
     notifyListeners();
   }
 }

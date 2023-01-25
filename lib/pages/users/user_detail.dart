@@ -87,6 +87,8 @@ class UserDetail extends StatelessWidget {
                               workPlace: _workPlaceController.text,
                               weekId: await attendanceProvider.setWeekId(),
                               weekStatus: 0,
+                              overTimeStatus: 0,
+                              salary: user.salary,
                               status: 1,
                               salaryReceived: '0');
                           attendanceProvider.addAttendance(attendance);
@@ -114,6 +116,8 @@ class UserDetail extends StatelessWidget {
                                             .attendanceModel.last.weekId,
                                         weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
                                         status: 1,
+                                        overTimeStatus: 0,
+                                        salary: user.salary,
                                         salaryReceived: '0');
 
                                     attendanceProvider.updateAttendance(
@@ -138,8 +142,10 @@ class UserDetail extends StatelessWidget {
                               userId: user.id!,
                               todayDate: '${DateTime.now()}',
                               workPlace: 'لا يوجد',
+                              overTimeStatus: 0,
                               weekId: await attendanceProvider.setWeekId(),
                               weekStatus: 0,
+                              salary: '0',
                               status: 0,
                               salaryReceived: '0');
                           attendanceProvider.addAttendance(attendance);
@@ -165,6 +171,8 @@ class UserDetail extends StatelessWidget {
                                         weekId: attendanceProvider.attendanceModel.last.weekId,
                                         weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
                                         status: 0,
+                                        salary: '0',
+                                        overTimeStatus: 0,
                                         salaryReceived: '0');
                                     attendanceProvider.updateAttendance(
                                         attendance: attendance);
@@ -180,12 +188,12 @@ class UserDetail extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 Form(key: _formKey,
                     child: CustomTextField(
                   controller: _workPlaceController, label: 'مكان العمل',
                 )),
-                const SizedBox(height: 30),
+                const SizedBox(height: 15),
                 BuildCard(Column(
                   children: [
                     TextRow(title: 'الاسم', txt: user.name),
@@ -196,7 +204,7 @@ class UserDetail extends StatelessWidget {
                         txt: user.salary.toString()),
                   ],
                 )),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 const Text(
                   'التمام اليومي',
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
@@ -223,9 +231,15 @@ class UserDetail extends StatelessWidget {
                           title: 'المبلغ المسحوب',
                           txt: attendanceProvider
                               .attendanceModel.last.salaryReceived),
+                    if (attendanceProvider.attendanceModel.isNotEmpty &&
+                        attendanceProvider.attendanceModel.last.status == 1)
+                      TextRow(
+                          title: 'الوقت الإضافي',
+                          txt: attendanceProvider
+                              .attendanceModel.last.overTimeStatus==1?'تم إضافة سهرة':'لا يوجد'),
                   ],
                 )),
-                const SizedBox(height: 30),
+                const SizedBox(height: 15),
                 if (attendanceProvider.attendanceModel.isNotEmpty &&
                     attendanceProvider.attendanceModel.last.status == 1)
                   buildElevatedButton(
@@ -237,7 +251,7 @@ class UserDetail extends StatelessWidget {
                             value: user,
                             child: DrawFinance()));
                       }),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 buildElevatedButton(
                     label: 'عرض ايام الحضور',
                     color: const Color(0xFF533483),
@@ -247,7 +261,56 @@ class UserDetail extends StatelessWidget {
                             .getAttendanceUser(user.id!);
                         showSheet(context);
                       });
-                    })
+                    }),
+                if (attendanceProvider.attendanceModel.isNotEmpty &&
+                    attendanceProvider.attendanceModel.last.status == 1)
+                  Row(children:[ Checkbox(value: attendanceProvider.isOverTimeStatus, onChanged: (val){attendanceProvider.changeCheckBox(val!);
+                    if(val){
+                      final attendance = Attendance(
+                          id: attendanceProvider
+                              .attendanceModel.last.id,
+                          workPlace: attendanceProvider
+                              .attendanceModel.last.workPlace,
+                          userId: user.id!,
+                          todayDate: attendanceProvider
+                              .attendanceModel.last.todayDate,
+                          weekId: attendanceProvider.attendanceModel.last.weekId,
+                          weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
+                          status: attendanceProvider
+                              .attendanceModel.last.status,
+                          salary: '${double.parse(attendanceProvider
+                              .attendanceModel.last.salary)*1.5}',
+                          overTimeStatus: 1,
+                          salaryReceived: attendanceProvider
+                              .attendanceModel.last.salaryReceived);
+                      attendanceProvider.updateAttendance(
+                          attendance: attendance);
+                      attendanceProvider.getAttendanceUserToDay(
+                          userId: user.id!);
+                  }
+                    else{
+                      final attendance = Attendance(
+                          id: attendanceProvider
+                              .attendanceModel.last.id,
+                          workPlace: attendanceProvider
+                              .attendanceModel.last.workPlace,
+                          userId: user.id!,
+                          todayDate: attendanceProvider
+                              .attendanceModel.last.todayDate,
+                          weekId: attendanceProvider.attendanceModel.last.weekId,
+                          weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
+                          status: attendanceProvider
+                              .attendanceModel.last.status,
+                          salary: user.salary,
+                          overTimeStatus: 0,
+                          salaryReceived: attendanceProvider
+                              .attendanceModel.last.salaryReceived);
+                      attendanceProvider.updateAttendance(
+                          attendance: attendance);
+                      attendanceProvider.getAttendanceUserToDay(
+                          userId: user.id!);
+                    }
+                  }), Text('إضافة سهرة'),])
               ],
             ),
           ),
@@ -259,7 +322,6 @@ class UserDetail extends StatelessWidget {
   TextButton buildElevatedButton(
       {required String label,
         required Color color,
-
         required VoidCallback onPressed}) {
     return TextButton(
       onPressed: onPressed,

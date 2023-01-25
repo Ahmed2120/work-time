@@ -29,10 +29,10 @@ class UsersStatusListview extends StatelessWidget {
               child: ListTile(
                 onTap: () async {
                   pro.getWeeks(users[index].id!);
-                  pro.setSalary(double.parse(users[index].salary));
-                  pro.getAttendanceUserToDay(userId: users[index].id!);
+                  pro.getAttendanceUserToDay(userId: users[index].id!).then((value) {
+                    pro.checkOverTime(pro.attendanceModel.last);
+                  });
                   pro.getAttendanceUser(users[index].id!);
-
                   push(screen: UserDetail(user: users[index],),context: context);
                 },
                 title: Text(users[index].name,style: const TextStyle(fontSize: 16,color: Color(0xFF17263D)),),

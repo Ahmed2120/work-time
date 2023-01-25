@@ -34,14 +34,17 @@ class DrawFinance extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 buildButton(context,() {
+
                   if (_salaryController.text.isEmpty) {
                     final attendance = Attendance(
                       userId: user.id!,
                       todayDate: attendanceProvider.attendanceModel.last.todayDate,
                       weekId: attendanceProvider.attendanceModel.last.weekId,
                       weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
+                      overTimeStatus:  attendanceProvider.attendanceModel.last.overTimeStatus,
                       status: 1,
                       salaryReceived: '0',
+                      salary: attendanceProvider.attendanceModel.last.salary,
                       workPlace: attendanceProvider.attendanceModel.last.workPlace
                     );
                     attendanceProvider.updateAttendance(attendance: attendance);
@@ -57,7 +60,9 @@ class DrawFinance extends StatelessWidget {
                         todayDate: attendanceProvider.attendanceModel.last.todayDate,
                         weekId: attendanceProvider.attendanceModel.last.weekId,
                         weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
+                        overTimeStatus:  attendanceProvider.attendanceModel.last.overTimeStatus,
                         status: 1,
+                        salary: attendanceProvider.attendanceModel.last.salary,
                         salaryReceived: _salaryController.text,
                         workPlace: attendanceProvider.attendanceModel.last.workPlace
                     );

@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context)=> UserProvider()..getUsers()..getTrash()..getSalaries()),
+        ChangeNotifierProvider(create: (context)=> UserProvider()..getUsers()),
         ChangeNotifierProvider(create: (context)=> AttendanceProvider()),
         ChangeNotifierProvider(create: (context)=> NoteProvider()..getNotes())
       ],
@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
             primary: const Color(0xFF16213E)
           )
         ),
-        home: const BottomBarScreen(),
+        home: const SplashPage(),
       ),
     );
   }

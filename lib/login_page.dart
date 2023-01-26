@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:local_auth/local_auth.dart';
 
-import '../service/api_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'pages/btm_bar_screen.dart';
 import 'pages/components/custom_textField.dart';
 import 'pages/home/home_page.dart';
 import 'service/local_auth_service.dart';
@@ -44,10 +41,7 @@ class _LoginPageState extends State<LoginPage> {
                             image: AssetImage('assets/images/Logo.png',)
                         )
                     ),
-                  ),
-                  CustomTextField(controller: _emailController, label: 'الايميل',icon: const Icon(Icons.email,size: 30,color:Color(0xFF1d3557) ,),),
-                  CustomTextField(controller: _emailController, label: 'الباسورد',icon: const Icon(Icons.lock,size: 30,color:Color(0xFF1d3557) ,),),
-                  const SizedBox(height: 30),
+                  ), const SizedBox(height: 30),
                   isLoading ? const CircularProgressIndicator() : buildButton(context)
                 ],
               ),
@@ -66,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (isAuthenticated) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => BottomBarScreen()),
         );
       }
     },
@@ -77,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10))),
-    child: const Text('ابدا',
+    child: const Text('دخول بالبصمة',
         style: TextStyle(
             color: Colors.white,
             fontSize: 22,

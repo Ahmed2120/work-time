@@ -19,7 +19,7 @@ class Attendance {
     required this.status,
     required this.salaryReceived,
     required this.workPlace,
-    required this.overTimeStatus,
+    this.overTimeStatus = 0,
     required this.salary
   });
 

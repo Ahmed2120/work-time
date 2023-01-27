@@ -29,9 +29,7 @@ class UsersStatusListview extends StatelessWidget {
               child: ListTile(
                 onTap: () async {
                   pro.getWeeks(users[index].id!);
-                  pro.getAttendanceUserToDay(userId: users[index].id!).then((value) {
-                   if(pro.attendanceModel.isNotEmpty) pro.checkOverTime(pro.attendanceModel.last);
-                  });
+                  pro.getAttendanceUserToDay(userId: users[index].id!);
                   pro.getAttendanceUser(users[index].id!);
                   push(screen: UserDetail(user: users[index],),context: context);
                 },

@@ -151,17 +151,4 @@ double totalSalary(List<Attendance> list){
     isOverTimeStatus=newVal;
     notifyListeners();
   }
-
-  void checkOverTime(Attendance model){
-    if(model==null){
-      isOverTimeStatus=false;
-    }
-    else if(model.overTimeStatus==0){
-      isOverTimeStatus=false;
-    }
-    else{
-      isOverTimeStatus=true;
-    }
-    notifyListeners();
-  }
 }

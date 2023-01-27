@@ -264,7 +264,7 @@ class UserDetail extends StatelessWidget {
                     }),
                 if (attendanceProvider.attendanceModel.isNotEmpty &&
                     attendanceProvider.attendanceModel.last.status == 1)
-                  Row(children:[ Checkbox(value: attendanceProvider.isOverTimeStatus, onChanged: (val){attendanceProvider.changeCheckBox(val!);
+                  Row(children:[ Checkbox(value: attendanceProvider.attendanceModel.last.overTimeStatus == 0 ? false : true, onChanged: (val){attendanceProvider.changeCheckBox(val!);
                     if(val){
                       final attendance = Attendance(
                           id: attendanceProvider

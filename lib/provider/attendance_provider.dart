@@ -74,28 +74,21 @@ class AttendanceProvider with ChangeNotifier {
 
 
   setWeekId() async{
-    final prefs = await SharedPreferences.getInstance();
 
-    final String? endWeek = prefs.getString('endWeek');
+    DateTime? _endWeekUser;
+    if(attendanceUser.isNotEmpty) _endWeekUser=GlobalMethods.getWeekDay(DateTime.parse(_attendanceUser.last.todayDate));
+
     int weekId=0;
     if(_attendanceUser.isEmpty){
       return weekId=1;
     }
-    if(endWeek == null){
-      final getEndWeek = GlobalMethods.getWeekDay(DateTime.now());
-      prefs.setString('endWeek', '$getEndWeek');
-      return weekId=1;
-    }
 
-    else if(GlobalMethods.getDateFormat(DateTime.now())==GlobalMethods.getDateFormat(DateTime.parse(endWeek))){
+     if(GlobalMethods.getDateFormat(DateTime.now())==GlobalMethods.getDateFormat(_endWeekUser!)){
       weekId=_attendanceUser.last.weekId;
       return weekId;
     }
-    else if(DateTime.parse(endWeek).isBefore(DateTime.now())){
-      final getEndWeek = GlobalMethods.getWeekDay(DateTime.now());
+    else if(_endWeekUser.isBefore(DateTime.now())){
         weekId=_attendanceUser.last.weekId+1;
-        prefs.clear();
-        prefs.setString('endWeek', '$getEndWeek');
         return weekId;
     }
     else{
@@ -117,6 +110,7 @@ class AttendanceProvider with ChangeNotifier {
     _weeksList=[];
     final attendanceRepository = AttendanceRepository();
     _weeksList = await attendanceRepository.retrieveWeeks(userId);
+    print(weeksList);
     notifyListeners();
   }
   

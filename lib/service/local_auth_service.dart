@@ -28,7 +28,7 @@ class LocalAuthApi {
       return await _auth.authenticate(
         localizedReason: 'Scan Fingerprint to Authenticate',
         options: const AuthenticationOptions(
-          biometricOnly: true,
+          biometricOnly: false,
           useErrorDialogs: true,
           stickyAuth: true,
         ),

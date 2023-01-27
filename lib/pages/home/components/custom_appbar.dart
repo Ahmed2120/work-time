@@ -32,6 +32,9 @@ AppBar customAppBar(BuildContext context) {
         : AppBar(
           title: TextField(
               onChanged: (txt) {
+                // if(txt.isEmpty){
+                //   userProvider.
+                // }
                 userProvider.searchUsers(txt);
               },
               decoration: InputDecoration(

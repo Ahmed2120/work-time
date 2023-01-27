@@ -49,9 +49,12 @@ class UserProvider with ChangeNotifier {
             usersListSearch.add(element);
           }
         }
+        _users = usersListSearch;
+        notifyListeners();
       }
-      _users = usersListSearch;
-      notifyListeners();
+      else{
+        getUsers();
+      }
       return _users;
     }
 

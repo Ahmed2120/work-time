@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:work_time/db/attendanceReposetory.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,13 +34,12 @@ class AttendanceProvider with ChangeNotifier {
   Future getAttendanceUserToDay({required int userId}) async {
     final attendanceRepository = AttendanceRepository();
     _attendanceModel =
-        await attendanceRepository.retrieveByUserIdDateTime(userId);
-
+        await attendanceRepository.retrieveByUserIdDateTime(userId,dateTimeAttendance);
     if (attendanceModel.isNotEmpty) {
       DateTime dateTime = DateTime.parse(attendanceModel.last.todayDate);
       date = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
       time =
-          "${dateTime.hour < 10 ? '0${dateTime.hour}' : '${dateTime.hour}'}:${dateTime.minute < 10 ? '0${dateTime.minute}' : '${dateTime.minute}'}:${dateTime.second < 10 ? '0${dateTime.second}' : '${dateTime.second}'}";
+          "${GlobalMethods.getTimeFormat(DateTime.parse(attendanceModel.last.todayDate))}";
       if (attendanceModel.last.status == 1) {
         attendanceText = 'حاضر';
       } else {
@@ -47,10 +48,16 @@ class AttendanceProvider with ChangeNotifier {
     }
     notifyListeners();
   }
+  DateTime dateTimeAttendance=DateTime.now();
+  changeDate(DateTime? _dateTime){
+    if(_dateTime==null)return;
+    dateTimeAttendance=_dateTime;
+    notifyListeners();
+  }
 
   Future<Attendance> getAttendByUserAndDate({required int userId}) async {
     final attendanceRepository = AttendanceRepository();
-    final List<Attendance> attend = await attendanceRepository.retrieveByUserIdDateTime(userId);
+    final List<Attendance> attend = await attendanceRepository.retrieveByUserIdDateTime(userId,dateTimeAttendance);
     return attend.last;
 
   }
@@ -76,29 +83,29 @@ class AttendanceProvider with ChangeNotifier {
   setWeekId() async{
 
     DateTime? _endWeekUser;
-    if(attendanceUser.isNotEmpty) _endWeekUser=GlobalMethods.getWeekDay(DateTime.parse(_attendanceUser.last.todayDate));
-
+    if(attendanceUser.isNotEmpty) _endWeekUser=GlobalMethods.getWeekDay(dateTimeAttendance);
     int weekId=0;
     if(_attendanceUser.isEmpty){
       return weekId=1;
     }
-
-     if(GlobalMethods.getDateFormat(DateTime.now())==GlobalMethods.getDateFormat(_endWeekUser!)){
-      weekId=_attendanceUser.last.weekId;
-      return weekId;
-    }
-    else if(_endWeekUser.isBefore(DateTime.now())){
-        weekId=_attendanceUser.last.weekId+1;
+    int maxWeekId=0;
+    for(var element in attendanceUser){
+      if(element.weekId>maxWeekId)maxWeekId=element.weekId;
+      if(element.weekEnd=="$_endWeekUser"){
+        weekId =element.weekId;
+        print('=========== weekId $weekId');
         return weekId;
+      }
     }
-    else{
-      weekId=_attendanceUser.last.weekId;
+    if(weekId==0){
+      weekId=maxWeekId+1;
+      print('=========== weekId $weekId');
       return weekId;
     }
   }
 
   List<int> _weeksList= [];
-  final Map<int, List<Attendance>> _weekAttendanceMap = {};
+   Map<int, List<Attendance>> _weekAttendanceMap = {};
   List<int> get weeksList {
     return _weeksList;
   }
@@ -107,19 +114,23 @@ class AttendanceProvider with ChangeNotifier {
   }
 
   void getWeeks(int userId) async{
+
     _weeksList=[];
     final attendanceRepository = AttendanceRepository();
     _weeksList = await attendanceRepository.retrieveWeeks(userId);
-    print(weeksList);
     notifyListeners();
   }
   
   Future<void> getWeeklyAttendance(int userId) async{
     final attendanceRepository = AttendanceRepository();
+_weekAttendanceMap={};
     for(var i in _weeksList){
       final x = await attendanceRepository.retrieveAttendByWeekId(weekId: i, userId: userId);
+      x.sort((a, b) => a.todayDate.compareTo(b.todayDate));
       _weekAttendanceMap.addEntries([MapEntry(i, x)]);
     }
+    sort();
+    notifyListeners();
   }
 
   double sumSalaryReceived(List<Attendance> list){
@@ -149,6 +160,15 @@ double totalSalary(List<Attendance> list){
   bool isOverTimeStatus=false;
   void changeCheckBox(bool newVal){
     isOverTimeStatus=newVal;
+    notifyListeners();
+  }
+
+  void sort(){
+    if(_weekAttendanceMap.isNotEmpty) {
+      _weekAttendanceMap = Map.fromEntries(_weekAttendanceMap.entries.toList()
+        ..sort((e1, e2) => e1.value[0].weekEnd.compareTo(e2.value[0].weekEnd)));
+      _weeksList = _weekAttendanceMap.keys.toList();
+    }
     notifyListeners();
   }
 }

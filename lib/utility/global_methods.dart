@@ -24,17 +24,16 @@ class GlobalMethods{
   static String getTimeFormat(DateTime dateTime) {
 
     String minute = dateTime.minute < 10 ? '0${dateTime.minute}' : '${dateTime.minute}';
-    String time = dateTime.hour < 12 ? '0${dateTime.hour}:$minute صباحاً' : '${dateTime.hour}:$minute مساءً';
+    String time = dateTime.hour < 12 ? '${dateTime.hour}:$minute صباحاً' : '${dateTime.hour-12}:$minute مساءً';
     return time ;
   }
 
   static DateTime getWeekDay(DateTime dateTime) {
     var today = DateTime(dateTime.year, dateTime.month, dateTime.day);
-    print('================== ${today.next(DateTime.friday)}');
-    if(today.next(DateTime.friday).isSameDate(DateTime.now())){
+    if(today.next(DateTime.saturday).isSameDate(dateTime)){
       return today.add(Duration(days: 7));
     }
-    return today.next(DateTime.friday) ;
+    return today.next(DateTime.saturday) ;
   }
 }
 

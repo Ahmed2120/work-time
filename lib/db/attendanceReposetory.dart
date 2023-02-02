@@ -1,6 +1,8 @@
 
 import '../model/attendance.dart';
 import 'DatabaseHandler.dart';
+import "package:collection/collection.dart";
+
 
 class AttendanceRepository{
   String table_name = 'attendance';
@@ -22,13 +24,12 @@ class AttendanceRepository{
   Future retrieveByUserId(int userId) async{
     final db = await databaseHandler.initializeDB();
     final List<Map<String, Object?>> queryResults = await db.query(table_name, where: 'userId = ?', whereArgs: [userId]);
-
     return queryResults.map((e) => Attendance.fromMap(e)).toList();
   }
 
-  Future retrieveByUserIdDateTime(int userId) async{
+  Future retrieveByUserIdDateTime(int userId,DateTime dateTime) async{
     final db = await databaseHandler.initializeDB();
-    final String date='${DateTime.now().year}-${DateTime.now().month<10?'0${DateTime.now().month}':'${DateTime.now().month}'}-${DateTime.now().day<10?'0${DateTime.now().day}':'${DateTime.now().day}'}';
+    final String date='${dateTime.year}-${dateTime.month<10?'0${dateTime.month}':'${dateTime.month}'}-${dateTime.day<10?'0${dateTime.day}':'${dateTime.day}'}';
     final List<Map<String, Object?>> queryResults = await db.query(table_name, where: 'userId = ? and todayDate LIKE ?', whereArgs: [userId,'%$date%']);
     return queryResults.map((e) => Attendance.fromMap(e)).toList();
   }
@@ -36,7 +37,6 @@ class AttendanceRepository{
   Future<List<int>> retrieveWeeks(int userId) async{
     final db = await databaseHandler.initializeDB();
     final List<Map<String, Object?>> queryResults = await db.rawQuery("SELECT DISTINCT weekId FROM $table_name WHERE userId = ? ",[userId]);
-    print(queryResults);
     return queryResults.map((e) => e['weekId'] as int).toList();
   }
 

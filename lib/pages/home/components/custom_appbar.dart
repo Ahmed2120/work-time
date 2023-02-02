@@ -3,11 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:work_time/BackupDB/backup_page.dart';
 import 'package:work_time/pages/components/constant.dart';
 
+import '../../../provider/attendance_provider.dart';
 import '../../../provider/user_provider.dart';
 import '../../../utility/global_methods.dart';
 
 AppBar customAppBar(BuildContext context) {
   final userProvider = Provider.of<UserProvider>(context);
+  final attendanceProvider = Provider.of<AttendanceProvider>(context);
   return !userProvider.clickSearch
         ? AppBar(
     leading: IconButton(
@@ -17,11 +19,16 @@ AppBar customAppBar(BuildContext context) {
         color: Colors.white,
       ),
     ),
-          actions: [IconButton(onPressed: () {
+          actions: [IconButton(onPressed: () async{
+            attendanceProvider.changeDate(await showDatePicker(context: context, initialDate: attendanceProvider.dateTimeAttendance, firstDate: DateTime.parse('1900-01-01'), lastDate: DateTime.now(),));
+          }, icon: const Icon(Icons.date_range_outlined)),
+            IconButton(onPressed: () {
             push(screen: const BackupPage(), context: context);
-          }, icon: const Icon(Icons.settings))],
+          }, icon: const Icon(Icons.settings)),
+
+          ],
           title: Text(
-            '${GlobalMethods.getDayName(DateTime.now())} ${GlobalMethods.getDateFormat(DateTime.now())}',
+            '${GlobalMethods.getDayName(attendanceProvider.dateTimeAttendance)} ${GlobalMethods.getDateFormat(attendanceProvider.dateTimeAttendance)}',
             style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
@@ -32,9 +39,10 @@ AppBar customAppBar(BuildContext context) {
         : AppBar(
           title: TextField(
               onChanged: (txt) {
-                // if(txt.isEmpty){
-                //   userProvider.
-                // }
+                if(txt.isEmpty){
+                  userProvider.getUsers();
+                  return;
+                }
                 userProvider.searchUsers(txt);
               },
               decoration: InputDecoration(

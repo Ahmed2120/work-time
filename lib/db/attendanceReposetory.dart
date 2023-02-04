@@ -13,6 +13,17 @@ class AttendanceRepository{
     return result;
   }
 
+  Future insertP(int userId) async{
+    int result = 0;
+    final db = await databaseHandler.initializeDB();
+    final String date='${DateTime.now().year}-${DateTime.now().month<10?'0${DateTime.now().month}':'${DateTime.now().month}'}-${DateTime.now().day<10?'0${DateTime.now().day}':'${DateTime.now().day}'}';
+    result = await db.rawInsert(
+        """INSERT INTO $table_name($userId) 
+        SELECT 5, 'text to insert'
+        WHERE NOT EXISTS(SELECT 1 FROM memos WHERE id = 5 AND text = 'text to insert')""");
+    return result;
+  }
+
   Future retrieve() async{
     final db = await databaseHandler.initializeDB();
     final List<Map<String, Object?>> queryResults = await db.query(table_name);

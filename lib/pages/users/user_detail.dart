@@ -5,6 +5,7 @@ import 'package:work_time/pages/components/constant.dart';
 import 'package:work_time/pages/components/custom_textField.dart';
 import 'package:work_time/provider/attendance_provider.dart';
 import 'package:work_time/provider/user_provider.dart';
+import 'package:work_time/utility/global_methods.dart';
 
 import '../../model/user.dart';
 import '../home/components/addingUser_bottomSheet.dart';
@@ -83,7 +84,8 @@ class UserDetail extends StatelessWidget {
                           if (attendanceProvider.attendanceModel.isEmpty) {
                           final attendance = Attendance(
                               userId: user.id!,
-                              todayDate: '${DateTime.now()}',
+                              weekEnd: '${GlobalMethods.getWeekDay(attendanceProvider.dateTimeAttendance)}',
+                              todayDate: '${attendanceProvider.dateTimeAttendance}',
                               workPlace: _workPlaceController.text,
                               weekId: await attendanceProvider.setWeekId(),
                               weekStatus: 0,
@@ -111,7 +113,8 @@ class UserDetail extends StatelessWidget {
                                             .attendanceModel.last.id,
                                         workPlace: _workPlaceController.text,
                                         userId: user.id!,
-                                        todayDate: '${DateTime.now()}',
+                                        todayDate: '${attendanceProvider.dateTimeAttendance}',
+                                        weekEnd: attendanceProvider.attendanceModel.last.weekEnd,
                                         weekId: attendanceProvider
                                             .attendanceModel.last.weekId,
                                         weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
@@ -140,7 +143,8 @@ class UserDetail extends StatelessWidget {
                         if (attendanceProvider.attendanceModel.isEmpty) {
                           final attendance = Attendance(
                               userId: user.id!,
-                              todayDate: '${DateTime.now()}',
+                              todayDate: '${attendanceProvider.dateTimeAttendance}',
+                              weekEnd: '${GlobalMethods.getWeekDay(attendanceProvider.dateTimeAttendance)}',
                               workPlace: 'لا يوجد',
                               overTimeStatus: 0,
                               weekId: await attendanceProvider.setWeekId(),
@@ -166,8 +170,9 @@ class UserDetail extends StatelessWidget {
                                         id: attendanceProvider
                                             .attendanceModel.last.id,
                                         workPlace: 'لا يوجد',
+                                        weekEnd: attendanceProvider.attendanceModel.last.weekEnd,
                                         userId: user.id!,
-                                        todayDate: '${DateTime.now()}',
+                                        todayDate: '${attendanceProvider.dateTimeAttendance}',
                                         weekId: attendanceProvider.attendanceModel.last.weekId,
                                         weekStatus: attendanceProvider.attendanceModel.last.weekStatus,
                                         status: 0,
@@ -272,6 +277,8 @@ class UserDetail extends StatelessWidget {
                           workPlace: attendanceProvider
                               .attendanceModel.last.workPlace,
                           userId: user.id!,
+                          weekEnd: attendanceProvider
+                              .attendanceModel.last.weekEnd,
                           todayDate: attendanceProvider
                               .attendanceModel.last.todayDate,
                           weekId: attendanceProvider.attendanceModel.last.weekId,
@@ -292,6 +299,8 @@ class UserDetail extends StatelessWidget {
                       final attendance = Attendance(
                           id: attendanceProvider
                               .attendanceModel.last.id,
+                          weekEnd: attendanceProvider
+                              .attendanceModel.last.weekEnd,
                           workPlace: attendanceProvider
                               .attendanceModel.last.workPlace,
                           userId: user.id!,

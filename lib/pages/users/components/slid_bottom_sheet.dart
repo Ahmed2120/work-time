@@ -40,7 +40,19 @@ Widget buildSheet(context, state) {
         itemBuilder: (BuildContext context, int index) => Padding(
               padding: const EdgeInsets.only(bottom: 15.0),
               child: ExpansionTile(
-                title: Text('الاسبوع ${attendanceProvider.weeksList[index]}'),
+                title: Row(children: [
+                  CircleAvatar(
+                    radius: 15,
+                    backgroundColor: const Color(0xFF533483),
+                    child: Text('${index+1}',style: TextStyle(color: Colors.white)),
+                  ),
+                  SizedBox(width: 10),
+                  Text('الاسبوع '),
+                  SizedBox(width: 10),
+                  Text('${DateTime.parse(attendanceProvider
+                      .weekAttendanceMap[weeksList[index]]![0].weekEnd).year}- ${DateTime.parse(attendanceProvider
+                      .weekAttendanceMap[weeksList[index]]![0].weekEnd).month}'),
+                ],),
                 childrenPadding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                 children: [
@@ -118,6 +130,7 @@ Widget buildSheet(context, state) {
                             final attendance = Attendance(
                                 id: model.id,
                                 userId: model.userId,
+                                weekEnd: model.weekEnd,
                                 todayDate: model.todayDate,
                                 weekId: model.weekId,
                                 weekStatus: 1,

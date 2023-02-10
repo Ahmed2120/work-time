@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:work_time/pages/users/components/functions.dart';
 
+import '../cash_helper.dart';
 import '../service/api_service.dart';
 import 'btm_bar_screen.dart';
 import 'components/constant.dart';
 import 'components/custom_textField.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 class StartPage extends StatefulWidget {
   const StartPage({Key? key}) : super(key: key);
@@ -44,7 +46,14 @@ class _StartPageState extends State<StartPage> {
                   ),
                   CustomTextField(controller: _emailController, label: 'الايميل',icon: const Icon(Icons.email,size: 30,color:Color(0xFF1d3557) ,),),
                   const SizedBox(height: 30),
-                  isLoading ? const CircularProgressIndicator() : buildButton(context)
+                  isLoading ? const CircularProgressIndicator() : buildButton(context),
+                  const SizedBox(height: 30),
+                  OutlinedButton.icon(onPressed: ()async{
+                    CashHelper.saveData(key: 'trial', value: true);
+                    await showFlushBar(context);
+                    trial=true;
+                    pushReplacement(screen: BottomBarScreen(), context: context);
+                  }, label:Text('نسخة تجريبية',style: TextStyle(fontSize: 17,color: Colors.blue),),icon: Icon(Icons.send_time_extension), )
                 ],
               ),
             ),
@@ -62,9 +71,9 @@ class _StartPageState extends State<StartPage> {
       final api = ApiService();
       try{
       final bool isExist = await api.getUser(_emailController.text.trim());
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setBool('isExist', isExist);
+      CashHelper.saveData(key: 'isExist', value: isExist);
       if(isExist) {
+        CashHelper.saveData(key: 'trial', value: false);
             pushReplacement(context: context, screen: const BottomBarScreen());
           }
       else{

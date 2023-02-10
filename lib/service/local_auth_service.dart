@@ -23,10 +23,9 @@ class LocalAuthApi {
   static Future<bool> authenticate() async {
     final isAvailable = await hasBiometrics();
     if (!isAvailable) return false;
-
     try {
       return await _auth.authenticate(
-        localizedReason: 'Scan Fingerprint to Authenticate',
+        localizedReason: 'تسجيل الدخول بالبصمة او كلمة السر',
         options: const AuthenticationOptions(
           biometricOnly: false,
           useErrorDialogs: true,

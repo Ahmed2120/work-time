@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/BackupDB/backup_page.dart';
 import 'package:work_time/pages/components/constant.dart';
 
+import '../../../BackupDB/notification/notification_api.dart';
 import '../../../provider/attendance_provider.dart';
 import '../../../provider/user_provider.dart';
 import '../../../utility/global_methods.dart';
@@ -12,27 +14,35 @@ AppBar customAppBar(BuildContext context) {
   final attendanceProvider = Provider.of<AttendanceProvider>(context);
   return !userProvider.clickSearch
         ? AppBar(
-    leading: IconButton(
-      onPressed: () => userProvider.changeClickSearch(),
-      icon: const Icon(
-        Icons.search,
-        color: Colors.white,
-      ),
-    ),
-          actions: [IconButton(onPressed: () async{
-            attendanceProvider.changeDate(await showDatePicker(context: context, initialDate: attendanceProvider.dateTimeAttendance, firstDate: DateTime.parse('1900-01-01'), lastDate: DateTime.now(),));
-          }, icon: const Icon(Icons.date_range_outlined)),
-            IconButton(onPressed: () {
-            push(screen: const BackupPage(), context: context);
-          }, icon: const Icon(Icons.settings)),
-
+          actions: [
+            // IconButton(
+            //   onPressed: () => NotificationApi.showNotification(title: 'WorkTime',
+            //       body: 'Make backup for save your data',
+            //       payload: 'BackUp'),
+            //   icon: const Icon(
+            //     Icons.notifications,
+            //     color: Colors.white,
+            //   ),
+            // ),
+            IconButton(
+              onPressed: () => userProvider.changeClickSearch(),
+              icon: const Icon(
+                FontAwesomeIcons.magnifyingGlass,
+                color: Colors.white,
+              ),
+            ),
           ],
-          title: Text(
-            '${GlobalMethods.getDayName(attendanceProvider.dateTimeAttendance)} ${GlobalMethods.getDateFormat(attendanceProvider.dateTimeAttendance)}',
-            style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w600,
-                color: Colors.white),
+          title: InkWell(
+            onTap: ()async {
+              attendanceProvider.changeDate(await showDatePicker(context: context, initialDate: attendanceProvider.dateTimeAttendance, firstDate: DateTime.parse('1900-01-01'), lastDate: DateTime.now(),));
+            },
+            child: Text(
+              '${GlobalMethods.getDayName(attendanceProvider.dateTimeAttendance)} ${GlobalMethods.getDateFormat(attendanceProvider.dateTimeAttendance)}',
+              style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white),
+            ),
           ),
     centerTitle: true,
         )

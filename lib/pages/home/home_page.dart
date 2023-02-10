@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utility/global_methods.dart';
+import '../users/components/main_drawer.dart';
 import 'components/custom_appbar.dart';
 import 'components/custon_add_button.dart';
 import 'components/dropDownMenuRow.dart';
@@ -35,6 +36,7 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
+      drawer: MainDrawer(),
     );
   }
 }

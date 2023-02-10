@@ -4,8 +4,10 @@ import 'package:work_time/pages/components/custom_textField.dart';
 import 'package:work_time/provider/note_provider.dart';
 import 'package:work_time/utility/global_methods.dart';
 
+import '../../cash_helper.dart';
 import '../EmptyScreen/epmty_screen.dart';
 import '../components/constant.dart';
+import '../users/components/functions.dart';
 import 'note_editor.dart';
 import 'search_note.dart';
 
@@ -49,7 +51,12 @@ class NotePage extends StatelessWidget {
          floatingActionButton: FloatingActionButton(
            backgroundColor: const Color(0xFF533483),
            onPressed: (){
-           push(screen:  NoteEditor(), context: context);
+             if((noteProvider.notes.length)>=5&&trial) {
+               showFlushBar(context);
+             }else{
+               push(screen:  NoteEditor(), context: context);
+             }
+
          },child: const Icon(Icons.note_alt_outlined,size: 28,),),
        );
       }

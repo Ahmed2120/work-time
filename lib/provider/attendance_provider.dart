@@ -5,6 +5,7 @@ import 'package:work_time/db/attendanceReposetory.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_time/utility/global_methods.dart';
 
+import '../cash_helper.dart';
 import '../model/attendance.dart';
 
 class AttendanceProvider with ChangeNotifier {
@@ -48,6 +49,7 @@ class AttendanceProvider with ChangeNotifier {
     }
     notifyListeners();
   }
+
   DateTime dateTimeAttendance=DateTime.now();
   changeDate(DateTime? _dateTime){
     if(_dateTime==null)return;
@@ -78,7 +80,6 @@ class AttendanceProvider with ChangeNotifier {
     _attendanceUser=await attendanceRepository.retrieveByUserId(userId);
     notifyListeners();
   }
-
 
   setWeekId() async{
 
@@ -141,7 +142,6 @@ _weekAttendanceMap={};
     return x;
   }
 
-
 double totalSalary(List<Attendance> list){
   double totalSalary=0;
   for(var model in list){
@@ -149,7 +149,6 @@ double totalSalary(List<Attendance> list){
   }
   return totalSalary;
 }
-
 
   getAttendanceList()async{
     final attendanceRepository = AttendanceRepository();
@@ -169,6 +168,13 @@ double totalSalary(List<Attendance> list){
         ..sort((e1, e2) => e1.value[0].weekEnd.compareTo(e2.value[0].weekEnd)));
       _weeksList = _weekAttendanceMap.keys.toList();
     }
+    notifyListeners();
+  }
+
+  bool trial=false;
+
+  checkTrial(){
+    trial=CashHelper.getData(key:'trial')??false;
     notifyListeners();
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/cash_helper.dart';
 import 'package:work_time/model/user.dart';
 import 'package:work_time/pages/components/constant.dart';
 import 'package:work_time/pages/users/components/functions.dart';
@@ -73,6 +74,10 @@ class AddingUserBottomSheet extends StatelessWidget {
 
   Widget buildButton(context) => ElevatedButton(
         onPressed: () {
+          if((Provider.of<UserProvider>(context,listen: false).users.length+Provider.of<UserProvider>(context,listen: false).usersTrash.length)>=5 && trial) {
+showFlushBar(context);
+            return;
+          }
           if (!_formKey.currentState!.validate()) return;
           if (onPressed == 'add'){
           final userModel = User(

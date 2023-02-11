@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:work_time/cash_helper.dart';
 import 'package:work_time/pages/btm_bar_screen.dart';
 import 'package:work_time/pages/start_page.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:work_time/provider/attendance_provider.dart';
 
 import '../login_page.dart';
 import 'components/constant.dart';
@@ -25,6 +28,7 @@ class _SplashPageState extends State<SplashPage> {
 
     showSplash(context);
     super.initState();
+
   }
 
   @override
@@ -42,15 +46,15 @@ class _SplashPageState extends State<SplashPage> {
 
 Future<void> showSplash(context) async {
   Future.delayed(const Duration(milliseconds: 2500), () async {
-    await isExistUser
-        ? pushReplacement(context: context, screen: const LoginPage())
-        : pushReplacement(context: context, screen: const StartPage());
+    if(await isExistUser || trial)
+        { pushReplacement(context: context, screen: const LoginPage());}
+    else{ pushReplacement(context: context, screen: const StartPage());}
   });
 }
 
 Future<bool>  get isExistUser async {
-  final prefs = await SharedPreferences.getInstance();
-  final bool? isExist = prefs.getBool('isExist');
+  final bool? isExist = CashHelper.getData(key: 'isExist');
+  print('======== trial $trial');
   if(isExist == null || !isExist) {
     return false;
   } else {

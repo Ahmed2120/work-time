@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:work_time/pages/btm_bar_screen.dart';
 import 'package:work_time/provider/user_provider.dart';
 
+import 'cash_helper.dart';
 import 'pages/splash_page.dart';
 import 'provider/attendance_provider.dart';
 import 'provider/note_provider.dart';
@@ -13,6 +14,8 @@ void main() async{
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await CashHelper.init();
+  trial=CashHelper.getData(key: 'trial')??false;
 
   runApp(const MyApp());
 }

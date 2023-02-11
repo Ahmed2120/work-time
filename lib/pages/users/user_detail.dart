@@ -7,6 +7,7 @@ import 'package:work_time/provider/attendance_provider.dart';
 import 'package:work_time/provider/user_provider.dart';
 import 'package:work_time/utility/global_methods.dart';
 
+import '../../cash_helper.dart';
 import '../../model/user.dart';
 import '../home/components/addingUser_bottomSheet.dart';
 import 'components/bottomSheet.dart';
@@ -80,6 +81,11 @@ class UserDetail extends StatelessWidget {
                       label: 'حاضر',
                       color: Colors.green,
                       onPressed: () async{
+
+                        if((attendanceProvider.attendanceUser.length)>=7&&trial) {
+                          showFlushBar(context);
+                          return;
+                        }
                         if(_formKey.currentState!.validate()) {
                           if (attendanceProvider.attendanceModel.isEmpty) {
                           final attendance = Attendance(
@@ -134,12 +140,17 @@ class UserDetail extends StatelessWidget {
                         }
                         }
                         }
+
                       },
                     ),
                     const SizedBox(width: 20),
                     buildElevatedButton(
                       label: 'غائب',
                       onPressed: () async{
+                        if((attendanceProvider.attendanceUser.length)>=7&&trial) {
+                          showFlushBar(context);
+                          return;
+                        }
                         if (attendanceProvider.attendanceModel.isEmpty) {
                           final attendance = Attendance(
                               userId: user.id!,

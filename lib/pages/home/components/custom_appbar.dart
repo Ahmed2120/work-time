@@ -15,15 +15,19 @@ AppBar customAppBar(BuildContext context) {
   return !userProvider.clickSearch
         ? AppBar(
           actions: [
-            // IconButton(
-            //   onPressed: () => NotificationApi.showNotification(title: 'WorkTime',
-            //       body: 'Make backup for save your data',
-            //       payload: 'BackUp'),
-            //   icon: const Icon(
-            //     Icons.notifications,
-            //     color: Colors.white,
-            //   ),
-            // ),
+            IconButton(
+              onPressed: () async{
+                await NotificationApi.init(initScheduled: true);
+                NotificationApi.showNotification(title: 'WorkTime',
+                  body: 'Make backup for save your data',
+                  payload: 'BackUp');
+                NotificationApi.showScheduleNotification();
+                },
+              icon: const Icon(
+                Icons.notifications,
+                color: Colors.white,
+              ),
+            ),
             IconButton(
               onPressed: () => userProvider.changeClickSearch(),
               icon: const Icon(

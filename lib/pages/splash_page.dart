@@ -58,6 +58,7 @@ Future<bool>  get isExistUser async {
   if(isExist == null || !isExist) {
     return false;
   } else {
+    ISEXIST = true;
     return true;
   }
 }

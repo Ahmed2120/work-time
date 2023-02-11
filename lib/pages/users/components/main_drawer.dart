@@ -73,7 +73,7 @@ class MainDrawer extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Divider(height: 10,color: Colors.black38,),
           ),
-          Padding(
+          if(ISEXIST) Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 5),
             child: ListTile(
               leading: Icon(FontAwesomeIcons.cartShopping,size: 25,color:Color(0xFFE94560)),

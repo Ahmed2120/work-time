@@ -1,84 +1,94 @@
-import 'dart:async';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-class NotificationApi{
+import 'package:rxdart/rxdart.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 
-  static final _notifications=FlutterLocalNotificationsPlugin();
+class NotificationApi {
+  static final _notification = FlutterLocalNotificationsPlugin();
+  static final onNotification = BehaviorSubject<String>();
 
-  static Future _notificationDetails()async{
+  static Future _notificationDetails() async {
+    final sound = "sound.wav";
     return NotificationDetails(
-      android: AndroidNotificationDetails(
-        'channelId',
-        'channelName',
-        channelDescription: 'channel description',
-        importance: Importance.max
-      ),
-      iOS: DarwinNotificationDetails()
-    );
+        android: AndroidNotificationDetails('channel id', 'channel name',
+          // sound: RawResourceAndroidNotificationSound(sound.split('.').first),
+          enableVibration: false,
+          importance: Importance.max,),
+        iOS: IOSNotificationDetails(sound:  sound));
   }
 
+  static Future init({bool initScheduled = false}) async {
+    final android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    final ios = IOSInitializationSettings();
+    final settings = InitializationSettings(android: android, iOS: ios);
+
+    /// when app closed
+    final details = await _notification.getNotificationAppLaunchDetails();
+    if(details != null && details.didNotificationLaunchApp){
+      onNotification.add(details.payload!);
+    }
+    await _notification.initialize(
+      settings,
+      onSelectNotification: (payload) async {
+        onNotification.add(payload!);
+      },
+    );
+    if (initScheduled) {
+      tz.initializeTimeZones();
+      final locationName = await FlutterNativeTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(locationName));
+    }
+  }
+
+
   static Future showNotification({
-  int id=0,
-  String? title,
+    int id = 0,
+    String? title,
     String? body,
-    String? payload
-})async =>_notifications.show(id, title, body, await _notificationDetails(),payload: payload);
+    String? payload,
+  }) async {
+    return _notification.show(id, title, body, await _notificationDetails(),
+        payload: payload);
+  }
 
-//    final FlutterLocalNotificationsPlugin notificationsPlugin=FlutterLocalNotificationsPlugin();
-// Future initNotification()async{
-//   AndroidInitializationSettings initializationSettingsAndroid=const AndroidInitializationSettings('ic_launcher');
-//   var initializationSettingsIos=DarwinInitializationSettings(requestAlertPermission: true,requestBadgePermission: true
-//   ,requestSoundPermission: true,
-//     onDidReceiveLocalNotification: (int id,String? body,String? payload,String? title)async{}
-//   );
-//   var initializationSettings=InitializationSettings(android: initializationSettingsAndroid,iOS: initializationSettingsIos);
-//   await notificationsPlugin.initialize(initializationSettings,onDidReceiveNotificationResponse: (NotificationResponse notificationResponse)async{
-//
-//   });
-// }
-//
-//    notificationDetails(){
-//   return const NotificationDetails(
-//     android: AndroidNotificationDetails('channelId', 'channelName',importance: Importance.max),
-//     iOS: DarwinNotificationDetails()
-//   );
-//    }
-//
-// Future showNotification({int id=0,String? title,String? payload,String? body})async{
-//   return notificationsPlugin.show(id, title, body,await notificationDetails());
-// }
+  static Future showScheduleNotification(
+      {int id = 0,
+        String? title,
+        String? body,
+        String? payload,}) async {
+    return _notification.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(_scheduleWeekly(Time(8), days: [DateTime.friday]), tz.local),
+      await _notificationDetails(),
+      payload: payload,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+      UILocalNotificationDateInterpretation.absoluteTime,
+    matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime);
+  }
 
+  static void cancel(int id) => _notification.cancel(id);
 
-//  static final StreamController<String?> selectNotificationStream =
-//   StreamController<String?>.broadcast();
-//
-//   static Future<NotificationDetails> _notificationDetails()async{
-//     return NotificationDetails(
-//       android: AndroidNotificationDetails(
-//         'channel id',
-//         'channel name',
-//         importance: Importance.max
-//       ),
-//       iOS: DarwinNotificationDetails()
-//     );
-//   }
-//
-//   static Future showNotification({int id = 0,
-//     String? title,
-//     String? body,
-//     String? payLoad}
-//       )async{
-//     print('========= notification');
-//     _notification.show(id, title, body,payload:payLoad,  await _notificationDetails() );
-//   }
-//
-// static Future init({bool initSchedule=false})async{
-//   final android=AndroidInitializationSettings('app_icon');
-//   final ios=DarwinInitializationSettings();
-//   final settings=InitializationSettings(android:android,iOS: ios);
-//   await _notification.initialize(settings,onDidReceiveNotificationResponse: (notificationResponse){
-//     selectNotificationStream.add(notificationResponse.payload);
-//     print('notification(${notificationResponse.id}) action tapped: ');
-//   });
-// }
+  static tz.TZDateTime _scheduleDaily(Time time) {
+    final now = tz.TZDateTime.now(tz.local);
+    final scheduleDate = tz.TZDateTime(tz.local, now.year, now.month, now.day,
+        time.hour, time.minute, time.second);
+    return scheduleDate.isBefore(now)
+        ? scheduleDate.add(Duration(minutes: 1))
+        : scheduleDate;
+  }
+
+  static tz.TZDateTime _scheduleWeekly(Time time, {required List<int> days}){
+    tz.TZDateTime scheduleDate = _scheduleDaily(time);
+
+    while (!days.contains(scheduleDate.weekday)){
+      print('days: ${scheduleDate.weekday}');
+      scheduleDate = scheduleDate.add(Duration(days: 1));
+    }
+    return scheduleDate;
+  }
 }

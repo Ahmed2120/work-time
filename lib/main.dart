@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
             primary: const Color(0xFF16213E)
           )
         ),
-        home: const SplashPage(),
+        home: const BottomBarScreen(),
       ),
     );
   }

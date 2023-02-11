@@ -12,3 +12,5 @@ void pop(BuildContext context){
 }
 
 TextStyle bootElevatedStyle= TextStyle(fontSize: 22,color: Color(0xFF16213E),fontWeight: FontWeight.bold);
+
+bool ISEXIST = false;

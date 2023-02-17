@@ -9,17 +9,12 @@ import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:work_time/pages/components/constant.dart';
-import 'package:work_time/pages/users/components/functions.dart';
+import 'package:work_time/pages/components/functions.dart';
 import 'package:work_time/provider/note_provider.dart';
 import 'package:work_time/provider/user_provider.dart';
 
 class BackupHelper{
-  getDbPath()async{
-    String databasePath=await getDatabasesPath();
-    print('===============databasePath= $databasePath');
-    Directory? externalStoragePath=await getExternalStorageDirectory();
-    print('===============externalStoragePath= $externalStoragePath');
-  }
+
   backupDB(BuildContext context)async{
     var status=await Permission.manageExternalStorage.status;
     if(!status.isGranted){
@@ -40,7 +35,6 @@ class BackupHelper{
     }
     catch(e){
       showToast(context, 'حدث خطأ اعد فتح التطبيق وحاول مرة اخري',color: Colors.red);
-      print('======================================error ${e.toString()}');
     }
   }
 
@@ -62,21 +56,13 @@ class BackupHelper{
           await saveBDFile.copy('/data/data/com.ahmad.work_time/databases/dgi.db');
           Provider.of<UserProvider>(context,listen: false).getUsers();
          Provider.of<NoteProvider>(context,listen: false).getNotes();
+         Provider.of<UserProvider>(context,listen: false).getTrash();
           showToast(context, 'تم استرجاع النسخة الاحتياطية');
           pop(context);
         }
       }
     catch(e){
       showToast(context, 'storage/emulated/0/Download/WorkTime/dgi.db خطأ تأكد من وجود ملف البيانات في المسار المحدد \n ',color: Colors.red);
-      print('======================================error ${e.toString()}');
-    }
-  }
-
-  deleteDB()async{
-    try{
-      deleteDatabase('/data/data/com.ahmad.work_time/databases/dgi.db');
-    }catch(e){
-      print('======================================error ${e.toString()}');
     }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../provider/note_provider.dart';
+import '../../../provider/note_provider.dart';
 
 class SwitchColor extends StatelessWidget {
 

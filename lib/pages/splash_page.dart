@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:work_time/cash_helper.dart';
-import 'package:work_time/pages/btm_bar_screen.dart';
 import 'package:work_time/pages/start_page.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:work_time/provider/attendance_provider.dart';
 
 import '../login_page.dart';
 import 'components/constant.dart';
@@ -21,14 +16,8 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-
     showSplash(context);
     super.initState();
-
   }
 
   @override
@@ -58,7 +47,7 @@ Future<bool>  get isExistUser async {
   if(isExist == null || !isExist) {
     return false;
   } else {
-    ISEXIST = true;
+    iSEXIST = true;
     return true;
   }
 }

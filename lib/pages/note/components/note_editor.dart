@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/pages/components/constant.dart';
-import 'package:work_time/pages/users/components/functions.dart';
+import 'package:work_time/pages/components/functions.dart';
 import 'package:work_time/provider/note_provider.dart';
 
-import '../../model/note.dart';
-import 'color.dart';
+import '../../../model/note.dart';
+import 'title_color.dart';
 
 class NoteEditor extends StatelessWidget {
   NoteEditor({this.note, Key? key}) : super(key: key);
@@ -23,7 +23,6 @@ class NoteEditor extends StatelessWidget {
           appBar: AppBar(
             elevation: 0,
             title:  Text(note==null?'إضافة ملاحظات جديدة':'تعديل ملاحظات'),
-            centerTitle: true,
             actions: [
               IconButton(
                   onPressed: () {
@@ -87,13 +86,13 @@ class NoteEditor extends StatelessWidget {
                   icon: const Icon(Icons.save))
             ],
           ),
-          body: buildPadding(),
+          body: buildPadding(context),
         );
       },
     );
   }
 
-  Padding buildPadding() {
+  Padding buildPadding(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
       child: ListView(
@@ -101,7 +100,7 @@ class NoteEditor extends StatelessWidget {
           SwitchColor(),
           TextField(
             controller: _titleController,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style:Theme.of(context).textTheme.bodyLarge,
             decoration:
                 const InputDecoration(hintText: 'العنوان', labelText: 'العنوان'),
           ),

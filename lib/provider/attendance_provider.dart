@@ -61,7 +61,6 @@ class AttendanceProvider with ChangeNotifier {
     final attendanceRepository = AttendanceRepository();
     final List<Attendance> attend = await attendanceRepository.retrieveByUserIdDateTime(userId,dateTimeAttendance);
     return attend.last;
-
   }
 
   Future<void> updateAttendance({required Attendance attendance}) async {
@@ -115,7 +114,6 @@ class AttendanceProvider with ChangeNotifier {
   }
 
   void getWeeks(int userId) async{
-
     _weeksList=[];
     final attendanceRepository = AttendanceRepository();
     _weeksList = await attendanceRepository.retrieveWeeks(userId);
@@ -171,10 +169,4 @@ double totalSalary(List<Attendance> list){
     notifyListeners();
   }
 
-  bool trial=false;
-
-  checkTrial(){
-    trial=CashHelper.getData(key:'trial')??false;
-    notifyListeners();
-  }
 }

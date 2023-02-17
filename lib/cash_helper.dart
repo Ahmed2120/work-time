@@ -28,3 +28,4 @@ class CashHelper {
   }
 }
 var trial;
+bool iSEXIST = false;

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../utility/global_methods.dart';
-import '../users/components/main_drawer.dart';
+import 'components/drawer/main_drawer.dart';
 import 'components/custom_appbar.dart';
-import 'components/custon_add_button.dart';
+import 'components/custom_add_button.dart';
 import 'components/dropDownMenuRow.dart';
 import 'components/users_status_listview.dart';
 
@@ -13,25 +12,26 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final landScape=MediaQuery.of(context).orientation==Orientation.landscape;
     return Scaffold(
       key: keyScaffold,
       appBar: customAppBar(context),
       body: Column(
         children: [
           Expanded(
-            flex: 1,
+            flex: landScape?2:1,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     DropDownMenuRow(),
+                     Spacer(),
                      CustomAddButton(keyScaffold),
                   ],
                 ),
               )),
           const Expanded(
-            flex: 7,
+            flex: 9,
             child: UsersStatusListview(),
           ),
         ],

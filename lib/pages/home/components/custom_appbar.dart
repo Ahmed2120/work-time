@@ -16,23 +16,10 @@ AppBar customAppBar(BuildContext context) {
         ? AppBar(
           actions: [
             IconButton(
-              onPressed: () async{
-                await NotificationApi.init(initScheduled: true);
-                NotificationApi.showNotification(title: 'WorkTime',
-                  body: 'Make backup for save your data',
-                  payload: 'BackUp');
-                NotificationApi.showScheduleNotification();
-                },
-              icon: const Icon(
-                Icons.notifications,
-                color: Colors.white,
-              ),
-            ),
-            IconButton(
               onPressed: () => userProvider.changeClickSearch(),
               icon: const Icon(
                 FontAwesomeIcons.magnifyingGlass,
-                color: Colors.white,
+                size: 20,
               ),
             ),
           ],
@@ -42,10 +29,7 @@ AppBar customAppBar(BuildContext context) {
             },
             child: Text(
               '${GlobalMethods.getDayName(attendanceProvider.dateTimeAttendance)} ${GlobalMethods.getDateFormat(attendanceProvider.dateTimeAttendance)}',
-              style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white),
+              style:Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white),
             ),
           ),
     centerTitle: true,
@@ -54,7 +38,7 @@ AppBar customAppBar(BuildContext context) {
           title: TextField(
               onChanged: (txt) {
                 if(txt.isEmpty){
-                  userProvider.getUsers();
+                  userProvider.filteringUser(userProvider.dropDownValue);
                   return;
                 }
                 userProvider.searchUsers(txt);
@@ -62,7 +46,7 @@ AppBar customAppBar(BuildContext context) {
               decoration: InputDecoration(
                   focusColor: Colors.red,
                   hintText: "بحث",
-                  hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
+                  hintStyle: TextStyle(color: Colors.grey[400]),
                   prefixIcon: const Icon(
                     Icons.search,
                     color: Colors.white,
@@ -70,7 +54,7 @@ AppBar customAppBar(BuildContext context) {
                   suffixIcon: IconButton(
                     onPressed: () {
                       userProvider.changeClickSearch();
-                      userProvider.getUsers();
+                      userProvider.filteringUser(userProvider.dropDownValue);
                     },
                     icon: const Icon(
                       Icons.arrow_forward_ios_sharp,

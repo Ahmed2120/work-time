@@ -14,7 +14,6 @@ class ApiService {
     var androidDeviceInfo = await deviceInfo.androidInfo;
     uniqueDeviceId =
         '${androidDeviceInfo.brand}:${androidDeviceInfo.id}'; // unique ID on Android
-    print('uniqueDeviceId:----- $uniqueDeviceId');
 
     return uniqueDeviceId;
   }
@@ -63,19 +62,6 @@ class ApiService {
     final result = await http.patch(Uri.parse(url),
         body: json.encode({
           'deviceToken': deviceToken,
-        }));
-    final users = json.decode(result.body);
-
-    print('000000:   $users');
-  }
-
-  void addUser() async {
-    final url = 'https://worktime-33fa5-default-rtdb.firebaseio.com/users.json';
-
-    final result = await http.post(Uri.parse(url),
-        body: json.encode({
-          'email': 'osama@gmail.com',
-          'deviceToken': '',
         }));
     final users = json.decode(result.body);
 

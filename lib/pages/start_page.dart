@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:work_time/pages/users/components/functions.dart';
+import 'package:work_time/pages/components/functions.dart';
 
 import '../cash_helper.dart';
-import '../service/api_service.dart';
 import 'btm_bar_screen.dart';
 import 'components/constant.dart';
-import 'components/custom_textField.dart';
+import 'purchase/components/purchase_data.dart';
 
 
 class StartPage extends StatefulWidget {
@@ -16,7 +15,6 @@ class StartPage extends StatefulWidget {
 }
 
 class _StartPageState extends State<StartPage> {
-  final _emailController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey();
 
@@ -29,33 +27,18 @@ class _StartPageState extends State<StartPage> {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height*.5,
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: AssetImage('assets/images/Logo.png',)
-                        )
-                    ),
-                  ),
-                  CustomTextField(controller: _emailController, label: 'الايميل',icon: const Icon(Icons.email,size: 30,color:Color(0xFF1d3557) ,),),
-                  const SizedBox(height: 30),
-                  isLoading ? const CircularProgressIndicator() : buildButton(context),
-                  const SizedBox(height: 30),
-                  OutlinedButton.icon(onPressed: ()async{
-                    CashHelper.saveData(key: 'trial', value: true);
-                    await showFlushBar(context);
-                    trial=true;
-                    pushReplacement(screen: BottomBarScreen(), context: context);
-                  }, label:Text('نسخة تجريبية',style: TextStyle(fontSize: 17,color: Colors.blue),),icon: Icon(Icons.send_time_extension), )
-                ],
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                PurchaseData(),
+                const SizedBox(height: 30),
+                OutlinedButton.icon(onPressed: ()async{
+                  CashHelper.saveData(key: 'trial', value: true);
+                  await showFlushBar(context);
+                  trial=true;
+                  pushReplacement(screen: BottomBarScreen(), context: context);
+                }, label:Text('نسخة تجريبية',style: TextStyle(fontSize: 17,color: Colors.blue),),icon: Icon(Icons.send_time_extension), )
+              ],
             ),
 
           ),
@@ -64,57 +47,4 @@ class _StartPageState extends State<StartPage> {
     );
   }
 
-  Widget buildButton(context) => ElevatedButton(
-    onPressed: () async{
-      if (!_formKey.currentState!.validate()) return;
-      setState(()=> isLoading = true);
-      final api = ApiService();
-      try{
-      final bool isExist = await api.getUser(_emailController.text.trim());
-      CashHelper.saveData(key: 'isExist', value: isExist);
-      if(isExist) {
-        CashHelper.saveData(key: 'trial', value: false);
-            pushReplacement(context: context, screen: const BottomBarScreen());
-          }
-      else{
-        showMessageDialog(context, 'لا تستطيع الدخول بهذا الايميل');
-      }
-      }catch(e){
-        final error = e.toString().replaceAll(RegExp("[Exception:]"), "");
-        showMessageDialog(context, error);
-        setState(()=> isLoading = false);
-      }
-          setState(()=> isLoading = false);
-    },
-    style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF1d3557),
-        minimumSize: const Size(double.infinity, 10),
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10))),
-    child: const Text('ابدا',
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.bold
-        )),
-  );
-
-  void showMessageDialog(BuildContext context,String message) {
-    showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('حدث خطأ'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              child: const Text('تم'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        ));
-  }
 }

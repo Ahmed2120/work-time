@@ -1,18 +1,11 @@
-
-
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:work_time/cash_helper.dart';
 import 'package:work_time/provider/user_provider.dart';
 
-import '../../users/components/functions.dart';
-import 'addingUser_bottomSheet.dart';
-import 'package:path/path.dart';
+import '../../../Theme/theme.dart';
+import '../../components/functions.dart';
+import 'bottom_sheet/addingUser_bottomSheet.dart';
 
 class CustomAddButton extends StatelessWidget {
   const CustomAddButton(this.keyScaffold,{Key? key}) : super(key: key);
@@ -20,28 +13,29 @@ class CustomAddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final landScape=MediaQuery.of(context).orientation==Orientation.landscape;
+    final height=MediaQuery.of(context).size.height;
+    final width=MediaQuery.of(context).size.width;
     return Container(
         constraints: BoxConstraints(
-            maxHeight: 50,
-            maxWidth: 100
+            maxHeight: landScape?height*.11:height*.06,
+            maxWidth:  landScape?width*.12:width*.24
         ),
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 29, 53, 87)
+          backgroundColor: defaultColor
         ),
         onPressed: () async{
           final provider=Provider.of<UserProvider>(context,listen: false);
           if((provider.users.length+provider.usersTrash.length)>=5&&trial) {
             showFlushBar(context);
+            return;
           }
-          else{
             keyScaffold.currentState!
-              .showBottomSheet((context) => AddingUserBottomSheet('add'));
-
-          }
+              .showBottomSheet((context) => AddingUserBottomSheet());
         },
-        icon: const Text('اضافة',),
-        label: const Icon(Icons.add,color: Colors.white,),
+        icon: FittedBox(child: const Text('اضافة',)),
+        label: FittedBox(child: const Icon(Icons.add)),
       ),
     );
   }

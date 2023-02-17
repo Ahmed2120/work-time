@@ -6,7 +6,6 @@ class CustomStatusText extends StatelessWidget {
   });
 
   final String title;
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -22,7 +21,7 @@ class CustomStatusText extends StatelessWidget {
         ),
         child: Center(
           child: Text(title,
-            style: const TextStyle(color:  Colors.white, fontSize: 14, fontWeight: FontWeight.w500),),
+            style: Theme.of(context).textTheme.bodySmall ,),
         ),
       ),
     );

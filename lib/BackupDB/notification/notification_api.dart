@@ -1,9 +1,12 @@
-
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:work_time/pages/components/constant.dart';
+
+import '../backup_page.dart';
 
 class NotificationApi {
   static final _notification = FlutterLocalNotificationsPlugin();
@@ -42,26 +45,14 @@ class NotificationApi {
     }
   }
 
-
-  static Future showNotification({
-    int id = 0,
-    String? title,
-    String? body,
-    String? payload,
-  }) async {
-    return _notification.show(id, title, body, await _notificationDetails(),
-        payload: payload);
-  }
-
   static Future showScheduleNotification(
       {int id = 0,
-        String? title,
-        String? body,
-        String? payload,}) async {
+        String?payload
+        }) async {
     return _notification.zonedSchedule(
       id,
-      title,
-      body,
+      'نسخ إحتياطي',
+        'قم بعمل نسخ احتياطي لحفظ البيانات الجديدة',
       tz.TZDateTime.from(_scheduleWeekly(Time(8), days: [DateTime.friday]), tz.local),
       await _notificationDetails(),
       payload: payload,

@@ -2,9 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:work_time/pages/btm_bar_screen.dart';
 import 'package:work_time/provider/user_provider.dart';
 
+import 'BackupDB/notification/notification_api.dart';
+import 'Theme/theme.dart';
 import 'cash_helper.dart';
 import 'pages/splash_page.dart';
 import 'provider/attendance_provider.dart';
@@ -16,6 +17,8 @@ void main() async{
   await Firebase.initializeApp();
   await CashHelper.init();
   trial=CashHelper.getData(key: 'trial')??false;
+ await NotificationApi.init(initScheduled: true);
+  NotificationApi.showScheduleNotification();
 
   runApp(const MyApp());
 }
@@ -43,23 +46,8 @@ class MyApp extends StatelessWidget {
           Locale('ar', 'AE') 
         ],
         title: 'work time',
-        theme: ThemeData(
-          elevatedButtonTheme:ElevatedButtonThemeData(
-            style:  ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFF9BBB0),
-                minimumSize: const Size(double.infinity, 10),
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)))
-          ),
-          fontFamily: 'Cairo',
-          primarySwatch: Colors.blue,
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-            primary: const Color(0xFF16213E)
-          )
-        ),
-        home: const BottomBarScreen(),
+        theme: lightThemeData,
+        home: const SplashPage(),
       ),
     );
   }

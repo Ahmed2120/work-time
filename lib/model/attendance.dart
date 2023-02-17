@@ -1,3 +1,5 @@
+import 'package:work_time/provider/attendance_provider.dart';
+
 class Attendance {
    final int? id;
   final int userId;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class SheetHeader extends StatelessWidget {
-  const SheetHeader({required this.title, Key? key}) : super(key: key);
+class HeaderSheet extends StatelessWidget {
+  const HeaderSheet({required this.title, Key? key}) : super(key: key);
   final String title;
 
   @override
@@ -14,17 +14,14 @@ class SheetHeader extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.start,
-            style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-                color: Colors.white,)
+            style: Theme.of(context).textTheme.bodyLarge
           ),
           const Spacer(),
           InkWell(
               onTap: () {
                 Navigator.pop(context);
               },
-              child: const Icon(Icons.close,size: 25,color: Colors.white,))
+              child: const Icon(Icons.close))
         ],
       ),
     );

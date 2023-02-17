@@ -22,6 +22,7 @@ class TrashPage extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 20.0,horizontal: 15),
         child: userTrash.isNotEmpty?ListView.builder(
+            physics: BouncingScrollPhysics(),
           itemCount: userTrash.length
         ,itemBuilder: (ctx,index)=>CustomCardTrash(userTrash[index])):EmptyScreen(title: 'لا يوجد عملاء خارج العمل',),
       );}),

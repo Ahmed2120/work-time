@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:work_time/db/attendanceReposetory.dart';
 
 import '../db/noteRepository.dart';
 import '../model/note.dart';
@@ -28,6 +26,7 @@ class NoteProvider with ChangeNotifier {
     _notes=_notes.reversed.toList();
     notifyListeners();
   }
+
   List<Note> searchNote(txt){
   List<Note> notesListSearch = [];
   if (_notes.isNotEmpty) {

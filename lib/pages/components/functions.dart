@@ -5,7 +5,7 @@ import 'package:iconly/iconly.dart';
 import 'package:toast/toast.dart';
 import 'package:work_time/pages/components/constant.dart';
 
-import '../../home/purchase_app.dart';
+import '../purchase/purchase_app.dart';
 
 AlertDialog alert(
     {required BuildContext context,required String txt,required Color color,required VoidCallback onPressed}) {
@@ -42,10 +42,6 @@ AlertDialog alert(
   );
 }
 
-Widget buildToast(){
-  return Builder(builder: (context)=>showToast(context, ''));
-}
-
 showToast(BuildContext context,String txt, {Color color = Colors.green}) {
   final toast = ToastContext();
   toast.init(context);
@@ -57,11 +53,11 @@ showToast(BuildContext context,String txt, {Color color = Colors.green}) {
 
 Future<void> showFlushBar(BuildContext context)async {
   await Flushbar(
-    backgroundColor: Color(0xF9D5CFCF).withOpacity(.2),
+    backgroundColor: Color(0xFFF9BBB0),
     titleColor:Color.fromARGB(255, 29, 53, 87),
     titleSize: 20,
     messageColor: Color(0xFF533483),
-    icon: Icon(Icons.info),
+    icon: Icon(Icons.info,color: Colors.black,),
     forwardAnimationCurve: Curves.linearToEaseOut,
     reverseAnimationCurve: Curves.linearToEaseOut,
     mainButton: TextButton(onPressed: (){

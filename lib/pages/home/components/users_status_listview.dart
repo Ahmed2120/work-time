@@ -21,6 +21,7 @@ class UsersStatusListview extends StatelessWidget {
       builder: (ctx, userProvider, _) {
         List<User> users = userProvider.users;
         return users.isNotEmpty?ListView.builder(
+          physics: BouncingScrollPhysics(),
           itemCount: users.length,
           itemBuilder: (context, index) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 2.0,horizontal: 10),
@@ -33,7 +34,7 @@ class UsersStatusListview extends StatelessWidget {
                   pro.getAttendanceUser(users[index].id!);
                   push(screen: UserDetail(user: users[index],),context: context);
                 },
-                title: Text(users[index].name,style: const TextStyle(fontSize: 16,color: Color(0xFF17263D)),),
+                title: Text(users[index].name),
                 trailing: Consumer<AttendanceProvider>(
                   builder: (ctx, attendProvider, _) => FutureBuilder(
                       future: attendProvider.getAttendByUserAndDate(

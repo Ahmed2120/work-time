@@ -47,7 +47,7 @@ class CustomTextField extends StatelessWidget {
             filled: true,
             fillColor: const Color(0xF9D5CFCF).withOpacity(.3),
             labelText: label,
-            hintStyle:const TextStyle(fontSize: 18, color: Color(0xFF0F3460)) ,
+            hintStyle:const TextStyle(fontSize: 18, color: Color(0xFF0F3460)),
             labelStyle:const TextStyle(fontSize: 18, color: Color(0xFF0F3460)),
             focusedBorder: OutlineInputBorder(
                 borderSide: const BorderSide(

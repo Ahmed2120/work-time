@@ -5,7 +5,7 @@ import 'package:work_time/provider/note_provider.dart';
 import 'package:work_time/utility/global_methods.dart';
 
 import '../../cash_helper.dart';
-import '../EmptyScreen/epmty_screen.dart';
+import '../EmptyScreen/empty_screen.dart';
 import '../components/constant.dart';
 import '../components/functions.dart';
 import 'components/item_note.dart';

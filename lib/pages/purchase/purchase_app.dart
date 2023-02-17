@@ -48,6 +48,8 @@ final isOrientation=orientation==Orientation.landscape;
             SizedBox(height: 10)
           ],
         ):ListView(
+          physics: BouncingScrollPhysics(),
+          shrinkWrap: true,
           children: [
             PurchaseData(),
             SizedBox(height: 50),

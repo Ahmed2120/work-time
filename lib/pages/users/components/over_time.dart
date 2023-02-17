@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../model/attendance.dart';
+import '../../../model/user.dart';
 import '../../../provider/attendance_provider.dart';
 
 class OverTime extends StatelessWidget {
-  const OverTime({Key? key}) : super(key: key);
-
+  const OverTime({required this.user,Key? key}) : super(key: key);
+final User user;
   @override
   Widget build(BuildContext context) {
     final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: true);
@@ -22,7 +23,7 @@ class OverTime extends StatelessWidget {
           weekId: model.weekId,
           weekStatus: model.weekStatus,
           status: model.status,
-          salary: val?'${double.parse(model.salary)*1.5}':model.salary,
+          salary: val?'${double.parse(user.salary)*1.5}':user.salary,
           overTimeStatus: val?1:0,
           salaryReceived: model.salaryReceived);
       attendanceProvider.updateAttendance(

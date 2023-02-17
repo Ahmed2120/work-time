@@ -88,7 +88,7 @@ class UserDetail extends StatelessWidget {
                       });
                     }),
                 if (model.isNotEmpty && model.last.status==1)
-                 const OverTime()
+                  OverTime(user: user)
               ],
             ),
           ),

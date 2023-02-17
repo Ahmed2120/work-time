@@ -13,25 +13,30 @@ class BackupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-       backgroundColor: const Color(0xFF000817),
-        leading: IconButton(onPressed: () {
-          pop(context);
-        }, icon: Icon(Icons.arrow_back_ios,color: Colors.white),),
+        backgroundColor: const Color(0xFF000817),
+        leading: IconButton(
+          onPressed: () {
+            pop(context);
+          },
+          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+        ),
       ),
       backgroundColor: const Color(0xFF000817),
-       body:Center(
-         child: SingleChildScrollView(
-           child: Column(
+      body: Center(
+        child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(
             children: [
               const Steps(),
               const SizedBox(height: 30),
               const Backup(),
               const SizedBox(height: 20),
-             const Restore() ,
+              const Restore(),
+              const SizedBox(height: 30)
             ],
+          ),
+        ),
       ),
-         ),
-       ),
     );
   }
-  }
+}

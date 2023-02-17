@@ -1,12 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
-import 'package:work_time/pages/components/constant.dart';
 
-import '../backup_page.dart';
 
 class NotificationApi {
   static final _notification = FlutterLocalNotificationsPlugin();
@@ -16,7 +13,6 @@ class NotificationApi {
     final sound = "sound.wav";
     return NotificationDetails(
         android: AndroidNotificationDetails('channel id', 'channel name',
-          // sound: RawResourceAndroidNotificationSound(sound.split('.').first),
           enableVibration: false,
           importance: Importance.max,),
         iOS: IOSNotificationDetails(sound:  sound));

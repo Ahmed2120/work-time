@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/db/attendanceReposetory.dart';
-import 'package:work_time/pages/EmptyScreen/epmty_screen.dart';
+import 'package:work_time/pages/EmptyScreen/empty_screen.dart';
 import 'package:work_time/pages/components/constant.dart';
 import 'package:work_time/provider/attendance_provider.dart';
 import 'package:work_time/utility/global_methods.dart';

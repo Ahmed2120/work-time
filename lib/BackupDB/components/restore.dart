@@ -7,6 +7,8 @@ class Restore extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final orientation=MediaQuery.of(context).orientation;
+    final isOrientation=orientation==Orientation.landscape;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Container(
@@ -25,7 +27,12 @@ class Restore extends StatelessWidget {
           onTap:(){
             BackupHelper().restoreDB(context);
           },
-          title: FittedBox(child: Text('إستعادة النسخة الاحتياطية',style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Color(0xFF315fbb)),)),
+          title: Text('إستعادة النسخة الاحتياطية',style:isOrientation?Theme.of(context).textTheme.bodyLarge!.copyWith(color: Color(0xFF315fbb)):TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF315fbb),
+              fontFamily: 'Cairo'
+          ),),
         ),
       ),
     );

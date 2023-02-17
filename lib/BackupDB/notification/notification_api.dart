@@ -13,7 +13,8 @@ class NotificationApi {
     final sound = "sound.wav";
     return NotificationDetails(
         android: AndroidNotificationDetails('channel id', 'channel name',
-          enableVibration: false,
+          sound: RawResourceAndroidNotificationSound(sound.split('.').first),
+          enableVibration: true,
           importance: Importance.max,),
         iOS: IOSNotificationDetails(sound:  sound));
   }

@@ -43,7 +43,6 @@ Future<void> showSplash(context) async {
 
 Future<bool>  get isExistUser async {
   final bool? isExist = CashHelper.getData(key: 'isExist');
-  print('======== trial $trial');
   if(isExist == null || !isExist) {
     return false;
   } else {

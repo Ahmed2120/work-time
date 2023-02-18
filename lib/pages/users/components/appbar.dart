@@ -37,7 +37,7 @@ AppBar appBar(UserProvider userProvider, BuildContext context,User user,GlobalKe
               showToast(context, 'تم حذف العامل ونقله الي خارج العمل',color: const Color(0xFFE94560));
             }
             else{
-              keyScaffold.currentState!.showBottomSheet((context) => ChangeNotifierProvider.value(value: user,child: AddingUserBottomSheet(user: user)));
+              keyScaffold.currentState!.showBottomSheet((context) => ChangeNotifierProvider.value(value: user,child: AddingUserBottomSheet(user: user,)));
             }
           },
           itemBuilder: (BuildContext context) {

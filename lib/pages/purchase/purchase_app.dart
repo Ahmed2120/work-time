@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/pages/components/constant.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../Theme/theme.dart';
-import '../../cash_helper.dart';
-import '../../service/api_service.dart';
-import '../btm_bar_screen.dart';
-import '../components/custom_textField.dart';
-import '../components/functions.dart';
 import 'components/ahmed_ashraf.dart';
 import 'components/purchase_data.dart';
 import 'components/osama_ibrahim.dart';

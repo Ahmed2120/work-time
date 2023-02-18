@@ -100,7 +100,7 @@ class NoteEditor extends StatelessWidget {
           SwitchColor(),
           TextField(
             controller: _titleController,
-            style:Theme.of(context).textTheme.bodyLarge,
+            style:Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.black),
             decoration:
                 const InputDecoration(hintText: 'العنوان', labelText: 'العنوان'),
           ),

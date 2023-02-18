@@ -119,4 +119,11 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
     return _users;
   }
+
+  User? _user;
+  User get user=>_user!;
+  void setUser(User model){
+    _user=model;
+    notifyListeners();
+  }
 }

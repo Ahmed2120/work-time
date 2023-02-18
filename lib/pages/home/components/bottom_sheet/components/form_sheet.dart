@@ -80,6 +80,7 @@ class FormSheet extends StatelessWidget {
            isDeleted: user!.isDeleted,
          );
          Provider.of<UserProvider>(context,listen: false).updateUser(userModel);
+         Provider.of<UserProvider>(context,listen: false).setUser(userModel);
          showToast(context, 'تم تعديل البيانات بنجاح');
          clearText();
          pop(context);

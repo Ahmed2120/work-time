@@ -17,21 +17,18 @@ import 'components/text_row.dart';
 import 'components/user_data.dart';
 
 class UserDetail extends StatelessWidget {
-  UserDetail({Key? key, required this.user}) : super(key: key);
-  final User user;
+  UserDetail({Key? key}) : super(key: key);
+
 
   final _keyScaffold = GlobalKey<ScaffoldState>();
-  final _formKey=GlobalKey<FormState>();
-  final _workPlaceController=TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-
     final attendanceProvider = Provider.of<AttendanceProvider>(context, listen: true);
     final model=attendanceProvider.attendanceModel;
-
     return Consumer<UserProvider>(
       builder: (ctx, userProvider, _) {
+        final User user=userProvider.user;
         return Scaffold(
           key: _keyScaffold,
           appBar: appBar(userProvider, context,user,_keyScaffold),
@@ -40,12 +37,7 @@ class UserDetail extends StatelessWidget {
             child: ListView(
           physics: BouncingScrollPhysics(),
               children: [
-                AttendanceWidget(_formKey, user: user, workPlace: _workPlaceController.text,),
-                const SizedBox(height: 10),
-                Form(key: _formKey,
-                    child: CustomTextField(
-                  controller: _workPlaceController, label: 'مكان العمل',
-                )),
+                AttendanceWidget(user: user),
                 const SizedBox(height: 15),
                UserData(user: user),
                 const SizedBox(height: 10),

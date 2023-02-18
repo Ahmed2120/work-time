@@ -77,12 +77,8 @@ class _PurchaseDataState extends State<PurchaseData> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10))),
-    child: const Text('شراء',
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 22,
-            fontWeight: FontWeight.bold
-        )),
+    child:  Text('${trial? 'شراء':'دخول'}',
+        style: Theme.of(context).textTheme.bodyLarge),
   );
 
   void showMessageDialog(BuildContext context,String message) {

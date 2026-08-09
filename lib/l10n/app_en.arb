@@ -1,0 +1,17 @@
+{
+  "@@locale": "en",
+  "appTitle": "Work Time",
+  "present": "Present",
+  "absent": "Absent",
+  "users": "Workers",
+  "notes": "Notes",
+  "trash": "Trash",
+  "all": "All",
+  "salary": "Salary",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "search": "Search...",
+  "noData": "No data available"
+}

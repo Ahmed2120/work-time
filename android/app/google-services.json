@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "577113528629",
+    "firebase_url": "https://worktime-33fa5-default-rtdb.firebaseio.com",
     "project_id": "worktime-33fa5",
-    "storage_bucket": "worktime-33fa5.appspot.com"
+    "storage_bucket": "worktime-33fa5.firebasestorage.app"
   },
   "client": [
     {
@@ -12,12 +13,7 @@
           "package_name": "com.ahmad.work_time"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "577113528629-bqmntmaet43aljq47tgjnotnhh490r6k.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyDwHjoAlkJQsJ35GUr9qwFkvGpiM2AJyM4"
@@ -25,12 +21,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "577113528629-bqmntmaet43aljq47tgjnotnhh490r6k.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

@@ -1,0 +1,63 @@
+import 'package:flutter/material.dart';
+import 'package:work_time/core/utils/cache_helper.dart';
+import 'package:work_time/views/start_view.dart';
+
+import 'components/constant.dart';
+import 'login_view.dart';
+
+class SplashView extends StatefulWidget {
+  const SplashView({super.key});
+
+  @override
+  State<SplashView> createState() => _SplashViewState();
+}
+
+class _SplashViewState extends State<SplashView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigateAfterSplash();
+    });
+  }
+
+  Future<void> _navigateAfterSplash() async {
+    await Future.delayed(const Duration(milliseconds: 2500));
+    if (!mounted) return;
+
+    final bool userExists = await _isExistUser();
+    if (!mounted) return;
+
+    if (userExists || trial) {
+      pushReplacement(context: context, screen: const LoginView());
+    } else {
+      pushReplacement(context: context, screen: const StartView());
+    }
+  }
+
+  Future<bool> _isExistUser() async {
+    final bool? isExist = CacheHelper.getData(key: 'isExist');
+    if (isExist == null || !isExist) {
+      return false;
+    } else {
+      iSEXIST = true;
+      return true;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/Logo.png'),
+            fit: BoxFit.contain,
+          ),
+        ),
+      ),
+    );
+  }
+}

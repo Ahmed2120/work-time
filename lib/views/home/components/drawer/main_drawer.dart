@@ -5,6 +5,8 @@ import 'package:work_time/core/utils/cache_helper.dart';
 
 import 'components/backup_drawer.dart';
 import 'components/purchase_drawer.dart';
+import 'components/reminder_drawer.dart';
+import 'components/reports_drawer.dart';
 import 'components/theme_drawer.dart';
 import 'components/title_drawer.dart';
 
@@ -22,22 +24,34 @@ class MainDrawer extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const TitleDrawer(),
-          const SizedBox(height: 16),
-          if (AppConfig.enableBackupFeature) const BackupDrawer(),
-          if (AppConfig.enableBackupFeature)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),
-              child: Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+          const SizedBox(height: 12),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  const ReportsDrawer(),
+                  _divider(isDark),
+                  const ReminderDrawer(),
+                  _divider(isDark),
+                  if (AppConfig.enableBackupFeature) const BackupDrawer(),
+                  if (AppConfig.enableBackupFeature) _divider(isDark),
+                  const ThemeDrawer(),
+                  if (trial) _divider(isDark),
+                  if (trial) const PurchaseDrawer(),
+                ],
+              ),
             ),
-          const ThemeDrawer(),
-          if (trial)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8),
-              child: Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
-            ),
-          if (trial) const PurchaseDrawer(),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _divider(bool isDark) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 4),
+      child: Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
     );
   }
 }

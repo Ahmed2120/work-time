@@ -79,16 +79,26 @@ class AttendanceViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  setWeekId() async {
-    int maxWeekId = 0;
-    if (_attendanceUser.isNotEmpty) {
-      for (var element in attendanceUser) {
-        if (element.weekId > maxWeekId) {
-          maxWeekId = element.weekId;
-        }
+  Future<int> setWeekId({required int userId, DateTime? date}) async {
+    final list = await attendanceRepository.retrieveByUserId(userId);
+    _attendanceUser = list;
+
+    final DateTime targetDate = date ?? dateTimeAttendance;
+    final String targetWeekEnd = '${GlobalMethods.getWeekDay(targetDate)}';
+
+    // 1. If worker already has an active (unsettled) week for this week period, reuse its weekId
+    for (var element in _attendanceUser) {
+      if (element.weekEnd == targetWeekEnd && element.weekStatus == 0) {
+        return element.weekId;
       }
-    } else {
-      return 1;
+    }
+
+    // 2. If it's a new period or the previous week was settled, increment to new weekId
+    int maxWeekId = 0;
+    for (var element in _attendanceUser) {
+      if (element.weekId > maxWeekId) {
+        maxWeekId = element.weekId;
+      }
     }
     return maxWeekId + 1;
   }

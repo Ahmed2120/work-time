@@ -1,5 +1,26 @@
 # Project Update Log
 
+## [2026-08-16] Monthly Reports & Arabic PDF Export + Daily Attendance Reminder
+- **Monthly Reports & Statistics (`lib/views/reports/reports_view.dart`, `lib/view_models/reports_view_model.dart`)**:
+  - Month & Year selector with quick navigation.
+  - KPI Dashboard Summary: Total Active Workers, Total Work Days, Total Salary Earned, Total Amounts Withdrawn/Paid, and Net Remaining Balance.
+  - Detailed Per-Worker Attendance Breakdown Cards (Days Present, Absent, Overtime, Earned, Drawn, Remaining).
+- **Arabic PDF Report Generator (`lib/core/services/pdf_report_service.dart`)**:
+  - Exports official Arabic PDF reports utilizing embedded `Cairo` font.
+  - Formatted KPI summary headers, detailed workers table with totals row, and authorization signature placeholders.
+  - Supports direct wireless printing, WhatsApp/email sharing, and file saving via `printing` package.
+- **Daily Attendance Notification Reminder (`lib/core/services/daily_reminder_service.dart`, `lib/views/home/components/drawer/components/reminder_drawer.dart`)**:
+  - Scheduled recurring local notifications to remind business owners/contractors to take daily attendance.
+  - Interactive drawer tile with enable/disable switch and custom time picker (persisted in `SharedPreferences`).
+
+## [2026-08-16] Weekly Attendance Auto-Grouping & Draggable BottomSheet
+- **Weekly Attendance Auto-Grouping Logic**:
+  - Corrected `setWeekId` in `AttendanceViewModel` to automatically group attendance days for the same weekly period (Saturday to Friday / unsettled week period) under the same active `weekId`.
+  - New weeks only increment when the current week is settled (`weekStatus == 1`) or a new calendar week cycle begins.
+- **Draggable Attendance BottomSheet**:
+  - Replaced legacy `sliding_sheet2` with native `DraggableScrollableSheet` to eliminate viewport and nested scroll clipping.
+  - Safe date parsing with `DateTime.tryParse` preventing `FormatException` crashes in attendance records table.
+
 ## [2026-08-10] WhatsApp-style Google Drive Automatic & Manual Cloud Backup
 - **Google Drive Cloud Integration**:
   - Integrated `google_sign_in` with private `drive.appdata` scope (`https://www.googleapis.com/auth/drive.appdata`) for seamless, secure cloud backups.

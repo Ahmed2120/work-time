@@ -7,7 +7,7 @@ import 'components/table_rows.dart';
 
 class TableData extends StatelessWidget {
   const TableData({required this.week, Key? key}) : super(key: key);
-  final week;
+  final dynamic week;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class TableData extends StatelessWidget {
             decoration: BoxDecoration(
               color: isDark ? AppColors.darkBorder.withValues(alpha: 0.4) : AppColors.lightPurple,
             ),
-            children: [
+            children: const [
               TableHeader("اليوم"),
               TableHeader("التاريخ"),
               TableHeader("التمام"),
@@ -50,41 +50,40 @@ class TableData extends StatelessWidget {
           ),
           ...List.generate(
             week.length,
-            (i) => buildTableRow(
-              day: GlobalMethods.getDayName(DateTime.parse(week[i].todayDate)),
-              today: GlobalMethods.getDateFormat(DateTime.parse(week[i].todayDate)),
-              workPlace: week[i].workPlace,
-              status: week[i].status,
-              overTime: week[i].overTimeStatus,
-              salary: week[i].salary,
-              salaryReceived: week[i].salaryReceived,
-            ),
+            (i) {
+              final item = week[i];
+              DateTime parsedDate;
+              try {
+                parsedDate = DateTime.parse(item.todayDate);
+              } catch (_) {
+                parsedDate = DateTime.now();
+              }
+              final dayName = GlobalMethods.getDayName(parsedDate);
+              final dateStr = GlobalMethods.getDateFormat(parsedDate);
+
+              return TableRow(
+                children: [
+                  TableRows(dayName, 4),
+                  TableRows(dateStr, 3),
+                  TableRows(
+                    item.status == 1 ? 'حاضر' : 'غائب',
+                    2,
+                    statusType: item.status == 1 ? 1 : 2,
+                  ),
+                  TableRows(
+                    item.overTimeStatus == 1 ? 'سهرة' : '—',
+                    2,
+                    statusType: item.overTimeStatus == 1 ? 3 : null,
+                  ),
+                  TableRows('${item.salary}', 3),
+                  TableRows(item.workPlace.isNotEmpty ? item.workPlace : '—', 3),
+                  TableRows('${item.salaryReceived}', 3),
+                ],
+              );
+            },
           ),
         ],
       ),
     );
-  }
-
-  TableRow buildTableRow({
-    required String day,
-    required String today,
-    required String workPlace,
-    required int status,
-    required int overTime,
-    required String salary,
-    required String salaryReceived,
-  }) {
-    DateTime dateTime = DateTime.parse(today);
-    String date = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
-
-    return TableRow(children: [
-      TableRows(day, 4),
-      TableRows(date, 3),
-      TableRows(status == 1 ? 'حاضر' : 'غائب', 2, statusType: status == 1 ? 1 : 2),
-      TableRows(overTime == 1 ? 'سهرة' : '—', 2, statusType: overTime == 1 ? 3 : null),
-      TableRows(salary, 3),
-      TableRows(workPlace, 3),
-      TableRows(salaryReceived, 3),
-    ]);
   }
 }

@@ -8,6 +8,7 @@ import 'package:work_time/data/repositories/attendance_repository.dart';
 import 'package:work_time/data/repositories/i_note_repository.dart';
 import 'package:work_time/data/repositories/note_repository.dart';
 import 'package:work_time/view_models/backup_view_model.dart';
+import 'package:work_time/view_models/reports_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/note_view_model.dart';
@@ -56,6 +57,12 @@ Future<void> setupServiceLocator() async {
   sl.registerFactory<NoteViewModel>(
     () => NoteViewModel(
       repository: sl<INoteRepository>(),
+    ),
+  );
+  sl.registerFactory<ReportsViewModel>(
+    () => ReportsViewModel(
+      userRepo: sl<IUserRepository>(),
+      attendRepo: sl<IAttendanceRepository>(),
     ),
   );
 }

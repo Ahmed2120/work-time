@@ -109,11 +109,13 @@ class UserDetail extends StatelessWidget {
                   label: 'عرض سجل أيام الحضور',
                   icon: Icons.calendar_month_rounded,
                   style: AppButtonStyle.secondary,
-                  onPressed: () {
-                    attendanceViewModel.getWeeklyAttendance(user.id!).then((value) {
-                      attendanceViewModel.getAttendanceUser(user.id!);
+                  onPressed: () async {
+                    await attendanceViewModel.getWeeks(user.id!);
+                    await attendanceViewModel.getWeeklyAttendance(user.id!);
+                    await attendanceViewModel.getAttendanceUser(user.id!);
+                    if (context.mounted) {
                       showSheet(context);
-                    });
+                    }
                   },
                 ),
                 const SizedBox(height: 20),

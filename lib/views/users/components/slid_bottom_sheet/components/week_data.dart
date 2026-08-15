@@ -16,8 +16,23 @@ class WeekData extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final attendanceViewModel = Provider.of<AttendanceViewModel>(context);
     final weeksList = attendanceViewModel.weeksList;
-    final weekGroup = attendanceViewModel.weekAttendanceMap[weeksList[index]]!;
-    final weekDate = DateTime.parse(weekGroup[0].weekEnd);
+
+    if (index >= weeksList.length) return const SizedBox();
+
+    final weekKey = weeksList[index];
+    final weekGroup = attendanceViewModel.weekAttendanceMap[weekKey];
+
+    if (weekGroup == null || weekGroup.isEmpty) return const SizedBox();
+
+    DateTime weekDate;
+    try {
+      weekDate = DateTime.tryParse(weekGroup[0].todayDate) ??
+          DateTime.tryParse(weekGroup[0].weekEnd) ??
+          DateTime.now();
+    } catch (_) {
+      weekDate = DateTime.now();
+    }
+
     final totalSalary = attendanceViewModel.totalSalary(weekGroup);
     final sumReceived = attendanceViewModel.sumSalaryReceived(weekGroup);
     final remaining = totalSalary - sumReceived;
@@ -34,6 +49,7 @@ class WeekData extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(14),
         child: ExpansionTile(
+          initiallyExpanded: index == 0,
           tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
           childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
           backgroundColor: Colors.transparent,
@@ -43,8 +59,8 @@ class WeekData extends StatelessWidget {
           title: Row(
             children: [
               Container(
-                width: 30,
-                height: 30,
+                width: 32,
+                height: 32,
                 decoration: BoxDecoration(
                   color: isDark ? AppColors.primaryPurple.withValues(alpha: 0.3) : AppColors.lightPurple,
                   borderRadius: BorderRadius.circular(8),
@@ -100,6 +116,9 @@ class WeekData extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
                 borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                ),
               ),
               child: Column(
                 children: [
@@ -107,14 +126,12 @@ class WeekData extends StatelessWidget {
                     label: 'المبلغ الكلي',
                     value: '$totalSalary ريال',
                     isDark: isDark,
-                    bold: false,
                   ),
                   const SizedBox(height: 8),
                   _FinancialRow(
                     label: 'المبلغ المدفوع',
                     value: '$sumReceived ريال',
                     isDark: isDark,
-                    bold: false,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
@@ -136,7 +153,7 @@ class WeekData extends StatelessWidget {
                       Text(
                         '$remaining ريال',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: remaining > 0
                               ? AppColors.primaryPurple
@@ -153,7 +170,7 @@ class WeekData extends StatelessWidget {
             const SizedBox(height: 14),
 
             // ─── تصفية الحساب CTA ─────────────────────────────────────────
-            WeekStatus(index: index, weeks: weeksList[index]),
+            WeekStatus(index: index, weeks: weekKey),
           ],
         ),
       ),
@@ -161,19 +178,16 @@ class WeekData extends StatelessWidget {
   }
 }
 
-// Helper widget for financial summary rows
 class _FinancialRow extends StatelessWidget {
   const _FinancialRow({
     required this.label,
     required this.value,
     required this.isDark,
-    this.bold = false,
   });
 
   final String label;
   final String value;
   final bool isDark;
-  final bool bold;
 
   @override
   Widget build(BuildContext context) {
@@ -191,8 +205,8 @@ class _FinancialRow extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontSize: bold ? 18 : 14,
-            fontWeight: bold ? FontWeight.bold : FontWeight.w600,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
             color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
             fontFamily: 'Cairo',
           ),

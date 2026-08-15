@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import 'package:work_time/core/services/daily_reminder_service.dart';
 import 'package:work_time/core/services/service_locator.dart';
+import 'package:work_time/view_models/reports_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/note_view_model.dart';
@@ -21,10 +23,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await CacheHelper.init();
-  // trial = CacheHelper.getData(key: 'trial') ?? false;
   trial = false;
   await NotificationApi.init(initScheduled: true);
-  // NotificationApi.showScheduleNotification();
+  await DailyReminderService.init();
 
   // Initialize dependencies with GetIt
   await setupServiceLocator();
@@ -53,6 +54,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => sl<BackupViewModel>()..initGoogleAuth(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => sl<ReportsViewModel>(),
         ),
       ],
       child: Consumer<ThemeViewModel>(

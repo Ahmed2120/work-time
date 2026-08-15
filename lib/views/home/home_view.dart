@@ -91,7 +91,7 @@ class HomeView extends StatelessWidget {
                             Expanded(
                               child: _buildSummaryCard(
                                 context: context,
-                                title: 'إجمالي الموظفين',
+                                title: 'الإجمالي',
                                 value: '$totalUsers',
                                 icon: Icons.people_alt_rounded,
                                 iconColor: AppColors.primary,

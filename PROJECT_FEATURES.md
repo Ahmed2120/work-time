@@ -1,5 +1,12 @@
 # Project Update Log
 
+## [2026-08-10] WhatsApp-style Google Drive Automatic & Manual Cloud Backup
+- **Google Drive Cloud Integration**:
+  - Integrated `google_sign_in` with private `drive.appdata` scope (`https://www.googleapis.com/auth/drive.appdata`) for seamless, secure cloud backups.
+  - Implemented `GoogleDriveService` (`lib/core/services/google_drive_service.dart`) to stream SQLite database (`dgi.db`) directly to/from Google Drive's hidden app storage.
+  - Implemented `BackupViewModel` (`lib/view_models/backup_view_model.dart`) managing auth, cloud metadata (last backup date, size), and upload/restore progress.
+  - Redesigned `BackupView` (`lib/views/backup/backup_view.dart`) with connected Google Account Card, Backup Status Card, and WhatsApp-style Cloud Backup & Restore buttons.
+
 ## [2026-08-09] Complete UI/UX Modernization & Design System
 - **Enterprise SaaS HR Application Redesign**:
   - **Strict Color Rules**: Main brand set to Deep Indigo (`#3730A3` / `#EEF2FF`). Green/Amber/Red reserved strictly for semantic attendance status.

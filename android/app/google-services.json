@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:577113528629:android:86e536e3184dea4098147c",
+        "mobilesdk_app_id": "1:577113528629:android:8792c36d497e783b98147c",
         "android_client_info": {
-          "package_name": "com.ahmad.work_time"
+          "package_name": "com.ashraf.workTime"
         }
       },
       "oauth_client": [],

@@ -11,26 +11,28 @@ class UserData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final String firstLetter = user.name.isNotEmpty ? user.name.trim()[0].toUpperCase() : '?';
 
     return AppCard(
-      margin: const EdgeInsets.symmetric(vertical: 6),
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
-                decoration: const BoxDecoration(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: AppColors.primaryGradient,
+                  color: isDark ? AppColors.primaryPurple.withValues(alpha: 0.3) : AppColors.lightPurple,
                 ),
                 child: Center(
                   child: Text(
                     firstLetter,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.primaryPurple,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Cairo',
@@ -45,16 +47,23 @@ class UserData extends StatelessWidget {
                   children: [
                     Text(
                       user.name,
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                        fontFamily: 'Cairo',
+                      ),
                     ),
                     if (user.job.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Text(
                         user.job,
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                          fontFamily: 'Cairo',
+                        ),
                       ),
                     ],
                   ],
@@ -62,12 +71,12 @@ class UserData extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          const Divider(height: 1),
-          const SizedBox(height: 8),
-          TextRow(title: 'الاسم', txt: user.name),
-          TextRow(title: 'الوظيفة', txt: user.job),
-          TextRow(title: 'الفئة', txt: user.salary.toString()),
+          const SizedBox(height: 14),
+          Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+          const SizedBox(height: 10),
+          TextRow(title: 'الاسم الكامل', txt: user.name),
+          TextRow(title: 'الوظيفة', txt: user.job.isNotEmpty ? user.job : 'غير محدد'),
+          TextRow(title: 'الفئة / اليومية', txt: '${user.salary} ريال'),
         ],
       ),
     );

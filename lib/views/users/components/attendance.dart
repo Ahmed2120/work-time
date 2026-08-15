@@ -42,7 +42,7 @@ class AttendanceWidget extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // Button: حاضر
+              // Button: حاضر (Success Green #10B981 when selected)
               Expanded(
                 child: InkWell(
                   borderRadius: BorderRadius.circular(10),
@@ -106,7 +106,7 @@ class AttendanceWidget extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: isPresent ? AppColors.primary : Colors.transparent,
+                      color: isPresent ? AppColors.success : Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     alignment: Alignment.center,
@@ -125,7 +125,7 @@ class AttendanceWidget extends StatelessWidget {
                           'حاضر',
                           style: TextStyle(
                             fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.bold,
                             color: isPresent
                                 ? Colors.white
                                 : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
@@ -140,7 +140,7 @@ class AttendanceWidget extends StatelessWidget {
 
               const SizedBox(width: 4),
 
-              // Button: غائب
+              // Button: غائب (Error Red #EF476F when selected)
               Expanded(
                 child: InkWell(
                   borderRadius: BorderRadius.circular(10),
@@ -171,7 +171,7 @@ class AttendanceWidget extends StatelessWidget {
                         builder: (ctx) => alert(
                           context: context,
                           txt: 'غائب',
-                          color: AppColors.dangerText,
+                          color: AppColors.error,
                           onPressed: () {
                             final attendance = Attendance(
                               id: attendanceViewModel.attendanceModel.last.id,
@@ -199,7 +199,7 @@ class AttendanceWidget extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: isAbsent ? AppColors.primary : Colors.transparent,
+                      color: isAbsent ? AppColors.error : Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     alignment: Alignment.center,
@@ -218,7 +218,7 @@ class AttendanceWidget extends StatelessWidget {
                           'غائب',
                           style: TextStyle(
                             fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.bold,
                             color: isAbsent
                                 ? Colors.white
                                 : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
@@ -236,13 +236,14 @@ class AttendanceWidget extends StatelessWidget {
 
         const SizedBox(height: 14),
 
-        // ─── Work Location Field ──────────────────────────────────────────────
+        // ─── Work Location Field with Location Icon ─────────────────────────
         Form(
           key: _formKey,
           child: CustomTextField(
             controller: _workPlaceController,
             label: 'مكان العمل',
             hint: 'أدخل مكان أو موقع العمل...',
+            prefixIcon: const Icon(Icons.location_on_outlined, size: 20, color: AppColors.primaryPurple),
           ),
         ),
       ],

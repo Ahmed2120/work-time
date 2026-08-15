@@ -14,6 +14,7 @@ class UserViewModel with ChangeNotifier {
   })  : userRepository = userRepository ?? sl<IUserRepository>(),
         attendanceRepository = attendanceRepository ?? sl<IAttendanceRepository>();
 
+  List<User> _allUsers = [];
   List<User> _users = [];
   List<User> _usersTrash = [];
   List<String> _filteredUsers = [];
@@ -24,6 +25,14 @@ class UserViewModel with ChangeNotifier {
   List<String> get filteredUsers => _filteredUsers;
   User get user => _user;
 
+  bool clickSearch = false;
+
+  // ─── Status Filter (الكل, حاضر, غائب, لم يسجل) ─────────────────────────────
+  String _statusFilter = 'الكل';
+  String get statusFilter => _statusFilter;
+
+  String dropDownValue = 'الكل';
+
   void setUser(User val) {
     _user = val;
     notifyListeners();
@@ -32,13 +41,17 @@ class UserViewModel with ChangeNotifier {
   Future<void> addUser(User user) async {
     final int userId = await userRepository.insert(user);
     user.id = userId;
+    _allUsers.add(user);
+    if(dropDownValue == user.salary){
     _users.add(user);
+    }
     getSalaries();
     notifyListeners();
   }
 
   Future getUsers() async {
-    _users = await userRepository.retrieve();
+    _allUsers = await userRepository.retrieve();
+    _users = _allUsers;
     getTrash();
     getSalaries();
     notifyListeners();
@@ -59,8 +72,6 @@ class UserViewModel with ChangeNotifier {
     }
     return _users;
   }
-
-  bool clickSearch = false;
 
   void changeClickSearch() {
     clickSearch = !clickSearch;
@@ -98,8 +109,6 @@ class UserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  String dropDownValue = 'الكل';
-
   dropDownChane(String val) {
     dropDownValue = val;
     filteringUser(dropDownValue);
@@ -110,15 +119,11 @@ class UserViewModel with ChangeNotifier {
     if (txt == 'الكل') {
       getUsers();
     } else {
-      _users = _users.where((user) => txt == user.salary).toList();
+      _users = _allUsers.where((user) => txt == user.salary).toList();
     }
     notifyListeners();
     return _users;
   }
-
-  // ─── Status Filter (الكل, حاضر, غائب, لم يسجل) ─────────────────────────────
-  String _statusFilter = 'الكل';
-  String get statusFilter => _statusFilter;
 
   void setStatusFilter(String filter) {
     _statusFilter = filter;

@@ -7,23 +7,59 @@ class TitleDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120,
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 48, 20, 20),
       decoration: const BoxDecoration(
-        gradient: AppColors.primaryGradient,
-      ),
-      child: const Align(
-        alignment: AlignmentDirectional.bottomStart,
-        child: Text(
-          'WorkTime',
-          style: TextStyle(
-            fontSize: 28,
-            fontFamily: 'Cairo',
-            fontWeight: FontWeight.w900,
-            color: Colors.white,
-          ),
+        color: AppColors.primaryPurple,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
         ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.access_time_filled_rounded,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'WorkTime',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontFamily: 'Cairo',
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'نظام إدارة حضور الموظفين',
+            style: TextStyle(
+              fontSize: 12,
+              fontFamily: 'Cairo',
+              fontWeight: FontWeight.w400,
+              color: Colors.white.withValues(alpha: 0.8),
+            ),
+          ),
+        ],
       ),
     );
   }

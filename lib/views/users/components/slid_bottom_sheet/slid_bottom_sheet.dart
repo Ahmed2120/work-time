@@ -1,51 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_sheet2/sliding_sheet2.dart';
-import 'package:work_time/core/utils/global_methods.dart';
+import 'package:work_time/core/theme/app_colors.dart';
 
 import '../../../../view_models/attendance_view_model.dart';
 import 'components/week_data.dart';
-import 'components/week_status.dart';
-import 'table/components/table_header.dart';
-import 'table/components/table_rows.dart';
-import 'table/table.dart';
 
-Future showSheet(BuildContext context) => showSlidingBottomSheet(context,
-    builder: (context) => const SlidingSheetDialog(
-        cornerRadius: 20,
-        duration: Duration(milliseconds: 200),
+Future showSheet(BuildContext context) => showSlidingBottomSheet(
+      context,
+      builder: (context) => SlidingSheetDialog(
+        cornerRadius: 24,
+        duration: const Duration(milliseconds: 250),
         avoidStatusBar: true,
-        snapSpec: SnapSpec(
-          snappings: [.4, .7],
+        snapSpec: const SnapSpec(
+          snappings: [.45, .85],
         ),
-        builder: buildSheet,
-        headerBuilder: buildHeader));
-
-Widget buildHeader(context, state) => Material(
-      child: SizedBox(
-        height: 10,
-        child: Container(
-          width: 60,
-          decoration: BoxDecoration(
-              color: const Color(0xFF533483),
-              borderRadius: BorderRadius.circular(20)),
-        ),
+        builder: _buildSheet,
+        headerBuilder: _buildHeader,
       ),
     );
 
-Widget buildSheet(context, state) {
+Widget _buildHeader(context, state) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+
   return Material(
-    child: ListView.builder(
-        itemCount:  Provider.of<AttendanceViewModel>(context).weeksList.length,
-        shrinkWrap: true,
-        primary: false,
-        itemBuilder: (BuildContext context, int index) => WeekData(index: index,)),
+    color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Center(
+        child: Container(
+          width: 44,
+          height: 5,
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    ),
   );
 }
 
+Widget _buildSheet(context, state) {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+  final attendanceViewModel = Provider.of<AttendanceViewModel>(context);
 
-
-
-
-
-
+  return Material(
+    color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+    child: SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: ListView.builder(
+          itemCount: attendanceViewModel.weeksList.length,
+          shrinkWrap: true,
+          physics: const BouncingScrollPhysics(),
+          itemBuilder: (BuildContext context, int index) => WeekData(index: index),
+        ),
+      ),
+    ),
+  );
+}

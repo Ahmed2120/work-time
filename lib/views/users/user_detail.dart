@@ -34,6 +34,7 @@ class UserDetail extends StatelessWidget {
         return Scaffold(
           key: _keyScaffold,
           appBar: appBar(userVM, context, user, _keyScaffold),
+          backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
           body: SafeArea(
             child: ListView(
               physics: const BouncingScrollPhysics(),
@@ -49,14 +50,14 @@ class UserDetail extends StatelessWidget {
                   'التمام اليومي',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.bold,
                     color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
                     fontFamily: 'Cairo',
                   ),
                 ),
                 const SizedBox(height: 10),
 
-                // Segmented Attendance Control
+                // Segmented Attendance Control [ حاضر | غائب ]
                 AttendanceWidget(user: user),
 
                 const SizedBox(height: 16),
@@ -85,10 +86,10 @@ class UserDetail extends StatelessWidget {
                   const SizedBox(height: 12),
                 ],
 
-                // Action: Withdraw Amount (Indigo Secondary Style - Not Red!)
+                // Action: Withdraw Amount (Primary Purple #4338B8 Button)
                 if (model.isNotEmpty && model.last.status == 1) ...[
                   AppButton(
-                    label: 'سحب مبلغ مالـي',
+                    label: 'سحب مبلغ مالي',
                     icon: Icons.payments_rounded,
                     style: AppButtonStyle.primary,
                     onPressed: () {
@@ -103,7 +104,7 @@ class UserDetail extends StatelessWidget {
                   const SizedBox(height: 12),
                 ],
 
-                // Action: Attendance Days Sheet
+                // Action: Attendance Days Sheet (Secondary Outlined Style)
                 AppButton(
                   label: 'عرض سجل أيام الحضور',
                   icon: Icons.calendar_month_rounded,

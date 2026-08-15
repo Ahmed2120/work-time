@@ -12,29 +12,49 @@ class ThemeDrawer extends StatelessWidget {
     final isDark = themeViewModel.isDarkMode;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 5),
-      child: SwitchListTile(
-        value: isDark,
-        onChanged: (value) => themeViewModel.toggleTheme(value),
-        secondary: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: Icon(
-            isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
-            key: ValueKey(isDark),
-            size: 24,
-            color: AppColors.accent,
-          ),
+      padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
         ),
-        title: Text(
-          isDark ? 'الوضع الداكن' : 'الوضع الفاتح',
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.darkSurface : AppColors.lightPurple,
+                borderRadius: BorderRadius.circular(10),
               ),
+              child: Icon(
+                isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+                size: 20,
+                color: AppColors.primaryPurple,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                isDark ? 'الوضع الداكن' : 'الوضع الفاتح',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                  fontFamily: 'Cairo',
+                ),
+              ),
+            ),
+            Switch.adaptive(
+              value: isDark,
+              activeColor: Colors.white,
+              activeTrackColor: AppColors.primaryPurple,
+              inactiveThumbColor: Colors.white,
+              inactiveTrackColor: const Color(0xFFCBD5E1),
+              onChanged: (value) => themeViewModel.toggleTheme(value),
+            ),
+          ],
         ),
-        activeThumbColor: AppColors.accent,
-        inactiveThumbColor: Colors.grey.shade400,
-        inactiveTrackColor: Colors.grey.shade300,
       ),
     );
   }

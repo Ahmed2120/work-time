@@ -10,6 +10,7 @@ class AppButton extends StatelessWidget {
   final IconData? icon;
   final AppButtonStyle style;
   final bool isFullWidth;
+  final bool isLoading;
 
   const AppButton({
     super.key,
@@ -18,6 +19,7 @@ class AppButton extends StatelessWidget {
     this.icon,
     this.style = AppButtonStyle.primary,
     this.isFullWidth = true,
+    this.isLoading = false,
   });
 
   @override
@@ -60,8 +62,8 @@ class AppButton extends StatelessWidget {
           side: side,
         ),
       ),
-      onPressed: onPressed,
-      child: Row(
+      onPressed: isLoading ? null : onPressed,
+      child: isLoading ? CircularProgressIndicator() : Row(
         mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

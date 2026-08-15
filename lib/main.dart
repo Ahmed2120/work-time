@@ -7,6 +7,7 @@ import 'package:work_time/core/services/service_locator.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/note_view_model.dart';
+import 'package:work_time/view_models/backup_view_model.dart';
 import 'package:work_time/view_models/theme_view_model.dart';
 import 'package:work_time/views/splash_view.dart';
 
@@ -20,7 +21,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await CacheHelper.init();
-  trial = CacheHelper.getData(key: 'trial') ?? false;
+  // trial = CacheHelper.getData(key: 'trial') ?? false;
+  trial = false;
   await NotificationApi.init(initScheduled: true);
   // NotificationApi.showScheduleNotification();
 
@@ -48,6 +50,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => sl<NoteViewModel>()..getNotes(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => sl<BackupViewModel>()..initGoogleAuth(),
         ),
       ],
       child: Consumer<ThemeViewModel>(

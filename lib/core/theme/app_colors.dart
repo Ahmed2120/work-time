@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 
-/// Centralized design token system for WorkTime app.
-/// Follows strict SaaS/HR color rules:
-/// - Indigo is the main brand color (buttons, nav, actions)
-/// - Green/Amber/Red ONLY for semantic attendance status
+/// Enterprise HR Design System Tokens for WorkTime.
 class AppColors {
   // ─── Brand Colors ───────────────────────────────────────────────────────────
-  static const Color primary = Color(0xFF3730A3);        // Deep Indigo
-  static const Color primaryLight = Color(0xFFEEF2FF);  // Soft Indigo Tint
-  static const Color primaryDark = Color(0xFF312E81);   // Darker Indigo
+  static const Color primaryNavy = Color(0xFF1F3557);
+  static const Color primaryPurple = Color(0xFF4338B8);
+  static const Color lightPurple = Color(0xFFEEF0FF);
+
+  // Backward compatibility alias for main brand action
+  static const Color primary = primaryPurple;
+  static const Color primaryDark = primaryNavy;
+  static const Color primaryLight = lightPurple;
+  static const Color accent = primaryPurple;
+  static const Color accentHover = primaryNavy;
+  static const Color indigoAccent = Color(0xFF6366F1);
 
   // ─── Backgrounds & Surfaces ─────────────────────────────────────────────────
-  static const Color lightBackground = Color(0xFFF8FAFC);
+  static const Color lightBackground = Color(0xFFF7F8FC);
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightBorder = Color(0xFFE2E8F0);
+  static const Color lightBorder = Color(0xFFE4E8F0);
 
   static const Color darkBackground = Color(0xFF0F172A);
   static const Color darkSurface = Color(0xFF1E293B);
@@ -26,38 +31,34 @@ class AppColors {
   static const Color successBgDark = Color(0xFF064E3B);
 
   // ─── Status: Absent (غائب) ──────────────────────────────────────────────────
-  static const Color danger = Color(0xFFF43F5E);
+  static const Color error = Color(0xFFEF476F);
+  static const Color danger = Color(0xFFEF476F);
   static const Color dangerText = Color(0xFFBE123C);
   static const Color dangerBgLight = Color(0xFFFFF1F2);
   static const Color dangerBgDark = Color(0xFF881337);
 
-  // ─── Status: Unregistered (لم يسجل) ─────────────────────────────────────────
+  // ─── Status: Pending / Overtime (سهرة / لم يسجل) ───────────────────────────
   static const Color warning = Color(0xFFF59E0B);
   static const Color warningText = Color(0xFFB45309);
   static const Color warningBgLight = Color(0xFFFFFBEB);
   static const Color warningBgDark = Color(0xFF78350F);
 
   // ─── Typography ─────────────────────────────────────────────────────────────
-  static const Color textPrimaryLight = Color(0xFF0F172A);
-  static const Color textSecondaryLight = Color(0xFF64748B);
+  static const Color textPrimaryLight = Color(0xFF172033);
+  static const Color textSecondaryLight = Color(0xFF718096);
   static const Color textPrimaryDark = Color(0xFFF8FAFC);
   static const Color textSecondaryDark = Color(0xFF94A3B8);
 
   // ─── Gradients ──────────────────────────────────────────────────────────────
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [Color(0xFF3730A3), Color(0xFF4338CA)],
+    colors: [Color(0xFF4338B8), Color(0xFF1F3557)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient accentGradient = LinearGradient(
-    colors: [Color(0xFF3730A3), Color(0xFF4F46E5)],
+    colors: [Color(0xFF4338B8), Color(0xFF3730A3)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
-
-  // Legacy aliases kept for backward compatibility
-  static const Color accent = primary;
-  static const Color accentHover = primaryDark;
-  static const Color indigoAccent = Color(0xFF818CF8);
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:work_time/core/theme/app_colors.dart';
 
 import '../../../../../core/utils/global_methods.dart';
 import 'components/table_header.dart';
@@ -10,74 +11,80 @@ class TableData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Table(
-      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-      border: TableBorder.all(
-        color: Colors.black45,
-        width: 2,
-      ),
-      columnWidths: const {
-        0: IntrinsicColumnWidth(flex: 4),
-        1: IntrinsicColumnWidth(flex: 4),
-        2: IntrinsicColumnWidth(flex: 4),
-        3: IntrinsicColumnWidth(flex: 4),
-        4: IntrinsicColumnWidth(flex: 4),
-        5: IntrinsicColumnWidth(flex: 4),
-        6: IntrinsicColumnWidth(flex: 4),
-      },
-      defaultColumnWidth: const IntrinsicColumnWidth(),
-      children: [
-        TableRow(children: [
-          TableHeader("اليوم"),
-          TableHeader("التاريخ"),
-          TableHeader("التمام"),
-          TableHeader("السهرة"),
-          TableHeader("اليومية"),
-          TableHeader("مكان العمل"),
-          TableHeader("المبلغ المسحوب"),
-        ]),
-        ...List.generate(
-          week.length,
-              (i) =>
-              buildTableRow(
-                  day: GlobalMethods.getDayName(DateTime.parse(
-                      week[i].todayDate)),
-                  today: GlobalMethods.getDateFormat(DateTime.parse(
-                      week[i].todayDate)),
-                  workPlace: week[i].workPlace,
-                  status: week[i].status,
-                  overTime: week[i]
-                      .overTimeStatus,
-                  salary: week[i].salary,
-                  salaryReceived: week[i]
-                      .salaryReceived),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Table(
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        border: TableBorder.all(
+          color: borderColor,
+          width: 1,
+          borderRadius: BorderRadius.circular(10),
         ),
-      ],
+        columnWidths: const {
+          0: IntrinsicColumnWidth(flex: 3),
+          1: IntrinsicColumnWidth(flex: 4),
+          2: IntrinsicColumnWidth(flex: 3),
+          3: IntrinsicColumnWidth(flex: 3),
+          4: IntrinsicColumnWidth(flex: 3),
+          5: IntrinsicColumnWidth(flex: 4),
+          6: IntrinsicColumnWidth(flex: 3),
+        },
+        defaultColumnWidth: const IntrinsicColumnWidth(),
+        children: [
+          TableRow(
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.darkBorder.withValues(alpha: 0.4) : AppColors.lightPurple,
+            ),
+            children: [
+              TableHeader("اليوم"),
+              TableHeader("التاريخ"),
+              TableHeader("التمام"),
+              TableHeader("السهرة"),
+              TableHeader("اليومية"),
+              TableHeader("مكان العمل"),
+              TableHeader("المسحوب"),
+            ],
+          ),
+          ...List.generate(
+            week.length,
+            (i) => buildTableRow(
+              day: GlobalMethods.getDayName(DateTime.parse(week[i].todayDate)),
+              today: GlobalMethods.getDateFormat(DateTime.parse(week[i].todayDate)),
+              workPlace: week[i].workPlace,
+              status: week[i].status,
+              overTime: week[i].overTimeStatus,
+              salary: week[i].salary,
+              salaryReceived: week[i].salaryReceived,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  TableRow buildTableRow({required String day,
+  TableRow buildTableRow({
+    required String day,
     required String today,
     required String workPlace,
     required int status,
     required int overTime,
     required String salary,
-    required String salaryReceived}) {
+    required String salaryReceived,
+  }) {
     DateTime dateTime = DateTime.parse(today);
     String date = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
+
     return TableRow(children: [
-      TableRows(day, 2),
-      TableRows(date, 5),
-      TableRows(status == 1 ? 'حاضر' : 'غائب', 0),
-      TableRows(overTime == 1 ? 'سهرة' : 'لا يوجد', 0),
-      TableRows(salary, 0),
-      TableRows(workPlace, 0),
-      TableRows(salaryReceived, 0),
+      TableRows(day, 4),
+      TableRows(date, 3),
+      TableRows(status == 1 ? 'حاضر' : 'غائب', 2, statusType: status == 1 ? 1 : 2),
+      TableRows(overTime == 1 ? 'سهرة' : '—', 2, statusType: overTime == 1 ? 3 : null),
+      TableRows(salary, 3),
+      TableRows(workPlace, 3),
+      TableRows(salaryReceived, 3),
     ]);
   }
 }
-
-
-
-
-

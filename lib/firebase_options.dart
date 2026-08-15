@@ -53,7 +53,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDwHjoAlkJQsJ35GUr9qwFkvGpiM2AJyM4',
-    appId: '1:577113528629:android:86e536e3184dea4098147c',
+    appId: '1:577113528629:android:8792c36d497e783b98147c',
     messagingSenderId: '577113528629',
     projectId: 'worktime-33fa5',
     databaseURL: 'https://worktime-33fa5-default-rtdb.firebaseio.com',
@@ -67,6 +67,7 @@ class DefaultFirebaseOptions {
     projectId: 'worktime-33fa5',
     databaseURL: 'https://worktime-33fa5-default-rtdb.firebaseio.com',
     storageBucket: 'worktime-33fa5.firebasestorage.app',
+    androidClientId: '577113528629-bn41ojf4lgbnd226ajgap9mte5cj2ki6.apps.googleusercontent.com',
     iosBundleId: 'com.ahmad.workTime',
   );
 
@@ -77,6 +78,7 @@ class DefaultFirebaseOptions {
     projectId: 'worktime-33fa5',
     databaseURL: 'https://worktime-33fa5-default-rtdb.firebaseio.com',
     storageBucket: 'worktime-33fa5.firebasestorage.app',
+    androidClientId: '577113528629-bn41ojf4lgbnd226ajgap9mte5cj2ki6.apps.googleusercontent.com',
     iosBundleId: 'com.example.workTime',
   );
 
@@ -91,9 +93,3 @@ class DefaultFirebaseOptions {
     measurementId: 'G-78DXD374H0',
   );
 }
-
-
-
-
-
-

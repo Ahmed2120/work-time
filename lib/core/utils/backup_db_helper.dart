@@ -26,7 +26,7 @@ class BackupHelper{
     }
 
     try{
-      File ourDbFile=File('/data/data/com.ahmad.work_time/databases/dgi.db');
+      File ourDbFile=File('/data/data/com.ashraf.workTime/databases/dgi.db');
       Directory? folderPathForDBFile=Directory('/storage/emulated/0/Download/WorkTime');
       await folderPathForDBFile.create();
       await ourDbFile.copy('/storage/emulated/0/Download/WorkTime/dgi.db');
@@ -53,7 +53,7 @@ class BackupHelper{
         List<String> listPath=path.split('/');
         if(listPath.last=='dgi.db'){
          File saveBDFile=File(path);
-          await saveBDFile.copy('/data/data/com.ahmad.work_time/databases/dgi.db');
+          await saveBDFile.copy('/data/data/com.ashraf.workTime/databases/dgi.db');
           Provider.of<UserViewModel>(context,listen: false).getUsers();
          Provider.of<NoteViewModel>(context,listen: false).getNotes();
          Provider.of<UserViewModel>(context,listen: false).getTrash();

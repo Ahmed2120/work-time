@@ -33,6 +33,13 @@ class DatabaseHandler {
     batch.execute("delete from users");
     return await batch.commit();
   }
+
+  Future<void> closeDatabase() async {
+    if (_database != null && _database!.isOpen) {
+      await _database!.close();
+      _database = null;
+    }
+  }
 }
 
 

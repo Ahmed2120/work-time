@@ -4,7 +4,8 @@ import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 
 class DropDownMenuRow extends StatelessWidget {
-  const DropDownMenuRow({super.key});
+  const DropDownMenuRow({super.key, this.height});
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +13,8 @@ class DropDownMenuRow extends StatelessWidget {
     final userViewModel = Provider.of<UserViewModel>(context, listen: true);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      height: height,
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
         borderRadius: BorderRadius.circular(12),
@@ -31,6 +33,7 @@ class DropDownMenuRow extends StatelessWidget {
           const SizedBox(width: 8),
           DropdownButtonHideUnderline(
             child: DropdownButton<String>(
+              isDense: true,
               value: userViewModel.dropDownValue,
               icon: const Icon(
                 Icons.keyboard_arrow_down_rounded,
@@ -39,8 +42,7 @@ class DropDownMenuRow extends StatelessWidget {
               ),
               dropdownColor: isDark ? AppColors.darkSurface : Colors.white,
               alignment: Alignment.topRight,
-              items: Provider.of<UserViewModel>(context, listen: false)
-                  .filteredUsers
+              items: userViewModel.filteredUsers
                   .map((String item) {
                 return DropdownMenuItem<String>(
                   value: item,
@@ -57,9 +59,9 @@ class DropDownMenuRow extends StatelessWidget {
               }).toList(),
               onChanged: (val) {
                 if (val == null) return;
-                userViewModel.getUsers().then((value) {
+                // userViewModel.getUsers().then((value) {
                   userViewModel.dropDownChane(val);
-                });
+                // });
               },
             ),
           ),

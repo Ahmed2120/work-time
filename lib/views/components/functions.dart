@@ -71,7 +71,7 @@ Future<void> showFlushBar(BuildContext context)async {
         topRight: Radius.circular(20),
         topLeft: Radius.circular(20)
       ),
-      duration: Duration(seconds: 7),
+      duration: Duration(seconds: 2),
   ).show(context);
 }
 

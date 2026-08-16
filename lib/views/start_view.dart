@@ -37,7 +37,7 @@ class _StartViewState extends State<StartView> {
                   await showFlushBar(context);
                   trial=true;
                   pushReplacement(screen: BottomNavView(), context: context);
-                }, label:Text('نسخة تجريبية',style: TextStyle(fontSize: 17,color: Colors.blue),),icon: Icon(Icons.send_time_extension), )
+                }, label:Text('نسخة تجريبية',style: TextStyle(fontSize: 17),),icon: Icon(Icons.send_time_extension), )
               ],
             ),
 

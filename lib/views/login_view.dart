@@ -12,21 +12,15 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  final TextEditingController _emailController = TextEditingController();
+  bool _isAuthenticating = false;
 
   @override
   void initState() {
     super.initState();
-    // Defer until after the first frame is rendered to avoid black screen
+    // Auto-trigger biometric prompt after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loginFinger();
     });
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    super.dispose();
   }
 
   @override
@@ -39,15 +33,15 @@ class _LoginViewState extends State<LoginView> {
         child: Center(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // ─── Compact Logo ─────────────────────────────────────────────
+                // ─── App Logo ─────────────────────────────────────────────
                 Container(
-                  height: 110,
-                  width: 110,
+                  height: 120,
+                  width: 120,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                       fit: BoxFit.contain,
@@ -55,60 +49,64 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
-                // ─── Subtitle ─────────────────────────────────────────────────
+                // ─── Welcome Header ────────────────────────────────────────
                 Text(
-                  'إدارة حضور وانصراف الموظفين بسهولة',
+                  'مرحباً بك مجدداً',
                   style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                    fontFamily: 'Cairo',
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'يرجى المصادقة بالبصمة أو رمز القفل للوصول إلى بيانات العمل',
+                  style: TextStyle(
+                    fontSize: 13,
                     color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                     fontFamily: 'Cairo',
                   ),
                   textAlign: TextAlign.center,
                 ),
 
-                const SizedBox(height: 36),
+                const SizedBox(height: 48),
 
-                // ─── Email Field ──────────────────────────────────────────────
-                TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-                    fontFamily: 'Cairo',
-                  ),
-                  decoration: InputDecoration(
-                    labelText: 'البريد الإلكتروني / اسم المستخدم',
-                    hintText: 'user@example.com',
-                    prefixIcon: const Icon(
-                      Icons.email_outlined,
-                      color: AppColors.primaryPurple,
-                      size: 20,
+                // ─── Biometric Fingerprint Icon Card ───────────────────────
+                InkWell(
+                  onTap: _isAuthenticating ? null : loginFinger,
+                  borderRadius: BorderRadius.circular(100),
+                  child: Container(
+                    width: 110,
+                    height: 110,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isDark
+                          ? AppColors.primaryPurple.withValues(alpha: 0.15)
+                          : AppColors.lightPurple,
+                      border: Border.all(
+                        color: AppColors.primaryPurple.withValues(alpha: 0.3),
+                        width: 2,
+                      ),
                     ),
-                    filled: true,
-                    fillColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.primaryPurple, width: 1.5),
+                    child: Center(
+                      child: Icon(
+                        Icons.fingerprint_rounded,
+                        size: 64,
+                        color: _isAuthenticating
+                            ? AppColors.primaryPurple.withValues(alpha: 0.5)
+                            : AppColors.primaryPurple,
+                      ),
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 48),
 
-                // ─── Full-width Login Button ──────────────────────────────
+                // ─── Unlock Button ────────────────────────────────────────
                 SizedBox(
                   width: double.infinity,
                   height: 52,
@@ -121,15 +119,15 @@ class _LoginViewState extends State<LoginView> {
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    onPressed: () => loginFinger(),
-                    child: const Row(
+                    onPressed: _isAuthenticating ? null : loginFinger,
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.fingerprint_rounded, size: 22, color: Colors.white),
-                        SizedBox(width: 10),
+                        const Icon(Icons.lock_open_rounded, size: 20, color: Colors.white),
+                        const SizedBox(width: 10),
                         Text(
-                          'تسجيل الدخـول',
-                          style: TextStyle(
+                          _isAuthenticating ? 'جاري التحقق...' : 'فتح التطبيق بالبصمة',
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Cairo',
@@ -143,7 +141,7 @@ class _LoginViewState extends State<LoginView> {
 
                 const SizedBox(height: 14),
 
-                // ─── Demo Secondary Button ────────────────────────────────────
+                // ─── Trial Mode Button ────────────────────────────────────
                 SizedBox(
                   width: double.infinity,
                   height: 48,
@@ -186,27 +184,37 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  void loginFinger() async {
-    final bool canAuth = await LocalAuthApi.hasBiometrics();
+  Future<void> loginFinger() async {
+    if (_isAuthenticating) return;
+    setState(() => _isAuthenticating = true);
 
-    if (!mounted) return;
+    try {
+      final bool canAuth = await LocalAuthApi.hasBiometrics();
 
-    if (!canAuth) {
-      await Future.delayed(const Duration(milliseconds: 300));
       if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const BottomNavView()),
-      );
-      return;
-    }
 
-    final isAuthenticated = await LocalAuthApi.authenticate();
-    if (!mounted) return;
+      if (!canAuth) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        if (!mounted) return;
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const BottomNavView()),
+        );
+        return;
+      }
 
-    if (isAuthenticated) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const BottomNavView()),
-      );
+      final isAuthenticated = await LocalAuthApi.authenticate();
+      if (!mounted) return;
+
+      if (isAuthenticated) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const BottomNavView()),
+        );
+      }
+    } catch (_) {
+    } finally {
+      if (mounted) {
+        setState(() => _isAuthenticating = false);
+      }
     }
   }
 }

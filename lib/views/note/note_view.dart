@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/view_models/note_view_model.dart';
 
@@ -52,7 +53,7 @@ class NoteView extends StatelessWidget {
             foregroundColor: Colors.white,
             elevation: 2,
             onPressed: () {
-              if ((noteViewModel.notes.length) >= 5 && trial) {
+              if ((noteViewModel.notes.length) >= AppConfig.maxTrialNotes && trial) {
                 showFlushBar(context);
               } else {
                 push(screen: NoteEditor(), context: context);

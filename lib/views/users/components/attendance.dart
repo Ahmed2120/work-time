@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 
 import '../../../core/utils/cache_helper.dart';
@@ -47,7 +48,7 @@ class AttendanceWidget extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(10),
                   onTap: () async {
-                    if ((attendanceViewModel.attendanceUser.length) >= 7 && trial) {
+                    if ((attendanceViewModel.attendanceUser.length) >= AppConfig.maxTrialAttendanceDays && trial) {
                       showFlushBar(context);
                       return;
                     }
@@ -145,7 +146,7 @@ class AttendanceWidget extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(10),
                   onTap: () async {
-                    if ((attendanceViewModel.attendanceUser.length) >= 7 && trial) {
+                    if ((attendanceViewModel.attendanceUser.length) >= AppConfig.maxTrialAttendanceDays && trial) {
                       showFlushBar(context);
                       return;
                     }

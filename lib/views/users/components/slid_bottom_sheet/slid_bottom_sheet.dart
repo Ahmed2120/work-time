@@ -99,9 +99,10 @@ class AttendanceWeeksBottomSheet extends StatelessWidget {
               Expanded(
                 child: Consumer<AttendanceViewModel>(
                   builder: (context, attendanceVM, _) {
-                    final weeksList = attendanceVM.weeksList;
+                    final sortedGroups = attendanceVM.sortedWeekGroups;
+                    print(sortedGroups);
 
-                    if (weeksList.isEmpty) {
+                    if (sortedGroups.isEmpty) {
                       return ListView(
                         controller: scrollController,
                         physics: const BouncingScrollPhysics(),
@@ -157,9 +158,12 @@ class AttendanceWeeksBottomSheet extends StatelessWidget {
                       controller: scrollController,
                       physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                      itemCount: weeksList.length,
+                      itemCount: sortedGroups.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return WeekData(index: index);
+                        return WeekData(
+                          weekGroup: sortedGroups[index],
+                          weekNumber: index + 1,
+                        );
                       },
                     );
                   },

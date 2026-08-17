@@ -22,6 +22,54 @@ class UsersStatusListview extends StatelessWidget {
 
     return Consumer<UserViewModel>(
       builder: (ctx, userViewModel, _) {
+        // ─── 1. Search Mode (Searches ALL users regardless of active filters) ──
+        if (userViewModel.isSearching) {
+          final searchList = userViewModel.searchResults;
+
+          if (searchList.isEmpty) {
+            return SingleChildScrollView(
+              child: EmptyScreen(
+                title: 'لا يوجد عمال يطابقون "${userViewModel.searchQuery}"',
+              ),
+            );
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                child: Text(
+                  'نتائج البحث (${searchList.length} عامل)',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? AppColors.indigoAccent : AppColors.primary,
+                    fontFamily: 'Cairo',
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: searchList.length,
+                  padding: const EdgeInsets.only(bottom: 20),
+                  itemBuilder: (context, index) {
+                    return _buildUserCard(
+                      context: context,
+                      user: searchList[index],
+                      userViewModel: userViewModel,
+                      attendProvider: attendProvider,
+                      isDark: isDark,
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        }
+
+        // ─── 2. Regular Filter Mode ──────────────────────────────────────────
         final List<User> allUsers = userViewModel.users;
         final String statusFilter = userViewModel.statusFilter;
 
@@ -55,104 +103,119 @@ class UsersStatusListview extends StatelessWidget {
               itemCount: filteredList.length,
               padding: const EdgeInsets.only(bottom: 20),
               itemBuilder: (context, index) {
-                final user = filteredList[index];
-                final String firstLetter =
-                    user.name.isNotEmpty ? user.name.trim()[0].toUpperCase() : '?';
-
-                return AppCard(
-                  margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
-                  onTap: () async {
-                    userViewModel.setUser(user);
-                    attendProvider.getWeeks(user.id!);
-                    attendProvider.getAttendanceUserToDay(userId: user.id!);
-                    attendProvider.getAttendanceUser(user.id!);
-                    push(screen: UserDetail(), context: context);
-                  },
-                  child: Row(
-                    children: [
-                      // Circular Avatar Initial (#EEF2FF bg, #3730A3 text)
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: isDark
-                              ? AppColors.primary.withValues(alpha: 0.3)
-                              : AppColors.primaryLight,
-                        ),
-                        child: Center(
-                          child: Text(
-                            firstLetter,
-                            style: TextStyle(
-                              color: isDark ? AppColors.indigoAccent : AppColors.primary,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: 'Cairo',
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-
-                      // Employee Details
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              user.name,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: isDark
-                                    ? AppColors.textPrimaryDark
-                                    : AppColors.textPrimaryLight,
-                                fontFamily: 'Cairo',
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            if (user.job.isNotEmpty) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                user.job,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                  color: isDark
-                                      ? AppColors.textSecondaryDark
-                                      : AppColors.textSecondaryLight,
-                                  fontFamily: 'Cairo',
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-
-                      // Status Badge
-                      FutureBuilder<Attendance?>(
-                        future: attendProvider.getAttendByUserAndDate(userId: user.id!),
-                        builder: (context, statusSnapshot) {
-                          final title = statusSnapshot.data == null
-                              ? 'لم يسجل'
-                              : statusSnapshot.data!.status == 1
-                                  ? 'حاضر'
-                                  : 'غائب';
-                          return CustomStatusText(title);
-                        },
-                      ),
-                    ],
-                  ),
+                return _buildUserCard(
+                  context: context,
+                  user: filteredList[index],
+                  userViewModel: userViewModel,
+                  attendProvider: attendProvider,
+                  isDark: isDark,
                 );
               },
             );
           },
         );
       },
+    );
+  }
+
+  Widget _buildUserCard({
+    required BuildContext context,
+    required User user,
+    required UserViewModel userViewModel,
+    required AttendanceViewModel attendProvider,
+    required bool isDark,
+  }) {
+    final String firstLetter =
+        user.name.isNotEmpty ? user.name.trim()[0].toUpperCase() : '?';
+
+    return AppCard(
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+      onTap: () async {
+        userViewModel.setUser(user);
+        attendProvider.getWeeks(user.id!);
+        attendProvider.getAttendanceUserToDay(userId: user.id!);
+        attendProvider.getAttendanceUser(user.id!);
+        push(screen: UserDetail(), context: context);
+      },
+      child: Row(
+        children: [
+          // Circular Avatar Initial
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isDark
+                  ? AppColors.primary.withValues(alpha: 0.3)
+                  : AppColors.primaryLight,
+            ),
+            child: Center(
+              child: Text(
+                firstLetter,
+                style: TextStyle(
+                  color: isDark ? AppColors.indigoAccent : AppColors.primary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Cairo',
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+
+          // Employee Details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user.name,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: isDark
+                        ? AppColors.textPrimaryDark
+                        : AppColors.textPrimaryLight,
+                    fontFamily: 'Cairo',
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (user.job.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    user.job,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : AppColors.textSecondaryLight,
+                      fontFamily: 'Cairo',
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
+          ),
+
+          // Status Badge (حاضر / غائب / لم يسجل)
+          FutureBuilder<Attendance?>(
+            future: attendProvider.getAttendByUserAndDate(userId: user.id!),
+            builder: (context, statusSnapshot) {
+              final title = statusSnapshot.data == null
+                  ? 'لم يسجل'
+                  : statusSnapshot.data!.status == 1
+                      ? 'حاضر'
+                      : 'غائب';
+              return CustomStatusText(title);
+            },
+          ),
+        ],
+      ),
     );
   }
 

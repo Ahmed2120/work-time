@@ -28,13 +28,17 @@ class GlobalMethods{
     return time ;
   }
 
-  static DateTime getWeekDay(DateTime dateTime) {
-    var today = DateTime(dateTime.year, dateTime.month, dateTime.day);
-    if(today.next(DateTime.saturday).isSameDate(dateTime)){
-      return today.add(Duration(days: 7));
-    }
-    return today.next(DateTime.saturday) ;
+  /// Returns the Friday that closes the Saturday→Friday week containing [dateTime].
+  /// Week runs: Saturday (start) → Friday (end).
+  static DateTime getWeekEnd(DateTime dateTime) {
+    final date = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    // daysUntilFriday: how many days until the next Friday (0 if already Friday)
+    final int daysUntilFriday = (DateTime.friday - date.weekday + 7) % 7;
+    return date.add(Duration(days: daysUntilFriday));
   }
+
+  /// Legacy alias kept for compatibility — delegates to getWeekEnd.
+  static DateTime getWeekDay(DateTime dateTime) => getWeekEnd(dateTime);
 }
 
 extension DateTimeExtension on DateTime {

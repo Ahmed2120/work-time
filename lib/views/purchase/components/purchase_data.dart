@@ -7,7 +7,7 @@ import 'package:work_time/views/components/constant.dart';
 import 'package:work_time/views/components/functions.dart';
 
 class PurchaseData extends StatefulWidget {
-  const PurchaseData({Key? key}) : super(key: key);
+  const PurchaseData({super.key});
 
   @override
   State<PurchaseData> createState() => _PurchaseDataState();

@@ -1,29 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:work_time/core/config/app_config.dart';
+import 'package:work_time/core/theme/app_colors.dart';
 
 import '../../../../components/constant.dart';
 import '../../../../purchase/purchase_app.dart';
 
 class PurchaseDrawer extends StatelessWidget {
-  const PurchaseDrawer({Key? key}) : super(key: key);
+  const PurchaseDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return  Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 5),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8),
       child: ListTile(
-        leading: FaIcon(FontAwesomeIcons.cartShopping,size: 25,color:Color(0xFFE94560)),
-        trailing: FaIcon(FontAwesomeIcons.chevronRight),
-        title:Text('شراء التطبيق',style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.black)),
-        onTap: (){
-          push(screen: PurchaseApp(), context: context);},
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        leading: Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isDark
+                ? AppColors.primaryPurple.withValues(alpha: 0.2)
+                : AppColors.lightPurple,
+          ),
+          child: const Icon(
+            Icons.workspace_premium_rounded,
+            size: 20,
+            color: AppColors.primaryPurple,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios_rounded,
+          size: 14,
+          color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+        ),
+        title: Text(
+          AppConfig.isPlayStore ? 'الترقية والاشتراك' : 'تفعيل ترخيص التطبيق',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+            fontFamily: 'Cairo',
+          ),
+        ),
+        onTap: () {
+          push(screen: const PurchaseApp(), context: context);
+        },
       ),
     );
   }
 }
-
-
-
-
-
-

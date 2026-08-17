@@ -22,7 +22,7 @@ AppBar customAppBar(BuildContext context) {
             IconButton(
               onPressed: () => userViewModel.changeClickSearch(),
               icon: const Icon(Icons.search_rounded, size: 22),
-              tooltip: 'بحث',
+              tooltip: 'بحث في العمال',
             ),
             const SizedBox(width: 4),
           ],
@@ -79,33 +79,37 @@ AppBar customAppBar(BuildContext context) {
             preferredSize: const Size.fromHeight(1),
             child: Divider(height: 1, color: borderColor),
           ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_rounded),
+            tooltip: 'إغلاق البحث',
+            onPressed: () => userViewModel.changeClickSearch(),
+          ),
           title: TextField(
             autofocus: true,
             onChanged: (txt) {
-              if (txt.isEmpty) {
-                userViewModel.filteringUser(userViewModel.dropDownValue);
-                return;
-              }
-              userViewModel.searchUsers(txt);
+              userViewModel.setSearchQuery(txt);
             },
             decoration: InputDecoration(
-              hintText: 'بحث عن عامل...',
+              hintText: 'بحث في جميع العمال (بالاسم أو الوظيفة)...',
               hintStyle: TextStyle(
                 color: isDark ? AppColors.textSecondaryDark : const Color(0xFF94A3B8),
-                fontSize: 14,
+                fontSize: 13,
+                fontFamily: 'Cairo',
               ),
               prefixIcon: Icon(
                 Icons.search_rounded,
                 color: isDark ? AppColors.textSecondaryDark : const Color(0xFF94A3B8),
                 size: 20,
               ),
-              suffixIcon: IconButton(
-                onPressed: () {
-                  userViewModel.changeClickSearch();
-                  userViewModel.filteringUser(userViewModel.dropDownValue);
-                },
-                icon: const Icon(Icons.close_rounded, size: 20),
-              ),
+              suffixIcon: userViewModel.searchQuery.isNotEmpty
+                  ? IconButton(
+                      onPressed: () {
+                        userViewModel.clearSearch();
+                      },
+                      icon: const Icon(Icons.close_rounded, size: 18),
+                      tooltip: 'مسح',
+                    )
+                  : null,
               filled: true,
               fillColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
               border: OutlineInputBorder(

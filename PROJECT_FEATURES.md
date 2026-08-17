@@ -1,5 +1,47 @@
 # Project Update Log
 
+## [2026-08-17] Dual Distribution Flavor Engine (Standalone APK vs Google Play Store)
+- **Central AppConfig Flavor Control (`lib/core/config/app_config.dart`)**:
+  - Implemented `AppFlavor` enum (`apkDirect` vs `playStore`) with compile-time environment override (`--dart-define=FLAVOR=playStore`) and fallback default.
+  - Centralized trial thresholds: `maxTrialWorkers` (5), `maxTrialNotes` (5), `maxTrialAttendanceDays` (7).
+- **Standalone Freelance APK Mode (`AppFlavor.apkDirect`)**:
+  - First launch routes to `StartView` with email license verification against Firebase (`ApiService.getUser`).
+  - Removed all hardcoded developer contact details and phone cards from `PurchaseApp` — activation is strictly done via email once the customer pays directly.
+  - Full biometric unlock (`LoginView`) persists on subsequent opens once licensed or using trial.
+- **Google Play Store Subscription Mode (`AppFlavor.playStore`)**:
+  - Automatically begins in Trial mode on first launch without requiring email validation.
+  - `PurchaseApp` & `PurchaseDrawer` dynamically display in-app subscription paywalls and Google Play Billing upgrade triggers.
+
+## [2026-08-17] Universal In-Place Worker Search & Filter Decoupling
+- **Decoupled Search Logic (`lib/view_models/user_view_model.dart`)**:
+  - Implemented isolated search engine operating over `_allUsers` (searching name & job title) without mutating or overwriting the regular `_users` list or active status filter (`statusFilter`).
+  - Added `searchQuery`, `isSearching`, `searchResults`, `setSearchQuery`, and `clearSearch`.
+- **Search Header & In-Place Results Interface (`lib/views/home/components/custom_appbar.dart`, `lib/views/home/components/users_status_listview.dart`, `lib/views/home/home_view.dart`)**:
+  - Modernized `customAppBar` with back-arrow toggle, clear query action button, and search input placeholder.
+  - In search mode, `HomeView` presents full-screen search results with worker count (`نتائج البحث (X عامل)`) and live attendance status badge (`حاضر`, `غائب`, `لم يسجل`).
+  - On closing or clearing search, the dashboard restores previous filters (`الكل`, `حاضر`, `غائب`, `لم يسجل` & category) seamlessly without reloading or state loss.
+
+## [2026-08-16] Date-Based Saturday-to-Friday Week Grouping & Chronological Sorting
+- **Date-Based Saturday-to-Friday Week Engine (`lib/core/utils/global_methods.dart`, `lib/view_models/attendance_view_model.dart`)**:
+  - `GlobalMethods.getWeekEnd()` computes the exact closing Friday for any given date in a Saturday→Friday work cycle using `(DateTime.friday - date.weekday + 7) % 7`.
+  - `setWeekId` matches calendar periods using year, month, and day comparisons rather than raw string representations.
+  - Automatically associates retroactively recorded previous days with their correct chronological week group.
+- **Chronological Week & Day Sorting**:
+  - `AttendanceViewModel.weekAttendanceMap` sorts days within each week card in ascending order (`todayDate ASC`).
+  - `AttendanceViewModel.sortedWeekGroups` sorts week cards by calendar end date (`weekEnd ASC`), ensuring older weeks always precede newer weeks even when inserted out of order.
+  - `AttendanceRepository.retrieveWeeks` orders query results by `weekEnd ASC, weekId ASC`.
+- **Modernized Attendance Bottom Sheet & Week Components (`lib/views/users/components/slid_bottom_sheet/`)**:
+  - `WeekData` and `WeekStatus` accept parsed week groups directly and display date range subheadings (`YYYY-MM-DD — YYYY-MM-DD`).
+  - Re-checks week settlement status dynamically (`weekStatus == 1`) across all grouped records.
+
+## [2026-08-16] Dedicated Two-Tier Authentication Flow Redesign
+- **Local Biometrics Lock Screen (`lib/views/login_view.dart`)**:
+  - Exclusively dedicated to device biometrics/PIN unlock every time the app opens.
+  - Removed email input field; provides direct biometric authentication prompt and fallback trial access.
+- **First-Time Purchase License Activation Screen (`lib/views/start_view.dart`, `lib/views/purchase/components/purchase_data.dart`)**:
+  - Dedicated first-run screen validating buyer's email against Firebase API (`ApiService.getUser`).
+  - Card-based enterprise UI adhering to `AppColors` palette with input validation and license activation feedback.
+
 ## [2026-08-16] Monthly Reports & Arabic PDF Export + Daily Attendance Reminder
 - **Monthly Reports & Statistics (`lib/views/reports/reports_view.dart`, `lib/view_models/reports_view_model.dart`)**:
   - Month & Year selector with quick navigation.

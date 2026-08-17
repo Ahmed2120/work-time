@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/data/models/attendance.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 
-import '../../../../../data/models/attendance.dart';
-
 class WeekStatus extends StatelessWidget {
-  const WeekStatus({required this.index, required this.weeks, Key? key}) : super(key: key);
-  final int index;
-  final int weeks;
+  const WeekStatus({required this.weekGroup, super.key});
+
+  final List<Attendance> weekGroup;
 
   @override
   Widget build(BuildContext context) {
     final attendanceViewModel = Provider.of<AttendanceViewModel>(context);
-    final weekStatus = attendanceViewModel.weekAttendanceMap[weeks]![0].weekStatus;
 
-    if (weekStatus == 0) {
+    // Settled if ANY record in the week is marked settled (weekStatus == 1)
+    final bool isSettled = weekGroup.any((a) => a.weekStatus == 1);
+
+    if (!isSettled) {
       return SizedBox(
         width: double.infinity,
         height: 48,
@@ -35,9 +36,10 @@ class WeekStatus extends StatelessWidget {
               fontFamily: 'Cairo',
             ),
           ),
-          onPressed: () {
-            final model = attendanceViewModel.weekAttendanceMap[weeks]![0];
-            final attendance = Attendance(
+          onPressed: () async {
+            // Mark every record in this week as settled
+            final model = weekGroup.first;
+            final settled = Attendance(
               id: model.id,
               userId: model.userId,
               weekEnd: model.weekEnd,
@@ -50,15 +52,15 @@ class WeekStatus extends StatelessWidget {
               overTimeStatus: model.overTimeStatus,
               salaryReceived: model.salaryReceived,
             );
-            attendanceViewModel.updateAttendance(attendance: attendance);
-            attendanceViewModel.getWeeklyAttendance(model.userId);
-            attendanceViewModel.getAttendanceUser(model.userId);
+            await attendanceViewModel.updateAttendance(attendance: settled);
+            await attendanceViewModel.getWeeklyAttendance(model.userId);
+            await attendanceViewModel.getAttendanceUser(model.userId);
           },
         ),
       );
     }
 
-    // Already settled
+    // ─── Already settled badge ───────────────────────────────────────────────
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 12),

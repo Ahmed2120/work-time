@@ -3,6 +3,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:toast/toast.dart';
+import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/views/components/constant.dart';
 
 import '../purchase/purchase_app.dart';
@@ -60,9 +61,15 @@ Future<void> showFlushBar(BuildContext context)async {
     icon: Icon(Icons.info,color: Colors.black,),
     forwardAnimationCurve: Curves.linearToEaseOut,
     reverseAnimationCurve: Curves.linearToEaseOut,
-    mainButton: TextButton(onPressed: (){
-      push(screen: PurchaseApp(), context: context);
-    },child:Text('شراء التطبيق',style: TextStyle(fontSize: 17,color: Colors.blue),) ,),
+    mainButton: TextButton(
+      onPressed: () {
+        push(screen: const PurchaseApp(), context: context);
+      },
+      child: Text(
+        AppConfig.isPlayStore ? 'شراء التطبيق' : 'تفعيل الترخيص',
+        style: const TextStyle(fontSize: 15, color: Colors.blue, fontFamily: 'Cairo'),
+      ),
+    ),
       title: 'النسخة التجريبية',
       message:
       'هذه نسخه تجريبية محدودة الاستخدام قم بشراء التطبيق للاستخدام الكامل',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/views/components/app_button.dart';
 
@@ -115,7 +116,7 @@ class _FormSheetState extends State<FormSheet> {
               icon: widget.user == null ? Icons.person_add_alt_1_rounded : Icons.edit_rounded,
               onPressed: () {
                 final provider = Provider.of<UserViewModel>(context, listen: false);
-                if ((provider.users.length + provider.usersTrash.length) >= 5 && trial) {
+                if ((provider.users.length + provider.usersTrash.length) >= AppConfig.maxTrialWorkers && trial) {
                   showFlushBar(context);
                   return;
                 }

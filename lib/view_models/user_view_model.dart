@@ -20,12 +20,18 @@ class UserViewModel with ChangeNotifier {
   List<String> _filteredUsers = [];
   User _user = User(name: '', job: '', salary: '');
 
+  List<User> get allUsers => _allUsers;
   List<User> get users => _users;
   List<User> get usersTrash => _usersTrash;
   List<String> get filteredUsers => _filteredUsers;
   User get user => _user;
 
   bool clickSearch = false;
+  String _searchQuery = '';
+  String get searchQuery => _searchQuery;
+
+  /// True when the search bar is active AND user has entered a search query
+  bool get isSearching => clickSearch && _searchQuery.trim().isNotEmpty;
 
   // ─── Status Filter (الكل, حاضر, غائب, لم يسجل) ─────────────────────────────
   String _statusFilter = 'الكل';
@@ -42,8 +48,8 @@ class UserViewModel with ChangeNotifier {
     final int userId = await userRepository.insert(user);
     user.id = userId;
     _allUsers.add(user);
-    if(dropDownValue == user.salary){
-    _users.add(user);
+    if (dropDownValue == 'الكل' || dropDownValue == user.salary) {
+      _users.add(user);
     }
     getSalaries();
     notifyListeners();
@@ -51,30 +57,49 @@ class UserViewModel with ChangeNotifier {
 
   Future getUsers() async {
     _allUsers = await userRepository.retrieve();
-    _users = _allUsers;
+    if (dropDownValue == 'الكل') {
+      _users = _allUsers;
+    } else {
+      _users = _allUsers.where((u) => u.salary == dropDownValue).toList();
+    }
     getTrash();
     getSalaries();
     notifyListeners();
   }
 
+  // ─── Search Operations (Searches across ALL users without mutating _users) ──
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
+  void clearSearch() {
+    _searchQuery = '';
+    notifyListeners();
+  }
+
   List<User> searchUsers(String txt) {
-    List<User> usersListSearch = [];
-    if (_users.isNotEmpty) {
-      for (var element in _users) {
-        if (element.name.contains(txt) || element.job.contains(txt)) {
-          usersListSearch.add(element);
-        }
-      }
-      _users = usersListSearch;
-      notifyListeners();
-    } else {
-      getUsers();
-    }
-    return _users;
+    _searchQuery = txt;
+    notifyListeners();
+    return searchResults;
+  }
+
+  /// Returns filtered list over ALL users based on the active query
+  List<User> get searchResults {
+    if (_searchQuery.trim().isEmpty) return _allUsers;
+    final query = _searchQuery.trim().toLowerCase();
+    return _allUsers.where((element) {
+      final nameMatch = element.name.toLowerCase().contains(query);
+      final jobMatch = element.job.toLowerCase().contains(query);
+      return nameMatch || jobMatch;
+    }).toList();
   }
 
   void changeClickSearch() {
     clickSearch = !clickSearch;
+    if (!clickSearch) {
+      _searchQuery = '';
+    }
     notifyListeners();
   }
 
@@ -117,7 +142,7 @@ class UserViewModel with ChangeNotifier {
 
   List<User> filteringUser(String txt) {
     if (txt == 'الكل') {
-      getUsers();
+      _users = _allUsers;
     } else {
       _users = _allUsers.where((user) => txt == user.salary).toList();
     }

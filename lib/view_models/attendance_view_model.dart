@@ -37,7 +37,7 @@ class AttendanceViewModel with ChangeNotifier {
     if (attendanceModel.isNotEmpty) {
       DateTime dateTime = DateTime.parse(attendanceModel.last.todayDate);
       date = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
-      time = "${GlobalMethods.getTimeFormat(DateTime.parse(attendanceModel.last.todayDate))}";
+      time = GlobalMethods.getTimeFormat(DateTime.parse(attendanceModel.last.todayDate));
       if (attendanceModel.last.status == 1) {
         attendanceText = 'حاضر';
       } else {
@@ -84,31 +84,37 @@ class AttendanceViewModel with ChangeNotifier {
     _attendanceUser = list;
 
     final DateTime targetDate = date ?? dateTimeAttendance;
-    final String targetWeekEnd = '${GlobalMethods.getWeekDay(targetDate)}';
+    // Compute the Friday that ends the week containing targetDate
+    final DateTime targetWeekEnd = GlobalMethods.getWeekEnd(targetDate);
 
-    // 1. If worker already has an active (unsettled) week for this week period, reuse its weekId
+    // 1. Reuse the active (unsettled) week whose weekEnd falls in the same calendar week
     for (var element in _attendanceUser) {
-      if (element.weekEnd == targetWeekEnd && element.weekStatus == 0) {
-        return element.weekId;
+      if (element.weekStatus == 0) {
+        final DateTime? stored = DateTime.tryParse(element.weekEnd);
+        if (stored != null &&
+            stored.year == targetWeekEnd.year &&
+            stored.month == targetWeekEnd.month &&
+            stored.day == targetWeekEnd.day) {
+          return element.weekId;
+        }
       }
     }
 
-    // 2. If it's a new period or the previous week was settled, increment to new weekId
+    // 2. New week period — assign new weekId
     int maxWeekId = 0;
     for (var element in _attendanceUser) {
-      if (element.weekId > maxWeekId) {
-        maxWeekId = element.weekId;
-      }
+      if (element.weekId > maxWeekId) maxWeekId = element.weekId;
     }
     return maxWeekId + 1;
   }
 
-  // Weeks list
+  // ─── Weeks list (weekId integers, ordered by DB) ─────────────────────────
   List<int> _weeksList = [];
   List<int> get weeksList => _weeksList;
 
   Future getWeeks(int userId) async {
     _weeksList = await attendanceRepository.retrieveWeeks(userId);
+    await getWeeklyAttendance(userId);
     notifyListeners();
   }
 
@@ -120,14 +126,35 @@ class AttendanceViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  // Groups weeklyAttendance by weekId
+  // Groups weeklyAttendance by weekId, with days sorted by date ascending
   Map<int, List<Attendance>> get weekAttendanceMap {
     final Map<int, List<Attendance>> map = {};
     for (var attendance in _weeklyAttendance) {
       map.putIfAbsent(attendance.weekId, () => []);
       map[attendance.weekId]!.add(attendance);
     }
+    // Sort each week's days by todayDate ascending
+    for (final key in map.keys) {
+      map[key]!.sort((a, b) {
+        final da = DateTime.tryParse(a.todayDate) ?? DateTime.now();
+        final db = DateTime.tryParse(b.todayDate) ?? DateTime.now();
+        return da.compareTo(db);
+      });
+    }
     return map;
+  }
+
+  /// Returns week groups sorted chronologically by their weekEnd date (oldest week first).
+  /// Each group's days are already sorted by date ascending.
+  List<List<Attendance>> get sortedWeekGroups {
+    final map = weekAttendanceMap;
+    final groups = map.values.toList();
+    groups.sort((a, b) {
+      final dateA = DateTime.tryParse(a.first.weekEnd) ?? DateTime.now();
+      final dateB = DateTime.tryParse(b.first.weekEnd) ?? DateTime.now();
+      return dateA.compareTo(dateB);
+    });
+    return groups;
   }
 
   // Calculates total salary for a week group

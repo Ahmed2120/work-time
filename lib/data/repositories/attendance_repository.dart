@@ -75,7 +75,11 @@ class AttendanceRepository implements IAttendanceRepository {
   Future<List<int>> retrieveWeeks(int userId) async {
     try {
       final db = await databaseHandler.initializeDB();
-      final List<Map<String, Object?>> queryResults = await db.rawQuery("SELECT DISTINCT weekId FROM $_tableName WHERE userId = ? ", [userId]);
+      // Order by the earliest date recorded in each week so older weeks come first
+      final List<Map<String, Object?>> queryResults = await db.rawQuery(
+        "SELECT DISTINCT weekId FROM $_tableName WHERE userId = ? ORDER BY weekEnd ASC, weekId ASC",
+        [userId],
+      );
       return queryResults.map((e) => e['weekId'] as int).toList();
     } catch (e) {
       print("Error retrieving weeks: $e");

@@ -75,7 +75,7 @@ class PdfReportService {
               ),
               pw.SizedBox(height: 2),
               pw.Text(
-                'نظام WorkTime لإدارة ومتابعة العمال',
+                'تطبيق عُمَّالي لإدارة ومتابعة العمال',
                 style: pw.TextStyle(fontSize: 11, color: textMuted),
               ),
             ],
@@ -233,7 +233,7 @@ class PdfReportService {
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
-          pw.Text('تم الاستخراج عبر تطبيق WorkTime', style: pw.TextStyle(fontSize: 8, color: textMuted)),
+          pw.Text('تم الاستخراج عبر تطبيق عُمَّالي', style: pw.TextStyle(fontSize: 8, color: textMuted)),
           pw.Text('صفحة ${context.pageNumber} من ${context.pagesCount}', style: pw.TextStyle(fontSize: 8, color: textMuted)),
         ],
       ),

@@ -48,12 +48,15 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.14.4
-  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.3
+  flutter_lints: ^1.0.0
 
 flutter_launcher_icons:
-  android: true
-  image_path: 'assets/images/logow.PNG'
+  android: "ic_launcher"
+  ios: true
+  adaptive_icon_background: "#0F172A"
+  adaptive_icon_foreground: "assets/images/transparent-logo.png"
+  image_path: "assets/images/logo.png"
 
 
 flutter:

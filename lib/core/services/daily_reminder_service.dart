@@ -4,6 +4,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:work_time/core/theme/app_colors.dart';
 
 class DailyReminderService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -36,7 +37,7 @@ class DailyReminderService {
     }
 
     const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@drawable/ic_stat_notification');
 
     const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -105,7 +106,8 @@ class DailyReminderService {
       channelDescription: _channelDescription,
       importance: Importance.max,
       priority: Priority.high,
-      icon: '@mipmap/ic_launcher',
+      icon: '@drawable/ic_stat_notification',
+      color: AppColors.primaryAmber,
     );
 
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
@@ -171,6 +173,8 @@ class DailyReminderService {
       channelDescription: _channelDescription,
       importance: Importance.max,
       priority: Priority.high,
+      icon: '@drawable/ic_stat_notification',
+      color: AppColors.primaryAmber,
     );
 
     const NotificationDetails notificationDetails = NotificationDetails(

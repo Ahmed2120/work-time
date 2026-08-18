@@ -1,5 +1,21 @@
 # Project Update Log
 
+## [2026-08-18] Android Adaptive Icons & Dedicated Notification Icon Integration
+- **Notification Icon Configuration (`@drawable/ic_stat_notification`)**:
+  - Integrated monochrome notification icon across all density buckets (`drawable-mdpi`, `hdpi`, `xhdpi`, `xxhdpi`, `xxxhdpi`).
+  - Linked `ic_stat_notification` with `AppColors.primaryAmber` accent tint in `DailyReminderService` (`daily_reminder_service.dart`) and `NotificationApi` (`notification_api.dart`).
+- **Android Resource Tree Audit**:
+  - Verified and confirmed that all files under `android/app/src/main/res/` are required, standard, and zero-redundancy.
+
+## [2026-08-18] New Identity "عُمَّالي | Ommali" & Color Palette (Industrial Amber & Slate Charcoal)
+- **Amber & Slate Palette Refactoring (`lib/core/theme/app_colors.dart`, `lib/core/theme/theme.dart`)**:
+  - Replaced green/blue tones with **Industrial Amber Rust** (`#EA580C`) and **Deep Slate Charcoal** (`#0F172A` / `#1E293B`).
+  - Drawer header updated with a sleek charcoal gradient (`drawerHeaderGradient`) and amber badge.
+  - Green (`#10B981`) is now exclusively dedicated to the semantic "حاضر" attendance status.
+- **New App Branding "عُمَّالي | Ommali" (`lib/views/home/components/drawer/components/title_drawer.dart`)**:
+  - Header updated to "عُمَّالي" with tagline "إدارة حضور وحسابات ويوميات العمال".
+  - Generated dedicated app icon logo in warm amber & carbon slate.
+
 ## [2026-08-17] Dual Distribution Flavor Engine (Standalone APK vs Google Play Store)
 - **Central AppConfig Flavor Control (`lib/core/config/app_config.dart`)**:
   - Implemented `AppFlavor` enum (`apkDirect` vs `playStore`) with compile-time environment override (`--dart-define=FLAVOR=playStore`) and fallback default.

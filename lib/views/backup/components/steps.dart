@@ -23,7 +23,7 @@ class Steps extends StatelessWidget {
             SizedBox(height: 10),
             Text('1 تحميل الملف من جوجل دريف '),
             Text('2 نسخ الملف في المسار المحدد '),
-            Text('3 المسار \n storage/emulated/0/WorkTime/dgi.db '),
+            Text('3 المسار \n storage/emulated/0/Download/Ommali/dgi.db '),
             Text('4 الضغط علي استرجاع النسخة الاحتياطية '),
           ],
         ));

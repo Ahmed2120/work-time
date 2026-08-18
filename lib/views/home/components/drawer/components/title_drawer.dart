@@ -10,7 +10,7 @@ class TitleDrawer extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 48, 20, 20),
       decoration: const BoxDecoration(
-        color: AppColors.primaryPurple,
+        gradient: AppColors.drawerHeaderGradient,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
@@ -23,23 +23,27 @@ class TitleDrawer extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 38,
-                height: 38,
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: AppColors.primaryAmber.withValues(alpha: 0.4),
+                    width: 1.5,
+                  ),
                 ),
-                child: const Center(
-                  child: Icon(
-                    Icons.access_time_filled_rounded,
-                    color: Colors.white,
-                    size: 22,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(13),
+                  child: Image.asset(
+                    'assets/images/transparent-logo.png',
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               const Text(
-                'WorkTime',
+                'عُمَّالي',
                 style: TextStyle(
                   fontSize: 22,
                   fontFamily: 'Cairo',
@@ -49,9 +53,9 @@ class TitleDrawer extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
-            'نظام إدارة حضور الموظفين',
+            'إدارة حضور وحسابات ويوميات العمال',
             style: TextStyle(
               fontSize: 12,
               fontFamily: 'Cairo',

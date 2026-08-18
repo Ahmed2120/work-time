@@ -62,14 +62,38 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/Logo.png'),
-            fit: BoxFit.contain,
-          ),
+      backgroundColor: const Color(0xFF0F172A), // Deep Slate — brand dark
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Logo with dark background fills nicely on dark splash
+            Image.asset(
+              'assets/images/logo.png',
+              width: 160,
+              height: 160,
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'عُمَّالي',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontFamily: 'Cairo',
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'إدارة حضور وحسابات ويوميات العمال',
+              style: TextStyle(
+                fontSize: 13,
+                color: Color(0xFF94A3B8),
+                fontFamily: 'Cairo',
+              ),
+            ),
+          ],
         ),
       ),
     );

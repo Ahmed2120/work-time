@@ -95,13 +95,13 @@ class _ReminderDrawerState extends State<ReminderDrawer> {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkSurface : AppColors.lightPurple,
+                    color: isDark ? AppColors.darkSurface : AppColors.lightAmber,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(
                     Icons.notifications_active_outlined,
                     size: 20,
-                    color: AppColors.primaryPurple,
+                    color: AppColors.primaryAmber,
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -125,7 +125,7 @@ class _ReminderDrawerState extends State<ReminderDrawer> {
                             'الموعد: ${_formatTime(_reminderTime)} (اضغط للتغيير)',
                             style: const TextStyle(
                               fontSize: 11,
-                              color: AppColors.primaryPurple,
+                              color: AppColors.primaryAmber,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'Cairo',
                             ),
@@ -136,8 +136,8 @@ class _ReminderDrawerState extends State<ReminderDrawer> {
                 ),
                 Switch.adaptive(
                   value: _isReminderEnabled,
-                  activeTrackColor: AppColors.primaryPurple,
-                  activeColor: Colors.white,
+                  activeTrackColor: AppColors.primaryAmber,
+                  activeThumbColor: Colors.white,
                   inactiveThumbColor: Colors.white,
                   inactiveTrackColor: const Color(0xFFCBD5E1),
                   onChanged: _toggleReminder,

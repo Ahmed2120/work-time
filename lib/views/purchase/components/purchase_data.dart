@@ -37,10 +37,24 @@ class _PurchaseDataState extends State<PurchaseData> {
           Container(
             height: 110,
             width: 110,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
+            decoration: BoxDecoration(
+              color: isDark
+                  ? const Color(0xFF1E293B)
+                  : const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(26),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFEA580C).withValues(alpha: 0.25),
+                  blurRadius: 18,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(26),
+              child: Image.asset(
+                'assets/images/transparent-logo.png',
                 fit: BoxFit.contain,
-                image: AssetImage('assets/images/Logo.png'),
               ),
             ),
           ),

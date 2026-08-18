@@ -71,7 +71,7 @@ class MyApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            title: 'Work Time',
+            title: 'عُمَّالي',
             theme: lightThemeData,
             darkTheme: darkThemeData,
             themeMode: themeViewModel.themeMode,

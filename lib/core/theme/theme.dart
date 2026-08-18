@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'app_colors.dart';
 
-Color defaultColor = AppColors.primaryPurple;
+Color defaultColor = AppColors.primary;
 
 // ─── Light Theme ──────────────────────────────────────────────────────────────
 ThemeData lightThemeData = ThemeData(
   brightness: Brightness.light,
   fontFamily: 'Cairo',
-  primaryColor: AppColors.primaryPurple,
+  primaryColor: AppColors.primary,
   scaffoldBackgroundColor: AppColors.lightBackground,
   cardColor: AppColors.lightSurface,
 
   colorScheme: const ColorScheme.light(
-    primary: AppColors.primaryPurple,
+    primary: AppColors.primary,
     secondary: AppColors.primaryNavy,
     surface: AppColors.lightSurface,
   ),
@@ -50,7 +50,7 @@ ThemeData lightThemeData = ThemeData(
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.primaryPurple,
+      backgroundColor: AppColors.primary,
       foregroundColor: Colors.white,
       elevation: 0,
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
@@ -63,12 +63,12 @@ ThemeData lightThemeData = ThemeData(
     ),
   ),
 
-  iconTheme: const IconThemeData(color: AppColors.primaryPurple, size: 22),
+  iconTheme: const IconThemeData(color: AppColors.primary, size: 22),
 
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     backgroundColor: AppColors.lightSurface,
     unselectedItemColor: AppColors.textSecondaryLight,
-    selectedItemColor: AppColors.primaryPurple,
+    selectedItemColor: AppColors.primary,
     elevation: 0,
     type: BottomNavigationBarType.fixed,
     selectedLabelStyle: TextStyle(
@@ -93,7 +93,7 @@ ThemeData lightThemeData = ThemeData(
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide(color: AppColors.primaryPurple, width: 1.5),
+      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
@@ -164,7 +164,7 @@ ThemeData lightThemeData = ThemeData(
 
   checkboxTheme: CheckboxThemeData(
     fillColor: WidgetStateProperty.resolveWith((states) {
-      return states.contains(WidgetState.selected) ? AppColors.primaryPurple : Colors.transparent;
+      return states.contains(WidgetState.selected) ? AppColors.primary : Colors.transparent;
     }),
     checkColor: WidgetStateProperty.all(Colors.white),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
@@ -176,12 +176,12 @@ ThemeData lightThemeData = ThemeData(
 ThemeData darkThemeData = ThemeData(
   brightness: Brightness.dark,
   fontFamily: 'Cairo',
-  primaryColor: AppColors.primaryPurple,
+  primaryColor: AppColors.primary,
   scaffoldBackgroundColor: AppColors.darkBackground,
   cardColor: AppColors.darkSurface,
 
   colorScheme: const ColorScheme.dark(
-    primary: AppColors.primaryPurple,
+    primary: AppColors.primary,
     secondary: AppColors.primaryNavy,
     surface: AppColors.darkSurface,
   ),
@@ -218,7 +218,7 @@ ThemeData darkThemeData = ThemeData(
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.primaryPurple,
+      backgroundColor: AppColors.primary,
       foregroundColor: Colors.white,
       elevation: 0,
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
@@ -231,12 +231,12 @@ ThemeData darkThemeData = ThemeData(
     ),
   ),
 
-  iconTheme: const IconThemeData(color: AppColors.indigoAccent, size: 22),
+  iconTheme: const IconThemeData(color: AppColors.amberAccent, size: 22),
 
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     backgroundColor: AppColors.darkSurface,
     unselectedItemColor: AppColors.textSecondaryDark,
-    selectedItemColor: AppColors.indigoAccent,
+    selectedItemColor: AppColors.amberAccent,
     elevation: 0,
     type: BottomNavigationBarType.fixed,
     selectedLabelStyle: TextStyle(
@@ -261,7 +261,7 @@ ThemeData darkThemeData = ThemeData(
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide(color: AppColors.indigoAccent, width: 1.5),
+      borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
@@ -332,7 +332,7 @@ ThemeData darkThemeData = ThemeData(
 
   checkboxTheme: CheckboxThemeData(
     fillColor: WidgetStateProperty.resolveWith((states) {
-      return states.contains(WidgetState.selected) ? AppColors.indigoAccent : Colors.transparent;
+      return states.contains(WidgetState.selected) ? AppColors.primary : Colors.transparent;
     }),
     checkColor: WidgetStateProperty.all(Colors.white),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),

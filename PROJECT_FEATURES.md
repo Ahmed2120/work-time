@@ -1,4 +1,24 @@
-# Project Update Log
+## [2026-08-19] Workforce Management Enhancements & Weekly Cloud Sync
+- **Job Role Filtering (`UserViewModel`, `UserRepository`, `JobFilterDropdown`)**:
+  - Implemented dynamic job role extraction from SQLite via `retrieveJobs()`.
+  - Added `JobFilterDropdown` in HomeView to filter workers seamlessly by profession alongside salary & status.
+- **Weekly Auto Silent Cloud Sync (`BackupViewModel`, `GoogleDriveService`, `BackupView`)**:
+  - Implemented silent 7-day cloud sync to Google Drive in the background.
+  - Added Auto-Sync toggle switch and last sync date display in `BackupView`.
+- **Flexible Overtime Multipliers & Custom Wage (`over_time.dart`, `AppConfig`)**:
+  - Added multi-rate overtime support (1.0x, 1.25x, 1.5x, 1.75x, 2.0x) with quick chips.
+  - Added modal bottom sheet allowing supervisors to enter custom overtime amounts on the fly.
+- **Dynamic Workplace Management (`AttendanceWidget`, `AttendanceRepository`, `AttendanceViewModel`)**:
+  - Added auto-suggestion chips for previously used project sites & workshop locations.
+  - Made workplace optional with fallback default to support fixed workshops and multi-site contractors alike.
+
+## [2026-08-19] Scheduled Alarm Receivers & Notification Fix
+- **Android Manifest Scheduled Receivers (`android/app/src/main/AndroidManifest.xml`)**:
+  - Registered `ScheduledNotificationReceiver`, `ScheduledNotificationBootReceiver`, and `ActionBroadcastReceiver` required by `flutter_local_notifications` for AlarmManager intents.
+- **Daily Reminder Service Optimization (`lib/core/services/daily_reminder_service.dart`)**:
+  - Explicitly created `AndroidNotificationChannel` (`attendance_reminder_channel_v2`) with `Importance.max`.
+  - Added `requestExactAlarmsPermission()` for Android 12+ (API 31+).
+  - Added `scheduleTestNotificationInSeconds()` helper for test verification.
 
 ## [2026-08-18] Android Adaptive Icons & Dedicated Notification Icon Integration
 - **Notification Icon Configuration (`@drawable/ic_stat_notification`)**:

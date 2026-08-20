@@ -8,46 +8,54 @@ class NotificationApi {
 
   static Future<NotificationDetails> _notificationDetails() async {
     const sound = "sound.wav";
-    return NotificationDetails(
+    return const NotificationDetails(
       android: AndroidNotificationDetails(
         'channel id',
         'channel name',
-        sound: RawResourceAndroidNotificationSound(sound.split('.').first),
+        sound: RawResourceAndroidNotificationSound('sound'),
         enableVibration: true,
         importance: Importance.max,
-        icon: '@drawable/ic_stat_notification',
+        icon: 'ic_stat_notification',
       ),
-      iOS: const DarwinNotificationDetails(sound: sound),
+      iOS: DarwinNotificationDetails(sound: sound),
     );
   }
 
-  static Future init({bool initScheduled = false}) async {
-    const android = AndroidInitializationSettings('@drawable/ic_stat_notification');
-    const ios = DarwinInitializationSettings();
-    const settings = InitializationSettings(android: android, iOS: ios);
-    await _notification.initialize(settings: settings);
+  static Future<void> init({bool initScheduled = false}) async {
+    try {
+      const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const ios = DarwinInitializationSettings();
+      const settings = InitializationSettings(android: android, iOS: ios);
+      await _notification.initialize(settings: settings);
+    } catch (_) {}
   }
 
-  static Future showScheduleNotification({
+  static Future<void> showScheduleNotification({
     int id = 0,
     String? payload,
   }) async {
-    return _notification.zonedSchedule(
-      id: id,
-      title: 'نسخ إحتياطي',
-      body: 'قم بعمل نسخ احتياطي لحفظ البيانات الجديدة',
-      scheduledDate: tz.TZDateTime.from(
-        _scheduleWeekly(const Time(8, 0, 0), days: [DateTime.friday]),
-        tz.local,
-      ),
-      notificationDetails: await _notificationDetails(),
-      payload: payload,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
-    );
+    try {
+      await _notification.zonedSchedule(
+        id: id,
+        title: 'نسخ إحتياطي',
+        body: 'قم بعمل نسخ احتياطي لحفظ البيانات الجديدة',
+        scheduledDate: tz.TZDateTime.from(
+          _scheduleWeekly(const Time(8, 0, 0), days: [DateTime.friday]),
+          tz.local,
+        ),
+        notificationDetails: await _notificationDetails(),
+        payload: payload,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+      );
+    } catch (_) {}
   }
 
-  static void cancel(int id) => _notification.cancel(id: id);
+  static void cancel(int id) {
+    try {
+      _notification.cancel(id: id);
+    } catch (_) {}
+  }
 
   static tz.TZDateTime _scheduleDaily(Time time) {
     final now = tz.TZDateTime.now(tz.local);

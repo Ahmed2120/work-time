@@ -15,43 +15,60 @@ class DailyReminderService {
   static const String _keyReminderMinute = 'daily_reminder_minute';
 
   static const int _notificationId = 1001;
-  static const String _channelId = 'attendance_reminder_channel';
+  static const String _channelId = 'attendance_reminder_channel_v2';
   static const String _channelName = 'تنبيهات التمام اليومي';
   static const String _channelDescription = 'تذكير يومي لتسجيل حضور وانصراف العمال';
 
   static bool _initialized = false;
   static bool _isRequestingPermission = false;
 
-  /// Initialize Notification plugin and timezone
+  /// Initialize Notification plugin and timezone safely
   static Future<void> init() async {
     if (_initialized) return;
 
     try {
-      tz.initializeTimeZones();
-      final timezoneResult = await FlutterTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(timezoneResult.localizedName?.name ?? 'Africa/Cairo'));
-    } catch (_) {
       try {
-        tz.setLocalLocation(tz.getLocation('Africa/Cairo'));
-      } catch (_) {}
-    }
+        tz.initializeTimeZones();
+        final timezoneResult = await FlutterTimezone.getLocalTimezone();
+        tz.setLocalLocation(tz.getLocation(timezoneResult.localizedName?.name ?? 'Africa/Cairo'));
+      } catch (_) {
+        try {
+          tz.setLocalLocation(tz.getLocation('Africa/Cairo'));
+        } catch (_) {}
+      }
 
-    const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@drawable/ic_stat_notification');
+      const AndroidInitializationSettings androidSettings =
+          AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+      const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
 
-    const InitializationSettings initSettings = InitializationSettings(
-      android: androidSettings,
-      iOS: iosSettings,
-    );
+      const InitializationSettings initSettings = InitializationSettings(
+        android: androidSettings,
+        iOS: iosSettings,
+      );
 
-    try {
       await _notificationsPlugin.initialize(settings: initSettings);
+
+      // Create notification channel explicitly for Android 8.0+
+      final androidImplementation = _notificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+
+      if (androidImplementation != null) {
+        const AndroidNotificationChannel channel = AndroidNotificationChannel(
+          _channelId,
+          _channelName,
+          description: _channelDescription,
+          importance: Importance.max,
+          playSound: true,
+          enableVibration: true,
+        );
+        await androidImplementation.createNotificationChannel(channel);
+      }
+
       _initialized = true;
 
       // Reschedule if reminder was enabled
@@ -61,7 +78,7 @@ class DailyReminderService {
         await scheduleDailyReminder(time);
       }
     } catch (e) {
-      debugPrint("Error initializing notifications: $e");
+      debugPrint("Error initializing DailyReminderService: $e");
     }
   }
 
@@ -73,8 +90,11 @@ class DailyReminderService {
     try {
       final androidImplementation = _notificationsPlugin
           .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-      final bool? androidGranted =
+
+      final bool? notifGranted =
           await androidImplementation?.requestNotificationsPermission();
+
+      await androidImplementation?.requestExactAlarmsPermission();
 
       final iosImplementation = _notificationsPlugin
           .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
@@ -84,7 +104,7 @@ class DailyReminderService {
         sound: true,
       );
 
-      return (androidGranted ?? false) || (iosGranted ?? false);
+      return (notifGranted ?? false) || (iosGranted ?? false);
     } catch (e) {
       debugPrint("Error requesting notification permission: $e");
       return false;
@@ -93,47 +113,38 @@ class DailyReminderService {
     }
   }
 
-  /// Schedule daily recurring reminder with fallback for Android exact alarm restrictions
+  /// Schedule daily recurring reminder at specified time
   static Future<void> scheduleDailyReminder(TimeOfDay time) async {
-    await init();
-    await cancelReminder();
-
-    final tz.TZDateTime scheduledDate = _nextInstanceOfTime(time.hour, time.minute);
-
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      _channelId,
-      _channelName,
-      channelDescription: _channelDescription,
-      importance: Importance.max,
-      priority: Priority.high,
-      icon: '@drawable/ic_stat_notification',
-      color: AppColors.primaryAmber,
-    );
-
-    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
-
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
-    // Try exact alarm first, fallback to inexact if exact alarm is restricted on Android 12+
     try {
-      await _notificationsPlugin.zonedSchedule(
-        id: _notificationId,
-        title: 'تذكير التمام اليومي 📋',
-        body: 'حان وقت تسجيل حضور وانصراف العمال لليوم.',
-        scheduledDate: scheduledDate,
-        notificationDetails: notificationDetails,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        matchDateTimeComponents: DateTimeComponents.time,
+      await init();
+      await cancelReminder();
+
+      final tz.TZDateTime scheduledDate = _nextInstanceOfTime(time.hour, time.minute);
+
+      const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+        _channelId,
+        _channelName,
+        channelDescription: _channelDescription,
+        importance: Importance.max,
+        priority: Priority.high,
+        icon: 'ic_stat_notification',
+        color: AppColors.primaryAmber,
+        playSound: true,
+        enableVibration: true,
       );
-    } catch (e) {
-      debugPrint("Exact alarm failed, trying inexactAllowWhileIdle: $e");
+
+      const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      );
+
+      const NotificationDetails notificationDetails = NotificationDetails(
+        android: androidDetails,
+        iOS: iosDetails,
+      );
+
+      // Try exact alarm first, fallback to inexact if exact alarm is restricted on Android 12+
       try {
         await _notificationsPlugin.zonedSchedule(
           id: _notificationId,
@@ -141,48 +152,101 @@ class DailyReminderService {
           body: 'حان وقت تسجيل حضور وانصراف العمال لليوم.',
           scheduledDate: scheduledDate,
           notificationDetails: notificationDetails,
-          androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
           matchDateTimeComponents: DateTimeComponents.time,
         );
-      } catch (fallbackError) {
-        debugPrint("Inexact alarm also failed: $fallbackError");
+      } catch (e) {
+        debugPrint("Exact alarm failed, trying inexact: $e");
+        try {
+          await _notificationsPlugin.zonedSchedule(
+            id: _notificationId,
+            title: 'تذكير التمام اليومي 📋',
+            body: 'حان وقت تسجيل حضور وانصراف العمال لليوم.',
+            scheduledDate: scheduledDate,
+            notificationDetails: notificationDetails,
+            androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+            matchDateTimeComponents: DateTimeComponents.time,
+          );
+        } catch (fallbackError) {
+          debugPrint("Inexact alarm also failed: $fallbackError");
+        }
       }
-    }
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_keyReminderEnabled, true);
-    await prefs.setInt(_keyReminderHour, time.hour);
-    await prefs.setInt(_keyReminderMinute, time.minute);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_keyReminderEnabled, true);
+      await prefs.setInt(_keyReminderHour, time.hour);
+      await prefs.setInt(_keyReminderMinute, time.minute);
+    } catch (e) {
+      debugPrint("Error in scheduleDailyReminder: $e");
+    }
+  }
+
+  /// Trigger test notification in N seconds (for testing scheduled alarms)
+  static Future<void> scheduleTestNotificationInSeconds({int seconds = 5}) async {
+    try {
+      await init();
+      final tz.TZDateTime scheduledDate = tz.TZDateTime.now(tz.local).add(Duration(seconds: seconds));
+
+      const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+        _channelId,
+        _channelName,
+        channelDescription: _channelDescription,
+        importance: Importance.max,
+        priority: Priority.high,
+        icon: 'ic_stat_notification',
+        color: AppColors.primaryAmber,
+        playSound: true,
+        enableVibration: true,
+      );
+
+      const NotificationDetails notificationDetails = NotificationDetails(
+        android: androidDetails,
+        iOS: DarwinNotificationDetails(),
+      );
+
+      await _notificationsPlugin.zonedSchedule(
+        id: 9998,
+        title: 'تجربة التنبيه المجدول ⏱️',
+        body: 'يعمل التنبيه المجدول بنجاح بعد $seconds ثوانٍ!',
+        scheduledDate: scheduledDate,
+        notificationDetails: notificationDetails,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      );
+    } catch (e) {
+      debugPrint("Error in scheduleTestNotificationInSeconds: $e");
+    }
   }
 
   /// Cancel reminder
   static Future<void> cancelReminder() async {
     try {
       await _notificationsPlugin.cancel(id: _notificationId);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_keyReminderEnabled, false);
     } catch (_) {}
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_keyReminderEnabled, false);
   }
 
   /// Trigger immediate test notification
   static Future<void> showTestNotification() async {
-    await init();
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      _channelId,
-      _channelName,
-      channelDescription: _channelDescription,
-      importance: Importance.max,
-      priority: Priority.high,
-      icon: '@drawable/ic_stat_notification',
-      color: AppColors.primaryAmber,
-    );
-
-    const NotificationDetails notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: DarwinNotificationDetails(),
-    );
-
     try {
+      await init();
+      const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+        _channelId,
+        _channelName,
+        channelDescription: _channelDescription,
+        importance: Importance.max,
+        priority: Priority.high,
+        icon: 'ic_stat_notification',
+        color: AppColors.primaryAmber,
+        playSound: true,
+        enableVibration: true,
+      );
+
+      const NotificationDetails notificationDetails = NotificationDetails(
+        android: androidDetails,
+        iOS: DarwinNotificationDetails(),
+      );
+
       await _notificationsPlugin.show(
         id: 9999,
         title: 'تجربة التنبيه 🔔',
@@ -196,16 +260,24 @@ class DailyReminderService {
 
   /// Check if reminder is enabled
   static Future<bool> isReminderEnabled() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_keyReminderEnabled) ?? false;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool(_keyReminderEnabled) ?? false;
+    } catch (_) {
+      return false;
+    }
   }
 
   /// Get saved reminder time (default 09:00 AM)
   static Future<TimeOfDay> getReminderTime() async {
-    final prefs = await SharedPreferences.getInstance();
-    final hour = prefs.getInt(_keyReminderHour) ?? 9;
-    final minute = prefs.getInt(_keyReminderMinute) ?? 0;
-    return TimeOfDay(hour: hour, minute: minute);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final hour = prefs.getInt(_keyReminderHour) ?? 9;
+      final minute = prefs.getInt(_keyReminderMinute) ?? 0;
+      return TimeOfDay(hour: hour, minute: minute);
+    } catch (_) {
+      return const TimeOfDay(hour: 9, minute: 0);
+    }
   }
 
   static tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {

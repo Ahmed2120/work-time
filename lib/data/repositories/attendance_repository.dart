@@ -6,7 +6,7 @@ class AttendanceRepository implements IAttendanceRepository {
   final String _tableName = 'attendance';
   final DatabaseHandler databaseHandler;
 
-  AttendanceRepository({DatabaseHandler? handler}) 
+  AttendanceRepository({DatabaseHandler? handler})
       : databaseHandler = handler ?? DatabaseHandler();
 
   @override
@@ -50,7 +50,8 @@ class AttendanceRepository implements IAttendanceRepository {
   Future<List<Attendance>> retrieveByUserId(int userId) async {
     try {
       final db = await databaseHandler.initializeDB();
-      final List<Map<String, Object?>> queryResults = await db.query(_tableName, where: 'userId = ?', whereArgs: [userId]);
+      final List<Map<String, Object?>> queryResults =
+          await db.query(_tableName, where: 'userId = ?', whereArgs: [userId]);
       return queryResults.map((e) => Attendance.fromMap(e)).toList();
     } catch (e) {
       print("Error retrieving attendance by user id: $e");
@@ -59,11 +60,16 @@ class AttendanceRepository implements IAttendanceRepository {
   }
 
   @override
-  Future<List<Attendance>> retrieveByUserIdDateTime(int userId, DateTime dateTime) async {
+  Future<List<Attendance>> retrieveByUserIdDateTime(
+      int userId, DateTime dateTime) async {
     try {
       final db = await databaseHandler.initializeDB();
-      final String date = '${dateTime.year}-${dateTime.month < 10 ? '0${dateTime.month}' : '${dateTime.month}'}-${dateTime.day < 10 ? '0${dateTime.day}' : '${dateTime.day}'}';
-      final List<Map<String, Object?>> queryResults = await db.query(_tableName, where: 'userId = ? and todayDate LIKE ?', whereArgs: [userId, '%$date%']);
+      final String date =
+          '${dateTime.year}-${dateTime.month < 10 ? '0${dateTime.month}' : '${dateTime.month}'}-${dateTime.day < 10 ? '0${dateTime.day}' : '${dateTime.day}'}';
+      final List<Map<String, Object?>> queryResults = await db.query(
+          _tableName,
+          where: 'userId = ? and todayDate LIKE ?',
+          whereArgs: [userId, '%$date%']);
       return queryResults.map((e) => Attendance.fromMap(e)).toList();
     } catch (e) {
       print("Error retrieving attendance by user id and date: $e");
@@ -88,10 +94,14 @@ class AttendanceRepository implements IAttendanceRepository {
   }
 
   @override
-  Future<List<Attendance>> retrieveAttendByWeekId({required int weekId, required int userId}) async {
+  Future<List<Attendance>> retrieveAttendByWeekId(
+      {required int weekId, required int userId}) async {
     try {
       final db = await databaseHandler.initializeDB();
-      final List<Map<String, Object?>> queryResults = await db.query(_tableName, where: "weekId = ? and userId = ?", whereArgs: [weekId, userId]);
+      final List<Map<String, Object?>> queryResults = await db.query(
+          _tableName,
+          where: "weekId = ? and userId = ?",
+          whereArgs: [weekId, userId]);
       return queryResults.map((e) => Attendance.fromMap(e)).toList();
     } catch (e) {
       print("Error retrieving attendance by week id: $e");
@@ -100,10 +110,25 @@ class AttendanceRepository implements IAttendanceRepository {
   }
 
   @override
+  Future<List<String>> retrieveWorkPlaces() async {
+    try {
+      final db = await databaseHandler.initializeDB();
+      final List<Map<String, Object?>> queryResults = await db.rawQuery(
+        "SELECT DISTINCT workPlace FROM $_tableName WHERE workPlace IS NOT NULL AND workPlace != '' AND workPlace != 'لا يوجد' ORDER BY id DESC LIMIT 20",
+      );
+      return queryResults.map((e) => e['workPlace'] as String).toList();
+    } catch (e) {
+      print("Error retrieving workplaces: $e");
+      return [];
+    }
+  }
+
+  @override
   Future<int> update({required Attendance attendance}) async {
     try {
       final db = await databaseHandler.initializeDB();
-      return await db.update(_tableName, attendance.toMap(), where: 'id = ?', whereArgs: [attendance.id!]);
+      return await db.update(_tableName, attendance.toMap(),
+          where: 'id = ?', whereArgs: [attendance.id!]);
     } catch (e) {
       print("Error updating attendance: $e");
       return 0;
@@ -120,4 +145,3 @@ class AttendanceRepository implements IAttendanceRepository {
     }
   }
 }
-

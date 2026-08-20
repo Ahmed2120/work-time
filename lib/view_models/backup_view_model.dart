@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:work_time/core/services/google_drive_service.dart';
+import 'package:work_time/core/utils/cache_helper.dart';
 import 'package:work_time/views/components/functions.dart';
 
 class BackupViewModel with ChangeNotifier {
@@ -31,15 +32,32 @@ class BackupViewModel with ChangeNotifier {
   bool _isRestoring = false;
   bool get isRestoring => _isRestoring;
 
-  /// Check Google sign-in status on app launch or backup screen load
+  // ─── Weekly Auto Cloud Sync State ──────────────────────────────────────────
+  bool _isAutoSyncEnabled = true;
+  bool get isAutoSyncEnabled => _isAutoSyncEnabled;
+
+  DateTime? _lastAutoSyncTime;
+  DateTime? get lastAutoSyncTime => _lastAutoSyncTime;
+
+  /// Check Google sign-in status and trigger weekly auto-sync check
   Future<void> initGoogleAuth() async {
     _isCheckingAuth = true;
     notifyListeners();
 
     try {
+      // Load auto sync preferences
+      final autoSyncVal = CacheHelper.getData(key: 'auto_sync_enabled');
+      _isAutoSyncEnabled = autoSyncVal == null ? true : (autoSyncVal as bool);
+
+      final lastSyncStr = CacheHelper.getData(key: 'last_auto_sync_time') as String?;
+      if (lastSyncStr != null && lastSyncStr.isNotEmpty) {
+        _lastAutoSyncTime = DateTime.tryParse(lastSyncStr);
+      }
+
       _currentUser = await googleDriveService.signInSilently();
       if (_currentUser != null) {
         await refreshBackupMetadata();
+        await checkAndPerformWeeklyAutoSync();
       }
     } catch (e) {
       debugPrint("Auth init error: $e");
@@ -47,6 +65,40 @@ class BackupViewModel with ChangeNotifier {
       _isCheckingAuth = false;
       notifyListeners();
     }
+  }
+
+  /// Silently perform weekly cloud backup if signed in and >= 7 days passed
+  Future<void> checkAndPerformWeeklyAutoSync() async {
+    if (!_isAutoSyncEnabled || !isSignedIn) return;
+
+    final now = DateTime.now();
+    final shouldSync = _lastAutoSyncTime == null ||
+        now.difference(_lastAutoSyncTime!).inDays >= 7;
+
+    if (!shouldSync) return;
+
+    try {
+      debugPrint("Starting weekly silent auto cloud backup...");
+      await googleDriveService.uploadDatabase();
+      _lastAutoSyncTime = now;
+      await CacheHelper.saveData(
+        key: 'last_auto_sync_time',
+        value: now.toIso8601String(),
+      );
+      await refreshBackupMetadata();
+      debugPrint("Weekly silent auto cloud backup completed successfully ✅");
+    } catch (e) {
+      debugPrint("Weekly silent auto backup failed: $e");
+    }
+  }
+
+  Future<void> toggleAutoSync(bool value) async {
+    _isAutoSyncEnabled = value;
+    await CacheHelper.saveData(key: 'auto_sync_enabled', value: value);
+    if (value && isSignedIn) {
+      await checkAndPerformWeeklyAutoSync();
+    }
+    notifyListeners();
   }
 
   Future<void> signInGoogle() async {
@@ -57,6 +109,7 @@ class BackupViewModel with ChangeNotifier {
       _currentUser = await googleDriveService.signIn();
       if (_currentUser != null) {
         await refreshBackupMetadata();
+        await checkAndPerformWeeklyAutoSync();
       }
       _signInError = "";
     } catch (e) {
@@ -103,6 +156,11 @@ class BackupViewModel with ChangeNotifier {
 
     try {
       await googleDriveService.uploadDatabase();
+      _lastAutoSyncTime = DateTime.now();
+      await CacheHelper.saveData(
+        key: 'last_auto_sync_time',
+        value: _lastAutoSyncTime!.toIso8601String(),
+      );
       await refreshBackupMetadata();
       if (context.mounted) {
         showToast(context, 'تم رفع النسخة الاحتياطية على Google Drive بنجاح ✅');

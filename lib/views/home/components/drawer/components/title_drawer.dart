@@ -55,7 +55,7 @@ class TitleDrawer extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'إدارة حضور وحسابات ويوميات العمال',
+            'رفيق صاحب العمل لإدارة العمال',
             style: TextStyle(
               fontSize: 12,
               fontFamily: 'Cairo',

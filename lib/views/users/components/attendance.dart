@@ -12,12 +12,32 @@ import '../../components/constant.dart';
 import '../../components/custom_textField.dart';
 import '../../components/functions.dart';
 
-class AttendanceWidget extends StatelessWidget {
-  AttendanceWidget({required this.user, super.key});
+class AttendanceWidget extends StatefulWidget {
+  const AttendanceWidget({required this.user, super.key});
   final User user;
 
+  @override
+  State<AttendanceWidget> createState() => _AttendanceWidgetState();
+}
+
+class _AttendanceWidgetState extends State<AttendanceWidget> {
   final _formKey = GlobalKey<FormState>();
   final _workPlaceController = TextEditingController();
+  bool _hasInitializedWorkPlace = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AttendanceViewModel>(context, listen: false).getWorkPlaces();
+    });
+  }
+
+  @override
+  void dispose() {
+    _workPlaceController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +47,29 @@ class AttendanceWidget extends StatelessWidget {
         attendanceViewModel.attendanceModel.last.status == 1;
     final isAbsent = attendanceViewModel.attendanceModel.isNotEmpty &&
         attendanceViewModel.attendanceModel.last.status == 0;
+
+    // Pre-populate workplace: first from today's record, then from the most recent previous location
+    if (!_hasInitializedWorkPlace) {
+      String? placeToFill;
+
+      // Priority 1: today's already-recorded attendance
+      if (attendanceViewModel.attendanceModel.isNotEmpty) {
+        final currentPlace = attendanceViewModel.attendanceModel.last.workPlace;
+        if (currentPlace.isNotEmpty && currentPlace != 'لا يوجد') {
+          placeToFill = currentPlace;
+        }
+      }
+
+      // Priority 2: most recently used workplace (first item from DB query)
+      if (placeToFill == null && attendanceViewModel.previousWorkPlaces.isNotEmpty) {
+        placeToFill = attendanceViewModel.previousWorkPlaces.first;
+      }
+
+      if (placeToFill != null) {
+        _workPlaceController.text = placeToFill;
+        _hasInitializedWorkPlace = true;
+      }
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,22 +96,24 @@ class AttendanceWidget extends StatelessWidget {
                       return;
                     }
                     if (_formKey.currentState!.validate()) {
+                      final placeText = _workPlaceController.text.trim();
                       if (attendanceViewModel.attendanceModel.isEmpty) {
                         final Attendance attendance = Attendance(
-                          userId: user.id!,
+                          userId: widget.user.id!,
                           weekEnd: '${GlobalMethods.getWeekDay(attendanceViewModel.dateTimeAttendance)}',
                           todayDate: '${attendanceViewModel.dateTimeAttendance}',
-                          workPlace: _workPlaceController.text,
-                          weekId: await attendanceViewModel.setWeekId(userId: user.id!),
+                          workPlace: placeText.isNotEmpty ? placeText : 'الورشة / الموقع',
+                          weekId: await attendanceViewModel.setWeekId(userId: widget.user.id!),
                           weekStatus: 0,
                           overTimeStatus: 0,
-                          salary: user.salary,
+                          salary: widget.user.salary,
                           status: 1,
                           salaryReceived: '0',
                         );
                         attendanceViewModel.addAttendance(attendance);
-                        attendanceViewModel.getAttendanceUserToDay(userId: user.id!);
-                        attendanceViewModel.getWeeks(user.id!);
+                        attendanceViewModel.getAttendanceUserToDay(userId: widget.user.id!);
+                        attendanceViewModel.getWeeks(widget.user.id!);
+                        attendanceViewModel.getWorkPlaces();
                       } else {
                         if (attendanceViewModel.attendanceModel.last.status == 0) {
                           showDialog(
@@ -80,20 +125,21 @@ class AttendanceWidget extends StatelessWidget {
                               onPressed: () {
                                 final attendance = Attendance(
                                   id: attendanceViewModel.attendanceModel.last.id,
-                                  workPlace: _workPlaceController.text,
-                                  userId: user.id!,
+                                  workPlace: placeText.isNotEmpty ? placeText : attendanceViewModel.attendanceModel.last.workPlace,
+                                  userId: widget.user.id!,
                                   todayDate: '${attendanceViewModel.dateTimeAttendance}',
                                   weekEnd: attendanceViewModel.attendanceModel.last.weekEnd,
                                   weekId: attendanceViewModel.attendanceModel.last.weekId,
                                   weekStatus: attendanceViewModel.attendanceModel.last.weekStatus,
                                   status: 1,
                                   overTimeStatus: 0,
-                                  salary: user.salary,
+                                  salary: widget.user.salary,
                                   salaryReceived: '0',
                                 );
 
                                 attendanceViewModel.updateAttendance(attendance: attendance);
-                                attendanceViewModel.getAttendanceUserToDay(userId: user.id!);
+                                attendanceViewModel.getAttendanceUserToDay(userId: widget.user.id!);
+                                attendanceViewModel.getWorkPlaces();
                                 pop(context);
                               },
                             ),
@@ -141,66 +187,64 @@ class AttendanceWidget extends StatelessWidget {
 
               const SizedBox(width: 4),
 
-              // Button: غائب (Error Red #EF476F when selected)
+              // Button: غائب (Danger Red #EF4444 when selected)
               Expanded(
                 child: InkWell(
                   borderRadius: BorderRadius.circular(10),
                   onTap: () async {
-                    if ((attendanceViewModel.attendanceUser.length) >= AppConfig.maxTrialAttendanceDays && trial) {
-                      showFlushBar(context);
-                      return;
-                    }
                     if (attendanceViewModel.attendanceModel.isEmpty) {
-                      final attendance = Attendance(
-                        userId: user.id!,
+                      final Attendance attendance = Attendance(
+                        userId: widget.user.id!,
                         todayDate: '${attendanceViewModel.dateTimeAttendance}',
                         weekEnd: '${GlobalMethods.getWeekDay(attendanceViewModel.dateTimeAttendance)}',
-                        workPlace: 'لا يوجد',
-                        overTimeStatus: 0,
-                        weekId: await attendanceViewModel.setWeekId(userId: user.id!),
-                        weekStatus: 0,
-                        salary: '0',
+                        weekId: await attendanceViewModel.setWeekId(userId: widget.user.id!),
                         status: 0,
+                        weekStatus: 0,
+                        overTimeStatus: 0,
+                        salary: '0',
                         salaryReceived: '0',
+                        workPlace: 'لا يوجد',
                       );
                       attendanceViewModel.addAttendance(attendance);
-                      attendanceViewModel.getAttendanceUserToDay(userId: user.id!);
-                      attendanceViewModel.getWeeks(user.id!);
-                    } else if (attendanceViewModel.attendanceModel.last.status == 1) {
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => alert(
-                          context: context,
-                          txt: 'غائب',
-                          color: AppColors.error,
-                          onPressed: () {
-                            final attendance = Attendance(
-                              id: attendanceViewModel.attendanceModel.last.id,
-                              workPlace: 'لا يوجد',
-                              weekEnd: attendanceViewModel.attendanceModel.last.weekEnd,
-                              userId: user.id!,
-                              todayDate: '${attendanceViewModel.dateTimeAttendance}',
-                              weekId: attendanceViewModel.attendanceModel.last.weekId,
-                              weekStatus: attendanceViewModel.attendanceModel.last.weekStatus,
-                              status: 0,
-                              salary: '0',
-                              overTimeStatus: 0,
-                              salaryReceived: '0',
-                            );
-                            attendanceViewModel.updateAttendance(attendance: attendance);
-                            attendanceViewModel.getAttendanceUserToDay(userId: user.id!);
-                            pop(context);
-                          },
-                        ),
-                      );
+                      attendanceViewModel.getAttendanceUserToDay(userId: widget.user.id!);
+                      attendanceViewModel.getWeeks(widget.user.id!);
                     } else {
-                      showToast(context, 'تم تسجيل التمام مسبقاً');
+                      if (attendanceViewModel.attendanceModel.last.status == 1) {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => alert(
+                            context: context,
+                            txt: 'غائب',
+                            color: AppColors.danger,
+                            onPressed: () {
+                              final attendance = Attendance(
+                                id: attendanceViewModel.attendanceModel.last.id,
+                                userId: widget.user.id!,
+                                todayDate: '${attendanceViewModel.dateTimeAttendance}',
+                                weekEnd: attendanceViewModel.attendanceModel.last.weekEnd,
+                                weekId: attendanceViewModel.attendanceModel.last.weekId,
+                                weekStatus: attendanceViewModel.attendanceModel.last.weekStatus,
+                                status: 0,
+                                overTimeStatus: 0,
+                                salary: '0',
+                                salaryReceived: '0',
+                                workPlace: 'لا يوجد',
+                              );
+                              attendanceViewModel.updateAttendance(attendance: attendance);
+                              attendanceViewModel.getAttendanceUserToDay(userId: widget.user.id!);
+                              pop(context);
+                            },
+                          ),
+                        );
+                      } else {
+                        showToast(context, 'تم تسجيل الغياب مسبقاً');
+                      }
                     }
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: isAbsent ? AppColors.error : Colors.transparent,
+                      color: isAbsent ? AppColors.danger : Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     alignment: Alignment.center,
@@ -237,14 +281,61 @@ class AttendanceWidget extends StatelessWidget {
 
         const SizedBox(height: 14),
 
-        // ─── Work Location Field with Location Icon ─────────────────────────
+        // ─── Work Location Field with Quick Suggestion Chips ─────────────────
         Form(
           key: _formKey,
-          child: CustomTextField(
-            controller: _workPlaceController,
-            label: 'مكان العمل',
-            hint: 'أدخل مكان أو موقع العمل...',
-            prefixIcon: const Icon(Icons.location_on_outlined, size: 20, color: AppColors.primaryPurple),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomTextField(
+                controller: _workPlaceController,
+                label: 'مكان / موقع العمل (اختياري)',
+                hint: 'مثال: الورشة، موقع التجمع، فيلا زايد...',
+                prefixIcon: const Icon(Icons.location_on_outlined, size: 20, color: AppColors.primaryAmber),
+              ),
+              if (attendanceViewModel.previousWorkPlaces.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: Row(
+                    children: attendanceViewModel.previousWorkPlaces.take(8).map((place) {
+                      final isSelected = _workPlaceController.text == place;
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 6),
+                        child: ActionChip(
+                          visualDensity: VisualDensity.compact,
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightAmber,
+                          side: BorderSide(
+                            color: isSelected
+                                ? AppColors.primaryAmber
+                                : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                            width: 1,
+                          ),
+                          label: Text(
+                            place,
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                              fontSize: 11,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isSelected
+                                  ? AppColors.primaryAmber
+                                  : (isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight),
+                            ),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _workPlaceController.text = place;
+                            });
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
       ],

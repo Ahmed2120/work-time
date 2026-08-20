@@ -13,7 +13,6 @@ import 'package:work_time/view_models/backup_view_model.dart';
 import 'package:work_time/view_models/theme_view_model.dart';
 import 'package:work_time/views/splash_view.dart';
 
-import 'core/notifications/notification_api.dart';
 import 'package:work_time/core/theme/theme.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
 import 'firebase_options.dart';
@@ -21,14 +20,33 @@ import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await CacheHelper.init();
+
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } catch (e) {
+    debugPrint("Firebase init error: $e");
+  }
+
+  try {
+    await CacheHelper.init();
+  } catch (e) {
+    debugPrint("CacheHelper init error: $e");
+  }
+
   trial = false;
-  await NotificationApi.init(initScheduled: true);
-  await DailyReminderService.init();
+
+  try {
+    await DailyReminderService.init();
+  } catch (e) {
+    debugPrint("DailyReminderService init error: $e");
+  }
 
   // Initialize dependencies with GetIt
-  await setupServiceLocator();
+  try {
+    await setupServiceLocator();
+  } catch (e) {
+    debugPrint("setupServiceLocator error: $e");
+  }
 
   runApp(const MyApp());
 }

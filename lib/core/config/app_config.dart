@@ -1,3 +1,5 @@
+import 'package:work_time/core/utils/cache_helper.dart';
+
 /// Application distribution variants (Flavors)
 enum AppFlavor {
   /// Standalone APK distribution (e.g. Freelance / Direct client sales)
@@ -35,4 +37,18 @@ class AppConfig {
   static const int maxTrialWorkers = 5;
   static const int maxTrialNotes = 5;
   static const int maxTrialAttendanceDays = 7;
+
+  // ─── Overtime Defaults ───────────────────────────────────────────────────
+  static const List<double> supportedOvertimeMultipliers = [1.0, 1.25, 1.5, 1.75, 2.0];
+
+  static double get defaultOvertimeMultiplier {
+    final val = CacheHelper.getData(key: 'default_overtime_multiplier');
+    if (val is double) return val;
+    if (val is int) return val.toDouble();
+    return 1.5; // Default 1.5x (يوم ونصف)
+  }
+
+  static Future<void> setDefaultOvertimeMultiplier(double multiplier) async {
+    await CacheHelper.saveData(key: 'default_overtime_multiplier', value: multiplier);
+  }
 }

@@ -86,11 +86,12 @@ class _SplashViewState extends State<SplashView> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'إدارة حضور وحسابات ويوميات العمال',
+              'رفيق صاحب العمل لإدارة العمال',
               style: TextStyle(
                 fontSize: 13,
-                color: Color(0xFF94A3B8),
+                color: Color(0xFFEA580C),
                 fontFamily: 'Cairo',
+                letterSpacing: 0.5,
               ),
             ),
           ],

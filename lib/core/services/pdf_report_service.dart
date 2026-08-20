@@ -15,11 +15,11 @@ class PdfReportService {
     final ttf = pw.Font.ttf(fontData);
     final ttfBold = pw.Font.ttf(boldFontData);
 
-    const primaryColor = PdfColor.fromInt(0xFF4338B8);
-    const secondaryColor = PdfColor.fromInt(0xFF1F3557);
-    const lightBgColor = PdfColor.fromInt(0xFFF7F8FC);
+    const primaryColor = PdfColor.fromInt(0xFFEA580C);   // Amber brand
+    const secondaryColor = PdfColor.fromInt(0xFF0F172A);  // Deep Slate
+    const lightBgColor = PdfColor.fromInt(0xFFFFF7ED);
     const borderColor = PdfColor.fromInt(0xFFE4E8F0);
-    const textDark = PdfColor.fromInt(0xFF172033);
+    const textDark = PdfColor.fromInt(0xFF0F172A);
     const textMuted = PdfColor.fromInt(0xFF718096);
 
     doc.addPage(
@@ -75,7 +75,7 @@ class PdfReportService {
               ),
               pw.SizedBox(height: 2),
               pw.Text(
-                'تطبيق عُمَّالي لإدارة ومتابعة العمال',
+                'عُمَّالي • رفيق صاحب العمل لإدارة العمال',
                 style: pw.TextStyle(fontSize: 11, color: textMuted),
               ),
             ],

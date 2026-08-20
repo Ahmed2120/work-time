@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/global_methods.dart';
-import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/backup_view_model.dart';
 import 'package:work_time/view_models/note_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
@@ -268,20 +267,20 @@ class _BackupViewState extends State<BackupView> {
 
                   const SizedBox(height: 20),
 
-                  if(backupVM.signInError.isNotEmpty)...[ Text(
-                    backupVM.signInError,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.red,
-                      fontFamily: 'Cairo',
+                  if (backupVM.signInError.isNotEmpty) ...[
+                    Text(
+                      backupVM.signInError,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.red,
+                        fontFamily: 'Cairo',
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8)],
+                    const SizedBox(height: 8),
+                  ],
 
                   // ─── Cloud Backup Details Card ───────────────────────────────────
-
-
                   Text(
                     'حالة النسخة الاحتياطية',
                     style: TextStyle(
@@ -307,7 +306,7 @@ class _BackupViewState extends State<BackupView> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'آخر نسخة احتياطية:',
+                              'آخر نسخة سحابية:',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: isDark
@@ -319,8 +318,7 @@ class _BackupViewState extends State<BackupView> {
                             const Spacer(),
                             Text(
                               metadata != null
-                                  ? '${GlobalMethods.getDayName(metadata.modifiedTime)}، '
-                                    '${GlobalMethods.getDateFormat(metadata.modifiedTime)}'
+                                  ? '${GlobalMethods.getDayName(metadata.modifiedTime)}، ${GlobalMethods.getDateFormat(metadata.modifiedTime)}'
                                   : 'لا توجد نسخة سحابية',
                               style: TextStyle(
                                 fontSize: 14,
@@ -368,6 +366,70 @@ class _BackupViewState extends State<BackupView> {
                             ],
                           ),
                         ],
+                        const SizedBox(height: 12),
+                        const Divider(height: 1),
+                        const SizedBox(height: 12),
+                        // ─── Weekly Auto Sync Row ───────────────────────────────────
+                        Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: backupVM.isAutoSyncEnabled
+                                    ? (isDark ? AppColors.darkSurface : AppColors.lightAmber)
+                                    : (isDark ? AppColors.darkSurface : const Color(0xFFF1F5F9)),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Icon(
+                                Icons.sync_rounded,
+                                size: 20,
+                                color: backupVM.isAutoSyncEnabled
+                                    ? AppColors.primaryAmber
+                                    : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'المزامنة الأسبوعية التلقائية',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark
+                                          ? AppColors.textPrimaryDark
+                                          : AppColors.textPrimaryLight,
+                                      fontFamily: 'Cairo',
+                                    ),
+                                  ),
+                                  Text(
+                                    backupVM.lastAutoSyncTime != null
+                                        ? 'آخر مزامنة: ${GlobalMethods.getDateFormat(backupVM.lastAutoSyncTime!)}'
+                                        : 'مزامنة صامتة في الخلفية كل 7 أيام',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: isDark
+                                          ? AppColors.textSecondaryDark
+                                          : AppColors.textSecondaryLight,
+                                      fontFamily: 'Cairo',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Switch.adaptive(
+                              value: backupVM.isAutoSyncEnabled,
+                              activeTrackColor: AppColors.primaryAmber,
+                              activeThumbColor: Colors.white,
+                              inactiveThumbColor: Colors.white,
+                              inactiveTrackColor: const Color(0xFFCBD5E1),
+                              onChanged: (val) => backupVM.toggleAutoSync(val),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),

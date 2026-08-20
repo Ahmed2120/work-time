@@ -45,6 +45,18 @@ class UserRepository implements IUserRepository {
   }
 
   @override
+  Future<List<String>> retrieveJobs() async {
+    try {
+      final db = await databaseHandler.initializeDB();
+      final List<Map<String, Object?>> queryResults = await db.rawQuery("SELECT DISTINCT job FROM $_tableName WHERE isDeleted = ? AND job != ''", [0]);
+      return queryResults.map((e) => e['job'] as String).toList();
+    } catch (e) {
+      print("Error retrieving jobs: $e");
+      return [];
+    }
+  }
+
+  @override
   Future<int> update({required User user}) async {
     try {
       final db = await databaseHandler.initializeDB();

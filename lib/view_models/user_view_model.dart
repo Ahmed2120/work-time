@@ -18,12 +18,14 @@ class UserViewModel with ChangeNotifier {
   List<User> _users = [];
   List<User> _usersTrash = [];
   List<String> _filteredUsers = [];
+  List<String> _jobs = ['الكل'];
   User _user = User(name: '', job: '', salary: '');
 
   List<User> get allUsers => _allUsers;
   List<User> get users => _users;
   List<User> get usersTrash => _usersTrash;
-  List<String> get filteredUsers => _filteredUsers;
+  List<String> get filteredUsers => _filteredUsers; // Salaries list
+  List<String> get jobs => _jobs;                   // Jobs list
   User get user => _user;
 
   bool clickSearch = false;
@@ -37,33 +39,42 @@ class UserViewModel with ChangeNotifier {
   String _statusFilter = 'الكل';
   String get statusFilter => _statusFilter;
 
+  // ─── Salary Filter ─────────────────────────────────────────────────────────
   String dropDownValue = 'الكل';
+
+  // ─── Job Role Filter ───────────────────────────────────────────────────────
+  String _selectedJob = 'الكل';
+  String get selectedJob => _selectedJob;
 
   void setUser(User val) {
     _user = val;
     notifyListeners();
   }
 
+  void _applyCombinedFilters() {
+    _users = _allUsers.where((u) {
+      final matchesSalary = (dropDownValue == 'الكل' || u.salary == dropDownValue);
+      final matchesJob = (_selectedJob == 'الكل' || u.job == _selectedJob);
+      return matchesSalary && matchesJob;
+    }).toList();
+  }
+
   Future<void> addUser(User user) async {
     final int userId = await userRepository.insert(user);
     user.id = userId;
     _allUsers.add(user);
-    if (dropDownValue == 'الكل' || dropDownValue == user.salary) {
-      _users.add(user);
-    }
-    getSalaries();
+    _applyCombinedFilters();
+    await getSalaries();
+    await getJobs();
     notifyListeners();
   }
 
-  Future getUsers() async {
+  Future<void> getUsers() async {
     _allUsers = await userRepository.retrieve();
-    if (dropDownValue == 'الكل') {
-      _users = _allUsers;
-    } else {
-      _users = _allUsers.where((u) => u.salary == dropDownValue).toList();
-    }
-    getTrash();
-    getSalaries();
+    _applyCombinedFilters();
+    await getTrash();
+    await getSalaries();
+    await getJobs();
     notifyListeners();
   }
 
@@ -103,49 +114,49 @@ class UserViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  getTrash() async {
+  Future<void> getTrash() async {
     _usersTrash = await userRepository.retrieve(trash: 1);
     notifyListeners();
   }
 
-  updateUser(User user) async {
+  Future<void> updateUser(User user) async {
     await userRepository.update(user: user);
-    getUsers();
-    getTrash();
-    getSalaries();
-    notifyListeners();
+    await getUsers();
   }
 
-  deleteUser(User user) async {
+  Future<void> deleteUser(User user) async {
     await attendanceRepository.deleteByUserId(user.id!);
     await userRepository.delete(user);
-    getUsers();
-    getTrash();
-    getSalaries();
+    await getUsers();
+  }
+
+  Future<void> getSalaries() async {
+    final list = await userRepository.retrieveSalaries();
+    _filteredUsers = ['الكل', ...list];
     notifyListeners();
   }
 
-  getSalaries() async {
-    List<String> list = [];
-    _filteredUsers = [];
-    _filteredUsers.add('الكل');
-    list = await userRepository.retrieveSalaries();
-    _filteredUsers.addAll(list);
+  Future<void> getJobs() async {
+    final list = await userRepository.retrieveJobs();
+    _jobs = ['الكل', ...list];
     notifyListeners();
   }
 
-  dropDownChane(String val) {
+  void dropDownChane(String val) {
     dropDownValue = val;
-    filteringUser(dropDownValue);
+    _applyCombinedFilters();
+    notifyListeners();
+  }
+
+  void setJobFilter(String job) {
+    _selectedJob = job;
+    _applyCombinedFilters();
     notifyListeners();
   }
 
   List<User> filteringUser(String txt) {
-    if (txt == 'الكل') {
-      _users = _allUsers;
-    } else {
-      _users = _allUsers.where((user) => txt == user.salary).toList();
-    }
+    dropDownValue = txt;
+    _applyCombinedFilters();
     notifyListeners();
     return _users;
   }

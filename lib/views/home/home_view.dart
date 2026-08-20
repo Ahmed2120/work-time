@@ -10,6 +10,7 @@ import 'components/custom_add_button.dart';
 import 'components/custom_appbar.dart';
 import 'components/drawer/main_drawer.dart';
 import 'components/dropDownMenuRow.dart';
+import 'components/job_filter_dropdown.dart';
 import 'components/users_status_listview.dart';
 
 class HomeView extends StatelessWidget {
@@ -165,27 +166,35 @@ class HomeView extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    // ─── Filter & Add Button Bar ────────────────────────────────────
+                    // ─── Section Title ───────────────────────────────────────────
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        activeStatusFilter == 'الكل'
+                            ? 'الموظفون'
+                            : 'الموظفون ($activeStatusFilter)',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: isDark
+                              ? AppColors.textPrimaryDark
+                              : AppColors.textPrimaryLight,
+                          fontFamily: 'Cairo',
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    // ─── Filter Bar + Add Button ──────────────────────────────────
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
                         children: [
-                          Text(
-                            activeStatusFilter == 'الكل'
-                                ? 'الموظفون'
-                                : 'الموظفون ($activeStatusFilter)',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: isDark
-                                  ? AppColors.textPrimaryDark
-                                  : AppColors.textPrimaryLight,
-                              fontFamily: 'Cairo',
-                            ),
-                          ),
-                          const Spacer(),
+                          const JobFilterDropdown(),
+                          const SizedBox(width: 6),
                           const DropDownMenuRow(),
-                          const SizedBox(width: 8),
+                          const Spacer(),
                           CustomAddButton(keyScaffold),
                         ],
                       ),

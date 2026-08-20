@@ -10,7 +10,7 @@ class AttendanceViewModel with ChangeNotifier {
   AttendanceViewModel({IAttendanceRepository? repository})
       : attendanceRepository = repository ?? sl<IAttendanceRepository>();
 
-  List<Attendance> _attendanceList = [];
+  final List<Attendance> _attendanceList = [];
 
   List<Attendance> get attendanceList {
     return _attendanceList;
@@ -180,6 +180,14 @@ class AttendanceViewModel with ChangeNotifier {
 
   void changeCheckBox(bool val) {
     _checkBoxVal = val ? 1 : 0;
+    notifyListeners();
+  }
+
+  List<String> _previousWorkPlaces = [];
+  List<String> get previousWorkPlaces => _previousWorkPlaces;
+
+  Future<void> getWorkPlaces() async {
+    _previousWorkPlaces = await attendanceRepository.retrieveWorkPlaces();
     notifyListeners();
   }
 }

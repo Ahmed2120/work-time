@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
+import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/views/start_view.dart';
 
 import 'components/constant.dart';
@@ -33,15 +34,14 @@ class _SplashViewState extends State<SplashView> {
     if (AppConfig.isPlayStore) {
       if (!userExists) {
         // First launch on Play Store starts in Trial mode automatically
-        await CacheHelper.saveData(key: 'trial', value: true);
-        trial = true;
+        await SecureStorageHelper.setTrial(true);
       }
       pushReplacement(context: context, screen: const LoginView());
       return;
     }
 
     // ─── Standalone APK Mode (Freelance/Direct) ──────────────────────────────
-    final bool isTrialActive = CacheHelper.getData(key: 'trial') == true || trial;
+    final bool isTrialActive = await SecureStorageHelper.isTrial() || trial;
     if (userExists || isTrialActive) {
       pushReplacement(context: context, screen: const LoginView());
     } else {
@@ -50,13 +50,8 @@ class _SplashViewState extends State<SplashView> {
   }
 
   Future<bool> _isExistUser() async {
-    final bool? isExist = CacheHelper.getData(key: 'isExist');
-    if (isExist == null || !isExist) {
-      return false;
-    } else {
-      iSEXIST = true;
-      return true;
-    }
+    final bool isExist = await SecureStorageHelper.isUserExist();
+    return isExist;
   }
 
   @override

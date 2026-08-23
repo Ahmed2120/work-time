@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/views/components/functions.dart';
 
-import '../core/utils/cache_helper.dart';
 import 'bottom_nav_view.dart';
 import 'components/constant.dart';
 import 'purchase/components/purchase_data.dart';
@@ -69,8 +69,7 @@ class StartView extends StatelessWidget {
                       ),
                     ),
                     onPressed: () async {
-                      await CacheHelper.saveData(key: 'trial', value: true);
-                      trial = true;
+                      await SecureStorageHelper.setTrial(true);
                       if (!context.mounted) return;
                       await showFlushBar(context);
                       if (!context.mounted) return;

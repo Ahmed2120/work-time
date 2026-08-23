@@ -15,6 +15,7 @@ import 'package:work_time/views/splash_view.dart';
 
 import 'package:work_time/core/theme/theme.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
+import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 
@@ -29,11 +30,10 @@ void main() async {
 
   try {
     await CacheHelper.init();
+    await SecureStorageHelper.init();
   } catch (e) {
-    debugPrint("CacheHelper init error: $e");
+    debugPrint("Storage init error: $e");
   }
-
-  trial = false;
 
   try {
     await DailyReminderService.init();

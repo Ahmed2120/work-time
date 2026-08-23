@@ -1,3 +1,11 @@
+## [2026-08-22] Hardware-Backed Encrypted License & Trial Storage (FlutterSecureStorage)
+- **Encrypted Security Layer (`lib/core/utils/secure_storage_helper.dart`)**:
+  - Implemented `SecureStorageHelper` utilizing `FlutterSecureStorage` with hardware-backed encryption (`AndroidKeyStore` with `encryptedSharedPreferences: true` and iOS `Keychain`).
+  - Migrated sensitive licensing flags (`isExist`, `trial`) from plain unencrypted `SharedPreferences` to secure encrypted storage.
+  - Automatically purged plaintext `isExist` and `trial` keys from `SharedPreferences` on app initialization to prevent local XML tampering or bypasses on rooted devices / backup extractors.
+- **Licensing & Authentication Flow Integration (`SplashView`, `StartView`, `PurchaseData`, `main.dart`)**:
+  - Seamless async validation and encrypted persistence during app startup, trial activation, and email verification.
+
 ## [2026-08-19] Workforce Management Enhancements & Weekly Cloud Sync
 - **Job Role Filtering (`UserViewModel`, `UserRepository`, `JobFilterDropdown`)**:
   - Implemented dynamic job role extraction from SQLite via `retrieveJobs()`.

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
+import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/data/services/api_service.dart';
 import 'package:work_time/views/bottom_nav_view.dart';
 import 'package:work_time/views/components/constant.dart';
@@ -179,12 +180,11 @@ class _PurchaseDataState extends State<PurchaseData> {
     final api = ApiService();
     try {
       final bool isExist = await api.getUser(_emailController.text.trim());
-      await CacheHelper.saveData(key: 'isExist', value: isExist);
+      await SecureStorageHelper.setUserExist(isExist);
       if (!mounted) return;
 
       if (isExist) {
-        await CacheHelper.saveData(key: 'trial', value: false);
-        trial = false;
+        await SecureStorageHelper.setTrial(false);
         if (!mounted) return;
         pushReplacement(context: context, screen: const BottomNavView());
         showToast(context, 'تم تفعيل الترخيص بنجاح');

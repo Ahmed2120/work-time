@@ -26,6 +26,11 @@ class InAppPurchaseService {
   // Callback to notify UI / ViewModel of status updates
   Function(bool isSuccess, String message)? onPurchaseResult;
 
+  // Track restore operation in-flight
+  bool _isRestoring = false;
+  bool _hasRestoredAnyItem = false;
+  Timer? _restoreTimeoutTimer;
+
   /// Initialize IAP service and listen to purchase updates
   void initialize({Function(bool isSuccess, String message)? onResult}) {
     onPurchaseResult = onResult;
@@ -38,7 +43,9 @@ class InAppPurchaseService {
       onError: (error) {
         debugPrint('InAppPurchase Stream error: $error');
         _isPurchasing = false;
-        onPurchaseResult?.call(false, 'حدث خطأ أثناء معالجة عملية الشراء');
+        _isRestoring = false;
+        _restoreTimeoutTimer?.cancel();
+        onPurchaseResult?.call(false, 'حدث خطأ أثناء الاتصال بـ Google Play: $error');
       },
     );
 
@@ -83,6 +90,13 @@ class InAppPurchaseService {
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
 
     try {
+      final available = await _iap.isAvailable();
+      if (!available) {
+        _isPurchasing = false;
+        onPurchaseResult?.call(false, 'خدمة الدفع عبر Google Play غير متاحة على هذا الجهاز.');
+        return false;
+      }
+
       final bool success = await _iap.buyNonConsumable(purchaseParam: purchaseParam);
       if (!success) {
         _isPurchasing = false;
@@ -97,13 +111,41 @@ class InAppPurchaseService {
     }
   }
 
-  /// Restore previous purchases for user
+  /// Restore previous purchases for user with robust timeout and feedback
   Future<void> restorePurchases() async {
     _isPurchasing = true;
+    _isRestoring = true;
+    _hasRestoredAnyItem = false;
+    _restoreTimeoutTimer?.cancel();
+
     try {
+      final available = await _iap.isAvailable();
+      if (!available) {
+        _isPurchasing = false;
+        _isRestoring = false;
+        onPurchaseResult?.call(false, 'خدمة Google Play غير متوفرة على هذا الجهاز حالياً.');
+        return;
+      }
+
+      // Set timeout fallback in case Google Play returns no purchases in stream
+      _restoreTimeoutTimer = Timer(const Duration(seconds: 4), () {
+        if (_isRestoring) {
+          _isPurchasing = false;
+          _isRestoring = false;
+          if (!_hasRestoredAnyItem) {
+            onPurchaseResult?.call(
+              false,
+              'لم يتم العثور على أي اشتراكات سابقة نشطة مرتبطة بحساب Google Play هذا.',
+            );
+          }
+        }
+      });
+
       await _iap.restorePurchases();
     } catch (e) {
+      _restoreTimeoutTimer?.cancel();
       _isPurchasing = false;
+      _isRestoring = false;
       debugPrint('Exception restoring purchases: $e');
       onPurchaseResult?.call(false, 'تعذر استعادة المشتريات: $e');
     }
@@ -118,22 +160,29 @@ class InAppPurchaseService {
       } else {
         if (purchaseDetails.status == PurchaseStatus.error) {
           _isPurchasing = false;
+          _isRestoring = false;
+          _restoreTimeoutTimer?.cancel();
           final errorMsg = purchaseDetails.error?.message ?? 'تم إلغاء عملية الشراء';
           debugPrint('Purchase error: $errorMsg');
           onPurchaseResult?.call(false, errorMsg);
         } else if (purchaseDetails.status == PurchaseStatus.purchased ||
             purchaseDetails.status == PurchaseStatus.restored) {
+          _hasRestoredAnyItem = true;
+          _restoreTimeoutTimer?.cancel();
+
           // Verify and unlock subscription
           final bool valid = await _verifyPurchase(purchaseDetails);
           if (valid) {
             await _unlockPremiumFeatures(purchaseDetails);
             _isPurchasing = false;
+            _isRestoring = false;
             final msg = purchaseDetails.status == PurchaseStatus.restored
                 ? 'تم استعادة اشتراكك بنجاح!'
                 : 'تم تفعيل الاشتراك بنجاح! شكراً لثقتك.';
             onPurchaseResult?.call(true, msg);
           } else {
             _isPurchasing = false;
+            _isRestoring = false;
             onPurchaseResult?.call(false, 'تعذر التحقق من صلاحية الشراء');
           }
         }
@@ -147,7 +196,6 @@ class InAppPurchaseService {
 
   /// Verify purchase token validity
   Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) async {
-    // Verified via Google Play Billing signature & token
     return purchaseDetails.productID.isNotEmpty &&
         AppConfig.subscriptionProductIds.contains(purchaseDetails.productID);
   }
@@ -174,6 +222,7 @@ class InAppPurchaseService {
   }
 
   void dispose() {
+    _restoreTimeoutTimer?.cancel();
     _subscription?.cancel();
   }
 }

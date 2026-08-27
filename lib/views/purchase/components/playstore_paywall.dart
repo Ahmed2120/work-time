@@ -13,8 +13,8 @@ import 'package:work_time/views/purchase/components/subscription_plan_card.dart'
 class PlayStorePaywall extends StatelessWidget {
   const PlayStorePaywall({super.key});
 
-  static const String privacyPolicyUrl = 'https://ahmed202ashraf202.github.io/work_time/privacy_policy.html';
-  static const String termsUrl = 'https://policies.google.com/terms';
+  static const String privacyPolicyUrl = 'https://sites.google.com/view/ommali-privacy/home';
+  static const String termsUrl = 'https://sites.google.com/view/ommali-terms/home';
 
   @override
   Widget build(BuildContext context) {
@@ -176,14 +176,14 @@ class PlayStorePaywall extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildLegalLink('سياسة الخصوصية', privacyPolicyUrl),
+                _buildLegalLink(context, 'سياسة الخصوصية', privacyPolicyUrl),
                 Text(
                   ' • ',
                   style: TextStyle(
                     color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                   ),
                 ),
-                _buildLegalLink('شروط الاستخدام', termsUrl),
+                _buildLegalLink(context, 'شروط الاستخدام', termsUrl),
               ],
             ),
           ],
@@ -222,21 +222,40 @@ class PlayStorePaywall extends StatelessWidget {
     );
   }
 
-  Widget _buildLegalLink(String title, String url) {
+  Widget _buildLegalLink(BuildContext context, String title, String url) {
     return InkWell(
+      borderRadius: BorderRadius.circular(6),
       onTap: () async {
-        final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        try {
+          final uri = Uri.parse(url);
+          final launched = await launchUrl(
+            uri,
+            mode: LaunchMode.externalApplication,
+          );
+          if (!launched) {
+            final fallbackLaunched = await launchUrl(uri, mode: LaunchMode.platformDefault);
+            if (!fallbackLaunched && context.mounted) {
+              showToast(context, 'تعذر فتح الرابط في المتصفح');
+            }
+          }
+        } catch (e) {
+          debugPrint('Error launching URL: $e');
+          if (context.mounted) {
+            showToast(context, 'تعذر فتح الرابط: $e');
+          }
         }
       },
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 11,
-          color: AppColors.primaryAmber,
-          fontFamily: 'Cairo',
-          decoration: TextDecoration.underline,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: AppColors.primaryAmber,
+            fontFamily: 'Cairo',
+            decoration: TextDecoration.underline,
+          ),
         ),
       ),
     );

@@ -14,8 +14,11 @@
 - **Google Play Billing Service (`InAppPurchaseService`, `lib/core/services/in_app_purchase_service.dart`)**:
   - Integrated `in_app_purchase: ^3.3.0` for full Google Play Billing subscription lifecycle management.
   - Implemented continuous listening to `purchaseStream`, purchase verification, and auto-completion (`completePurchase`).
-  - Added full restore purchases support (`restorePurchases()`) for reinstalls and device switches.
+  - Added full restore purchases support (`restorePurchases()`) with 4-second timeout protection and availability checks to prevent infinite spinner when no previous purchases exist.
   - Secured subscription persistence in `SecureStorageHelper` (`sec_active_subscription_id`, `sec_is_exist`, `sec_is_trial`).
+- **Legal Compliance & Privacy Assets (`privacy_policy.html`, `terms_of_service.html`)**:
+  - Created standalone `terms_of_service.html` covering 14-day trial, auto-renewing subscriptions, cancellation rules, and offline data storage.
+  - Connected live Google Sites URLs (`https://sites.google.com/view/ommali-privacy/home` & `terms`) inside `PlayStorePaywall`.
 - **Subscription State Management (`PurchaseViewModel`, `lib/view_models/purchase_view_model.dart`)**:
   - Added multi-tier plan management (Monthly, 3-Month, 6-Month, 1-Year).
   - Implemented live price resolution with currency localization from Google Play with offline fallback.

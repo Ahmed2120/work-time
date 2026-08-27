@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:work_time/core/services/google_drive_service.dart';
+import 'package:work_time/core/services/in_app_purchase_service.dart';
 import 'package:work_time/data/repositories/database_handler.dart';
 import 'package:work_time/data/repositories/i_user_repository.dart';
 import 'package:work_time/data/repositories/user_repository.dart';
@@ -8,6 +9,7 @@ import 'package:work_time/data/repositories/attendance_repository.dart';
 import 'package:work_time/data/repositories/i_note_repository.dart';
 import 'package:work_time/data/repositories/note_repository.dart';
 import 'package:work_time/view_models/backup_view_model.dart';
+import 'package:work_time/view_models/purchase_view_model.dart';
 import 'package:work_time/view_models/reports_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
@@ -20,6 +22,7 @@ Future<void> setupServiceLocator() async {
   // Core Services & Database Handler
   sl.registerLazySingleton<DatabaseHandler>(() => DatabaseHandler());
   sl.registerLazySingleton<GoogleDriveService>(() => GoogleDriveService());
+  sl.registerLazySingleton<InAppPurchaseService>(() => InAppPurchaseService());
 
   // Repositories
   sl.registerLazySingleton<IUserRepository>(
@@ -63,6 +66,11 @@ Future<void> setupServiceLocator() async {
     () => ReportsViewModel(
       userRepo: sl<IUserRepository>(),
       attendRepo: sl<IAttendanceRepository>(),
+    ),
+  );
+  sl.registerFactory<PurchaseViewModel>(
+    () => PurchaseViewModel(
+      iapService: sl<InAppPurchaseService>(),
     ),
   );
 }

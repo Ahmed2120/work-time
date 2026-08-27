@@ -1,3 +1,29 @@
+## [2026-08-27] 14-Day Full Unlimited Free Trial Model (Play Store)
+- **Time-Based Free Trial Architecture (`SecureStorageHelper`, `AppConfig`)**:
+  - Implemented 14-day full unrestricted trial model (`trialDurationDays = 14`).
+  - Recorded encrypted first launch timestamp (`sec_trial_start_date`) in hardware-backed `FlutterSecureStorage`.
+  - Added real-time remaining trial days calculator (`getRemainingTrialDays()`) and expiration detection (`isTrialExpired()`).
+  - Removed artificial limits during trial: users enjoy **unlimited workers, unlimited attendance records, unlimited notes, and full PDF export** during their first 14 days.
+- **Trial Expiration & Soft-Gating Protection**:
+  - After day 14 (if not subscribed): adding new workers, attendance, or notes triggers an elegant paywall Flushbar prompting subscription upgrade.
+  - Existing worker records, attendance history, notes, and PDF exports remain **100% accessible (Read-Only)** to protect user data.
+- **Dynamic Trial Countdown in Drawer (`PurchaseDrawer`, `main_drawer.dart`)**:
+  - Added live countdown badge in Drawer menu displaying `"متبقي X يوم"` in Amber or `"انتهت التجربة 🔒"` / `"نشط ⭐"`.
+
+## [2026-08-27] Google Play In-App Purchases & Subscriptions Integration
+- **Google Play Billing Service (`InAppPurchaseService`, `lib/core/services/in_app_purchase_service.dart`)**:
+  - Integrated `in_app_purchase: ^3.3.0` for full Google Play Billing subscription lifecycle management.
+  - Implemented continuous listening to `purchaseStream`, purchase verification, and auto-completion (`completePurchase`).
+  - Added full restore purchases support (`restorePurchases()`) for reinstalls and device switches.
+  - Secured subscription persistence in `SecureStorageHelper` (`sec_active_subscription_id`, `sec_is_exist`, `sec_is_trial`).
+- **Subscription State Management (`PurchaseViewModel`, `lib/view_models/purchase_view_model.dart`)**:
+  - Added multi-tier plan management (Monthly, 3-Month, 6-Month, 1-Year).
+  - Implemented live price resolution with currency localization from Google Play with offline fallback.
+- **Paywall Presentation Layer (`PlayStorePaywall`, `SubscriptionPlanCard`, `PurchaseApp`)**:
+  - Created brand-aligned paywall with feature benefits checklist, tier cards, discount badges, and Google Play purchase button.
+  - Added required Google Play legal links (Privacy Policy & Terms of Service).
+  - Configured Android BILLING permission in `AndroidManifest.xml`.
+
 ## [2026-08-24] Fixed Responsive Attendance Table Layout (No Horizontal Scroll)
 - **Fixed Responsive Table Architecture (`lib/views/users/components/slid_bottom_sheet/table/`)**:
   - Implemented exact proportional column distribution using `FlexColumnWidth` for all 7 columns (`اليوم`, `التاريخ`, `التمام`, `السهرة`, `اليومية`, `مكان العمل`, `المسحوب`).

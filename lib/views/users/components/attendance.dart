@@ -4,6 +4,7 @@ import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 
 import '../../../core/utils/cache_helper.dart';
+import '../../../core/utils/secure_storage_helper.dart';
 import '../../../core/utils/global_methods.dart';
 import '../../../data/models/attendance.dart';
 import '../../../data/models/user.dart';
@@ -91,8 +92,12 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(10),
                   onTap: () async {
-                    if ((attendanceViewModel.attendanceUser.length) >= AppConfig.maxTrialAttendanceDays && trial) {
-                      showFlushBar(context);
+                    final bool isExpired = AppConfig.isPlayStore
+                        ? await SecureStorageHelper.isTrialExpired()
+                        : ((attendanceViewModel.attendanceUser.length) >= AppConfig.maxTrialAttendanceDays && trial);
+
+                    if (isExpired) {
+                      if (context.mounted) showFlushBar(context);
                       return;
                     }
                     if (_formKey.currentState!.validate()) {

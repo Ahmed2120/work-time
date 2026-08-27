@@ -52,33 +52,44 @@ showToast(BuildContext context,String txt, {Color color = Colors.green}) {
       textStyle: const TextStyle(color: Color(0xFFFFFFFF)));
 }
 
-Future<void> showFlushBar(BuildContext context)async {
+Future<void> showFlushBar(BuildContext context, {String? customMessage}) async {
   await Flushbar(
-    backgroundColor: Color(0xFFF9BBB0),
-    titleColor:Color.fromARGB(255, 29, 53, 87),
-    titleSize: 20,
-    messageColor: Color(0xFF533483),
-    icon: Icon(Icons.info,color: Colors.black,),
-    forwardAnimationCurve: Curves.linearToEaseOut,
-    reverseAnimationCurve: Curves.linearToEaseOut,
+    backgroundColor: const Color(0xFF0F172A),
+    titleColor: Colors.white,
+    titleSize: 16,
+    messageColor: const Color(0xFF94A3B8),
+    messageSize: 13,
+    icon: const Icon(Icons.lock_clock_rounded, color: Color(0xFFEA580C), size: 28),
+    forwardAnimationCurve: Curves.easeOutCubic,
+    reverseAnimationCurve: Curves.easeInCubic,
+    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+    borderRadius: BorderRadius.circular(16),
+    boxShadows: [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.3),
+        blurRadius: 16,
+        offset: const Offset(0, 4),
+      ),
+    ],
     mainButton: TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: const Color(0xFFEA580C),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      ),
       onPressed: () {
         push(screen: const PurchaseApp(), context: context);
       },
       child: Text(
-        AppConfig.isPlayStore ? 'شراء التطبيق' : 'تفعيل الترخيص',
-        style: const TextStyle(fontSize: 15, color: Colors.blue, fontFamily: 'Cairo'),
+        AppConfig.isPlayStore ? 'ترقية الحساب' : 'تفعيل الترخيص',
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
       ),
     ),
-      title: 'النسخة التجريبية',
-      message:
-      'هذه نسخه تجريبية محدودة الاستخدام قم بشراء التطبيق للاستخدام الكامل',
-   //   margin: EdgeInsets.symmetric(horizontal: 10),
-      borderRadius: BorderRadius.only(
-        topRight: Radius.circular(20),
-        topLeft: Radius.circular(20)
-      ),
-      duration: Duration(seconds: 2),
+    title: AppConfig.isPlayStore ? 'انتهت الفترة التجريبية' : 'النسخة التجريبية',
+    message: customMessage ??
+        (AppConfig.isPlayStore
+            ? 'انتهت فترة التجربة المجانية (14 يوماً). يرجى الاشتراك لمتابعة إضافة العمال وتسجيل الحضور.'
+            : 'هذه نسخة تجريبية محدودة الاستخدام. قم بتفعيل الترخيص للاستخدام الكامل.'),
+    duration: const Duration(seconds: 4),
   ).show(context);
 }
 

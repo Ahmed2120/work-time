@@ -4,6 +4,7 @@ import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/view_models/note_view_model.dart';
 
+import 'package:work_time/core/utils/secure_storage_helper.dart';
 import '../../core/utils/cache_helper.dart';
 import '../EmptyScreen/empty_screen.dart';
 import '../components/constant.dart';
@@ -52,9 +53,13 @@ class NoteView extends StatelessWidget {
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
             elevation: 2,
-            onPressed: () {
-              if ((noteViewModel.notes.length) >= AppConfig.maxTrialNotes && trial) {
-                showFlushBar(context);
+            onPressed: () async {
+              final bool isExpired = AppConfig.isPlayStore
+                  ? await SecureStorageHelper.isTrialExpired()
+                  : ((noteViewModel.notes.length) >= AppConfig.maxTrialNotes && trial);
+
+              if (isExpired) {
+                if (context.mounted) showFlushBar(context);
               } else {
                 push(screen: NoteEditor(), context: context);
               }

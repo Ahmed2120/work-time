@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
+import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 
 import '../../components/functions.dart';
@@ -32,8 +33,12 @@ class CustomAddButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           onTap: () async {
             final provider = Provider.of<UserViewModel>(context, listen: false);
-            if ((provider.users.length + provider.usersTrash.length) >= AppConfig.maxTrialWorkers && trial) {
-              showFlushBar(context);
+            final bool isExpired = AppConfig.isPlayStore
+                ? await SecureStorageHelper.isTrialExpired()
+                : ((provider.users.length + provider.usersTrash.length) >= AppConfig.maxTrialWorkers && trial);
+
+            if (isExpired) {
+              if (context.mounted) showFlushBar(context);
               return;
             }
             keyScaffold.currentState!

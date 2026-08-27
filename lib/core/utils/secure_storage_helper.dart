@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
 
 /// Secure helper managing encrypted data storage using Android KeyStore & iOS Keychain.
@@ -15,6 +16,11 @@ class SecureStorageHelper {
 
   static const String _keyIsExist = 'sec_is_exist';
   static const String _keyTrial = 'sec_is_trial';
+  static const String _keyTrialStartDate = 'sec_trial_start_date';
+
+  /// Cached synchronous state for rapid UI checks
+  static bool isTrialExpiredSync = false;
+  static int remainingTrialDaysSync = AppConfig.trialDurationDays;
 
   /// Initializes secure storage, syncs in-memory flags (`trial`, `iSEXIST`),
   /// and migrates/cleans any legacy unencrypted flags from plain SharedPreferences.
@@ -41,15 +47,80 @@ class SecureStorageHelper {
       await CacheHelper.removeData(key: 'isExist');
       await CacheHelper.removeData(key: 'trial');
 
+      // Initialize trial start date on first launch
+      await initTrialStartDateIfNeeded();
+
       // Sync latest values to fast in-memory variables
       final existVal = await isUserExist();
       final trialVal = await isTrial();
 
       iSEXIST = existVal;
       trial = trialVal;
+
+      // Update trial expiration cache
+      await syncTrialStatus();
     } catch (e) {
       debugPrint('SecureStorageHelper init error: $e');
     }
+  }
+
+  /// Initialize trial start date if not already recorded
+  static Future<void> initTrialStartDateIfNeeded() async {
+    try {
+      final existingDate = await _storage.read(key: _keyTrialStartDate);
+      if (existingDate == null) {
+        final now = DateTime.now().toIso8601String();
+        await _storage.write(key: _keyTrialStartDate, value: now);
+        await setTrial(true);
+      }
+    } catch (e) {
+      debugPrint('Error initializing trial start date: $e');
+    }
+  }
+
+  /// Get the recorded trial start date
+  static Future<DateTime> getTrialStartDate() async {
+    try {
+      final dateStr = await _storage.read(key: _keyTrialStartDate);
+      if (dateStr != null) {
+        return DateTime.parse(dateStr);
+      }
+    } catch (e) {
+      debugPrint('Error reading trial start date: $e');
+    }
+    return DateTime.now();
+  }
+
+  /// Calculates remaining trial days out of 14 days
+  static Future<int> getRemainingTrialDays() async {
+    final bool isSubscribed = await isUserExist();
+    if (isSubscribed) return 0;
+
+    final startDate = await getTrialStartDate();
+    final difference = DateTime.now().difference(startDate).inDays;
+    final remaining = AppConfig.trialDurationDays - difference;
+    return remaining.clamp(0, AppConfig.trialDurationDays);
+  }
+
+  /// Checks if the 14-day trial has expired (and user has not subscribed)
+  static Future<bool> isTrialExpired() async {
+    final bool isSubscribed = await isUserExist();
+    if (isSubscribed) return false;
+
+    if (AppConfig.isPlayStore) {
+      final startDate = await getTrialStartDate();
+      final difference = DateTime.now().difference(startDate).inDays;
+      return difference >= AppConfig.trialDurationDays;
+    }
+
+    // For apkDirect fallback
+    return !(await isTrial());
+  }
+
+  /// Syncs trial expiration in-memory cache
+  static Future<void> syncTrialStatus() async {
+    isTrialExpiredSync = await isTrialExpired();
+    remainingTrialDaysSync = await getRemainingTrialDays();
   }
 
   /// Check whether the user has a verified purchased license.
@@ -68,6 +139,10 @@ class SecureStorageHelper {
     try {
       await _storage.write(key: _keyIsExist, value: exist.toString());
       iSEXIST = exist;
+      if (exist) {
+        await setTrial(false);
+      }
+      await syncTrialStatus();
     } catch (e) {
       debugPrint('Error saving isUserExist to secure storage: $e');
     }
@@ -89,6 +164,7 @@ class SecureStorageHelper {
     try {
       await _storage.write(key: _keyTrial, value: isTrial.toString());
       trial = isTrial;
+      await syncTrialStatus();
     } catch (e) {
       debugPrint('Error saving isTrial to secure storage: $e');
     }
@@ -114,5 +190,7 @@ class SecureStorageHelper {
     await _storage.deleteAll();
     iSEXIST = false;
     trial = false;
+    isTrialExpiredSync = false;
+    remainingTrialDaysSync = AppConfig.trialDurationDays;
   }
 }

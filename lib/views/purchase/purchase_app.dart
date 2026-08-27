@@ -3,6 +3,7 @@ import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/views/components/constant.dart';
 
+import 'components/playstore_paywall.dart';
 import 'components/purchase_data.dart';
 
 class PurchaseApp extends StatelessWidget {
@@ -40,13 +41,13 @@ class PurchaseApp extends StatelessWidget {
         child: Center(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // ─── Main Purchase / Activation Card ─────────────────
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
                   decoration: BoxDecoration(
                     color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
                     borderRadius: BorderRadius.circular(20),
@@ -63,11 +64,11 @@ class PurchaseApp extends StatelessWidget {
                     ),
                   ),
                   child: AppConfig.isPlayStore
-                      ? _buildPlayStorePaywall(context, isDark)
+                      ? const PlayStorePaywall()
                       : const PurchaseData(),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
 
                 // ─── Info / Security Note ─────────────────────────────
                 Row(
@@ -94,79 +95,6 @@ class PurchaseApp extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  /// Placeholder paywall for Play Store Subscription variant
-  Widget _buildPlayStorePaywall(BuildContext context, bool isDark) {
-    return Column(
-      children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: isDark
-                ? AppColors.primaryPurple.withValues(alpha: 0.2)
-                : AppColors.lightPurple,
-          ),
-          child: const Icon(
-            Icons.workspace_premium_rounded,
-            size: 34,
-            color: AppColors.primaryPurple,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'الترقية إلى النسخة غير المحدودة',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-            fontFamily: 'Cairo',
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'احصل على إمكانية إضافة عدد غير محدود من العمال والملاحظات وسجلات الحضور والنسخ السحابي.',
-          style: TextStyle(
-            fontSize: 13,
-            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-            fontFamily: 'Cairo',
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          height: 50,
-          child: ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryNavy,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            ),
-            icon: const Icon(Icons.shopping_bag_outlined, size: 20),
-            label: const Text(
-              'الاشتراك عبر Google Play',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Cairo',
-              ),
-            ),
-            onPressed: () {
-              // Google Play In-App Purchase integration trigger
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('سيتم ربط بوابة دفع Google Play قريباً'),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 }

@@ -10,6 +10,7 @@ import 'package:work_time/view_models/user_view_model.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/note_view_model.dart';
 import 'package:work_time/view_models/backup_view_model.dart';
+import 'package:work_time/view_models/purchase_view_model.dart';
 import 'package:work_time/view_models/theme_view_model.dart';
 import 'package:work_time/views/splash_view.dart';
 
@@ -75,6 +76,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => sl<ReportsViewModel>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => sl<PurchaseViewModel>(),
         ),
       ],
       child: Consumer<ThemeViewModel>(

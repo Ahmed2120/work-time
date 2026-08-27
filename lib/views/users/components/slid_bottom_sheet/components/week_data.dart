@@ -113,9 +113,7 @@ class WeekData extends StatelessWidget {
           ),
           children: [
             // ─── Attendance Table ─────────────────────────────────────
-            InteractiveViewer(
-              child: TableData(week: weekGroup),
-            ),
+            TableData(week: weekGroup),
 
             const SizedBox(height: 16),
 

@@ -6,7 +6,7 @@ import 'components/table_header.dart';
 import 'components/table_rows.dart';
 
 class TableData extends StatelessWidget {
-  const TableData({required this.week, Key? key}) : super(key: key);
+  const TableData({required this.week, super.key});
   final dynamic week;
 
   @override
@@ -24,19 +24,20 @@ class TableData extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         columnWidths: const {
-          0: IntrinsicColumnWidth(flex: 3),
-          1: IntrinsicColumnWidth(flex: 4),
-          2: IntrinsicColumnWidth(flex: 3),
-          3: IntrinsicColumnWidth(flex: 3),
-          4: IntrinsicColumnWidth(flex: 3),
-          5: IntrinsicColumnWidth(flex: 4),
-          6: IntrinsicColumnWidth(flex: 3),
+          0: FlexColumnWidth(1.2),  // اليوم
+          1: FlexColumnWidth(1.3),  // التاريخ
+          2: FlexColumnWidth(0.95), // التمام
+          3: FlexColumnWidth(0.85), // السهرة
+          4: FlexColumnWidth(0.95), // اليومية
+          5: FlexColumnWidth(1.15), // مكان العمل
+          6: FlexColumnWidth(0.95), // المسحوب
         },
-        defaultColumnWidth: const IntrinsicColumnWidth(),
         children: [
           TableRow(
             decoration: BoxDecoration(
-              color: isDark ? AppColors.darkBorder.withValues(alpha: 0.4) : AppColors.lightPurple,
+              color: isDark
+                  ? AppColors.darkBorder.withValues(alpha: 0.4)
+                  : AppColors.lightPurple,
             ),
             children: const [
               TableHeader("اليوم"),
@@ -63,21 +64,21 @@ class TableData extends StatelessWidget {
 
               return TableRow(
                 children: [
-                  TableRows(dayName, 4),
-                  TableRows(dateStr, 3),
+                  TableRows(dayName, 2),
+                  TableRows(dateStr, 2),
                   TableRows(
                     item.status == 1 ? 'حاضر' : 'غائب',
-                    2,
+                    1,
                     statusType: item.status == 1 ? 1 : 2,
                   ),
                   TableRows(
                     item.overTimeStatus == 1 ? 'سهرة' : '—',
-                    2,
+                    1,
                     statusType: item.overTimeStatus == 1 ? 3 : null,
                   ),
-                  TableRows('${item.salary}', 3),
-                  TableRows(item.workPlace.isNotEmpty ? item.workPlace : '—', 3),
-                  TableRows('${item.salaryReceived}', 3),
+                  TableRows('${item.salary}', 2),
+                  TableRows(item.workPlace.isNotEmpty ? item.workPlace : '—', 2),
+                  TableRows('${item.salaryReceived}', 2),
                 ],
               );
             },

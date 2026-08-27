@@ -3,8 +3,7 @@ import 'package:work_time/core/theme/app_colors.dart';
 
 /// A table cell widget that optionally renders a semantic status badge.
 class TableRows extends StatelessWidget {
-  const TableRows(this.txt, this.padding, {Key? key, this.statusType})
-      : super(key: key);
+  const TableRows(this.txt, this.padding, {super.key, this.statusType});
 
   final String txt;
   final double padding;
@@ -20,14 +19,19 @@ class TableRows extends StatelessWidget {
     }
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: padding, vertical: 6),
-      child: Text(
-        txt,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 10,
-          color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-          fontFamily: 'Cairo',
+      padding: EdgeInsets.symmetric(horizontal: padding, vertical: 7),
+      child: Center(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            txt,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 11,
+              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+              fontFamily: 'Cairo',
+            ),
+          ),
         ),
       ),
     );
@@ -65,21 +69,26 @@ class _StatusBadge extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         decoration: BoxDecoration(
           color: bg,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(4),
         ),
-        child: Text(
-          txt,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 9,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-            fontFamily: 'Cairo',
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              txt,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+                fontFamily: 'Cairo',
+              ),
+            ),
           ),
         ),
       ),

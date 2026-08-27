@@ -1,3 +1,14 @@
+## [2026-08-24] Fixed Responsive Attendance Table Layout (No Horizontal Scroll)
+- **Fixed Responsive Table Architecture (`lib/views/users/components/slid_bottom_sheet/table/`)**:
+  - Implemented exact proportional column distribution using `FlexColumnWidth` for all 7 columns (`اليوم`, `التاريخ`, `التمام`, `السهرة`, `اليومية`, `مكان العمل`, `المسحوب`).
+  - Wrapped header titles and row values with `FittedBox(fit: BoxFit.scaleDown)` to ensure typography auto-scales cleanly on narrow mobile viewports without horizontal scrolling or text clipping.
+  - Eliminated `InteractiveViewer` and horizontal scrollbars, keeping the card fully fixed, aligned, and clean.
+
+## [2026-08-24] Keyboard Inset Spacing Fix in Worker Edit / Add Sheet
+- **Bottom Sheet Inset Optimization (`lib/views/home/components/bottom_sheet/addingUser_bottomSheet.dart`)**:
+  - Removed redundant `MediaQuery.of(context).viewInsets.bottom` padding inside `AddingUserBottomSheet`.
+  - Resolved double-padding issue when opening the soft keyboard inside worker add/edit bottom sheets where the Scaffold was already handling `resizeToAvoidBottomInset`.
+
 ## [2026-08-22] Hardware-Backed Encrypted License & Trial Storage (FlutterSecureStorage)
 - **Encrypted Security Layer (`lib/core/utils/secure_storage_helper.dart`)**:
   - Implemented `SecureStorageHelper` utilizing `FlutterSecureStorage` with hardware-backed encryption (`AndroidKeyStore` with `encryptedSharedPreferences: true` and iOS `Keychain`).

@@ -19,38 +19,33 @@ class AddingUserBottomSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(height: 12),
-                // ─── Drag Handle ───────────────────────────────────────────────
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              // ─── Drag Handle ───────────────────────────────────────────────
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.darkBorder : const Color(0xFFCBD5E1),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(height: 8),
+              ),
+              const SizedBox(height: 8),
 
-                // ─── Header ───────────────────────────────────────────────────
-                HeaderSheet(title: user != null ? 'تعديل البيانات' : 'إضافة عامل'),
+              // ─── Header ───────────────────────────────────────────────────
+              HeaderSheet(title: user != null ? 'تعديل البيانات' : 'إضافة عامل'),
 
-                const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-                // ─── Form Inputs & Primary Button ─────────────────────────────
-                FormSheet(user: user),
-              ],
-            ),
+              // ─── Form Inputs & Primary Button ─────────────────────────────
+              FormSheet(user: user),
+            ],
           ),
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/data/models/user.dart';
 import 'package:work_time/views/components/app_button.dart';
 import 'package:work_time/views/components/constant.dart';
@@ -37,7 +38,18 @@ class DrawFinance extends StatelessWidget {
                 AppButton(
                   label: 'تأكيد السحب',
                   icon: Icons.payments_rounded,
-                  onPressed: () {
+                  onPressed: () async {
+                    final isExpired = await SecureStorageHelper.isTrialExpired();
+                    if (isExpired) {
+                      if (context.mounted) {
+                        showFlushBar(
+                          context,
+                          customMessage: 'انتهت صلاحية الاستخدام. يرجى تجديد الاشتراك لتسجيل المسحوبات.',
+                        );
+                      }
+                      return;
+                    }
+
                     final attendance = Attendance(
                       id: attendanceViewModel.attendanceModel.last.id,
                       userId: user.id!,

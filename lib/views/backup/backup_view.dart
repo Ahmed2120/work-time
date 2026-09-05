@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/global_methods.dart';
+import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/view_models/backup_view_model.dart';
 import 'package:work_time/view_models/note_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 import 'package:work_time/views/components/app_button.dart';
 import 'package:work_time/views/components/app_card.dart';
+import 'package:work_time/views/components/functions.dart';
 
 class BackupView extends StatefulWidget {
   const BackupView({super.key});
@@ -426,7 +428,21 @@ class _BackupViewState extends State<BackupView> {
                               activeThumbColor: Colors.white,
                               inactiveThumbColor: Colors.white,
                               inactiveTrackColor: const Color(0xFFCBD5E1),
-                              onChanged: (val) => backupVM.toggleAutoSync(val),
+                              onChanged: (val) async {
+                                if (val) {
+                                  final isExpired = await SecureStorageHelper.isTrialExpired();
+                                  if (isExpired) {
+                                    if (context.mounted) {
+                                      showFlushBar(
+                                        context,
+                                        customMessage: 'المزامنة التلقائية السحابية ميزة للمشتركين. يرجى الاشتراك للتفعيل.',
+                                      );
+                                    }
+                                    return;
+                                  }
+                                }
+                                backupVM.toggleAutoSync(val);
+                              },
                             ),
                           ],
                         ),
@@ -458,7 +474,21 @@ class _BackupViewState extends State<BackupView> {
                       label: 'نسخ إحتياطي الآن (Google Drive)',
                       icon: Icons.cloud_upload_rounded,
                       style: AppButtonStyle.primary,
-                      onPressed: () => backupVM.performBackup(context),
+                      onPressed: () async {
+                        final isExpired = await SecureStorageHelper.isTrialExpired();
+                        if (isExpired) {
+                          if (context.mounted) {
+                            showFlushBar(
+                              context,
+                              customMessage: 'النسخ الاحتياطي السحابي ميزة للمشتركين. يرجى الاشتراك لحفظ نسخة جديدة.',
+                            );
+                          }
+                          return;
+                        }
+                        if (context.mounted) {
+                          backupVM.performBackup(context);
+                        }
+                      },
                     ),
 
                   const SizedBox(height: 12),

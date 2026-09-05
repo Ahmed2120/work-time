@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/services/pdf_report_service.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/view_models/reports_view_model.dart';
 import 'package:work_time/views/components/app_button.dart';
 import 'package:work_time/views/components/app_card.dart';
+import 'package:work_time/views/components/functions.dart';
 
 class ReportsView extends StatefulWidget {
   const ReportsView({super.key});
@@ -39,7 +41,19 @@ class _ReportsViewState extends State<ReportsView> {
             IconButton(
               icon: const Icon(Icons.picture_as_pdf_rounded, color: AppColors.primaryPurple),
               tooltip: 'تصدير PDF',
-              onPressed: () => PdfReportService.generateAndPreviewReport(summary),
+              onPressed: () async {
+                final isExpired = await SecureStorageHelper.isTrialExpired();
+                if (isExpired) {
+                  if (context.mounted) {
+                    showFlushBar(
+                      context,
+                      customMessage: 'تصدير ملفات PDF ميزة حصرية للمشتركين. يرجى الاشتراك للمتابعة.',
+                    );
+                  }
+                  return;
+                }
+                PdfReportService.generateAndPreviewReport(summary);
+              },
             ),
         ],
         bottom: PreferredSize(

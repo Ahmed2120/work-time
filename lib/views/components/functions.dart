@@ -1,9 +1,10 @@
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:iconly/iconly.dart';
+import 'package:iconly_plus/iconly_plus.dart';
 import 'package:toast/toast.dart';
 import 'package:work_time/core/config/app_config.dart';
+import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/views/components/constant.dart';
 
 import '../purchase/purchase_app.dart';
@@ -11,9 +12,9 @@ import '../purchase/purchase_app.dart';
 AlertDialog alert(
     {required BuildContext context,required String txt,required Color color,required VoidCallback onPressed}) {
   return AlertDialog(
-    title: Row(
+    title: const Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: const [
+      children: [
         Icon(
             IconlyBold.danger,
           color: Colors.amber,
@@ -37,8 +38,14 @@ AlertDialog alert(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('Cancel')),
-      TextButton(onPressed: onPressed, child: Text('Ok',style: TextStyle(color: Color(0xFFE94560)),)),
+          child: const Text('Cancel')),
+      TextButton(
+        onPressed: onPressed,
+        child: const Text(
+          'Ok',
+          style: TextStyle(color: Color(0xFFE94560)),
+        ),
+      ),
     ],
   );
 }
@@ -53,6 +60,27 @@ showToast(BuildContext context,String txt, {Color color = Colors.green}) {
 }
 
 Future<void> showFlushBar(BuildContext context, {String? customMessage}) async {
+  final bool wasSubscribed = await SecureStorageHelper.wasSubscribedBefore();
+
+  final String title = customMessage != null
+      ? (AppConfig.isPlayStore ? 'تنبيه' : 'النسخة التجريبية')
+      : (AppConfig.isPlayStore
+          ? (wasSubscribed ? 'انتهت فترة الاشتراك' : 'انتهت الفترة التجريبية')
+          : 'النسخة التجريبية');
+
+  final String message = customMessage ??
+      (AppConfig.isPlayStore
+          ? (wasSubscribed
+              ? 'انتهت فترة اشتراكك في التطبيق. يرجى تجديد الاشتراك لمتابعة إضافة العمال وتسجيل الحضور.'
+              : 'انتهت فترة التجربة المجانية (14 يوماً). يرجى الاشتراك لمتابعة إضافة العمال وتسجيل الحضور.')
+          : 'هذه نسخة تجريبية محدودة الاستخدام. قم بتفعيل الترخيص للاستخدام الكامل.');
+
+  final String buttonText = AppConfig.isPlayStore
+      ? (wasSubscribed ? 'تجديد الاشتراك' : 'ترقية الحساب')
+      : 'تفعيل الترخيص';
+
+  if (!context.mounted) return;
+
   await Flushbar(
     backgroundColor: const Color(0xFF0F172A),
     titleColor: Colors.white,
@@ -80,15 +108,12 @@ Future<void> showFlushBar(BuildContext context, {String? customMessage}) async {
         push(screen: const PurchaseApp(), context: context);
       },
       child: Text(
-        AppConfig.isPlayStore ? 'ترقية الحساب' : 'تفعيل الترخيص',
+        buttonText,
         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
       ),
     ),
-    title: AppConfig.isPlayStore ? 'انتهت الفترة التجريبية' : 'النسخة التجريبية',
-    message: customMessage ??
-        (AppConfig.isPlayStore
-            ? 'انتهت فترة التجربة المجانية (14 يوماً). يرجى الاشتراك لمتابعة إضافة العمال وتسجيل الحضور.'
-            : 'هذه نسخة تجريبية محدودة الاستخدام. قم بتفعيل الترخيص للاستخدام الكامل.'),
+    title: title,
+    message: message,
     duration: const Duration(seconds: 4),
   ).show(context);
 }

@@ -4,6 +4,7 @@ import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
 
 import 'components/backup_drawer.dart';
+import 'components/projects_drawer.dart';
 import 'components/purchase_drawer.dart';
 import 'components/reminder_drawer.dart';
 import 'components/reports_drawer.dart';
@@ -31,6 +32,8 @@ class MainDrawer extends StatelessWidget {
               child: Column(
                 children: [
                   const ReportsDrawer(),
+                  _divider(isDark),
+                  const ProjectsDrawer(),
                   _divider(isDark),
                   const ReminderDrawer(),
                   _divider(isDark),

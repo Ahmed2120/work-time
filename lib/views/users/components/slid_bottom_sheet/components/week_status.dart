@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/data/models/attendance.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
+import 'package:work_time/views/components/functions.dart';
 
 class WeekStatus extends StatelessWidget {
   const WeekStatus({required this.weekGroup, super.key});
@@ -37,6 +39,17 @@ class WeekStatus extends StatelessWidget {
             ),
           ),
           onPressed: () async {
+            final isExpired = await SecureStorageHelper.isTrialExpired();
+            if (isExpired) {
+              if (context.mounted) {
+                showFlushBar(
+                  context,
+                  customMessage: 'انتهت صلاحية الاستخدام. يرجى تجديد الاشتراك لتصفية الحسابات.',
+                );
+              }
+              return;
+            }
+
             // Mark every record in this week as settled
             final model = weekGroup.first;
             final settled = Attendance(

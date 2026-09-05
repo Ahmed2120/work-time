@@ -25,6 +25,7 @@ class PurchaseDrawer extends StatelessWidget {
         final bool isSubscribed = data['isSubscribed'] as bool;
         final int remainingDays = data['remainingDays'] as int;
         final bool isExpired = data['isExpired'] as bool;
+        final bool wasSubscribed = data['wasSubscribed'] as bool? ?? false;
 
         String title = AppConfig.isPlayStore ? 'الترقية والاشتراك' : 'تفعيل ترخيص التطبيق';
         String? badgeText;
@@ -38,8 +39,8 @@ class PurchaseDrawer extends StatelessWidget {
             badgeBg = AppColors.successBgLight;
             badgeFg = AppColors.successText;
           } else if (isExpired) {
-            title = 'ترقية الحساب';
-            badgeText = 'انتهت التجربة 🔒';
+            title = wasSubscribed ? 'تجديد الاشتراك' : 'ترقية الحساب';
+            badgeText = wasSubscribed ? 'انتهى الاشتراك 🔒' : 'انتهت التجربة 🔒';
             badgeBg = AppColors.dangerBgLight;
             badgeFg = AppColors.dangerText;
           } else {
@@ -123,10 +124,12 @@ class PurchaseDrawer extends StatelessWidget {
     final bool isSubscribed = await SecureStorageHelper.isUserExist();
     final int remainingDays = await SecureStorageHelper.getRemainingTrialDays();
     final bool isExpired = await SecureStorageHelper.isTrialExpired();
+    final bool wasSubscribed = await SecureStorageHelper.wasSubscribedBefore();
     return {
       'isSubscribed': isSubscribed,
       'remainingDays': remainingDays,
       'isExpired': isExpired,
+      'wasSubscribed': wasSubscribed,
     };
   }
 }

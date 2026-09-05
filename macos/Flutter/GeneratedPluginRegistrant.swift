@@ -6,7 +6,7 @@ import FlutterMacOS
 import Foundation
 
 import device_info_plus
-import file_picker
+import file_picker_darwin
 import firebase_core
 import flutter_local_notifications
 import flutter_secure_storage_darwin

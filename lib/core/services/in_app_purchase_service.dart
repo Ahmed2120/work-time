@@ -50,6 +50,45 @@ class InAppPurchaseService {
     );
 
     loadProducts();
+    if (AppConfig.isPlayStore) {
+      syncSubscriptionStatusSilently();
+    }
+  }
+
+  /// Performs a silent background verification against Google Play
+  /// to ensure any cancelled or expired subscriptions automatically revoke access.
+  Future<void> syncSubscriptionStatusSilently() async {
+    try {
+      final available = await _iap.isAvailable();
+      if (!available) return;
+
+      final isCurrentlySubscribed = await SecureStorageHelper.isUserExist();
+      final wasSubscribed = await SecureStorageHelper.wasSubscribedBefore();
+
+      // Only perform silent sync if the user is currently or was previously marked as subscribed
+      if (!isCurrentlySubscribed && !wasSubscribed) return;
+
+      _isRestoring = true;
+      _hasRestoredAnyItem = false;
+      _restoreTimeoutTimer?.cancel();
+
+      // Set fallback timer: if no active subscription returned within 5s, mark as expired
+      _restoreTimeoutTimer = Timer(const Duration(seconds: 5), () async {
+        if (_isRestoring) {
+          _isRestoring = false;
+          if (!_hasRestoredAnyItem && AppConfig.isPlayStore) {
+            debugPrint('Silent sync: No active subscription returned by Google Play. Revoking subscription status.');
+            await SecureStorageHelper.setUserExist(false);
+          }
+        }
+      });
+
+      await _iap.restorePurchases();
+    } catch (e) {
+      _restoreTimeoutTimer?.cancel();
+      _isRestoring = false;
+      debugPrint('Silent subscription sync error: $e');
+    }
   }
 
   /// Load available subscription products from Google Play
@@ -106,7 +145,14 @@ class InAppPurchaseService {
     } catch (e) {
       _isPurchasing = false;
       debugPrint('Exception starting purchase: $e');
-      onPurchaseResult?.call(false, 'حدث خطأ: $e');
+      // Silently reset if user just dismissed — no error shown for PlatformException cancel
+      final msg = e.toString();
+      final isCancelledByUser = msg.contains('responseCode: 1') ||
+          msg.contains('BillingResponse.USER_CANCELED') ||
+          msg.contains('cancel');
+      if (!isCancelledByUser) {
+        onPurchaseResult?.call(false, 'حدث خطأ: $e');
+      }
       return false;
     }
   }
@@ -158,13 +204,28 @@ class InAppPurchaseService {
         _isPurchasing = true;
         debugPrint('Purchase pending: ${purchaseDetails.productID}');
       } else {
-        if (purchaseDetails.status == PurchaseStatus.error) {
+        if (purchaseDetails.status == PurchaseStatus.canceled) {
+          // User dismissed the Google Play payment sheet — silently reset loading
           _isPurchasing = false;
           _isRestoring = false;
           _restoreTimeoutTimer?.cancel();
-          final errorMsg = purchaseDetails.error?.message ?? 'تم إلغاء عملية الشراء';
-          debugPrint('Purchase error: $errorMsg');
-          onPurchaseResult?.call(false, errorMsg);
+          debugPrint('Purchase cancelled by user: ${purchaseDetails.productID}');
+        } else if (purchaseDetails.status == PurchaseStatus.error) {
+          _isPurchasing = false;
+          _isRestoring = false;
+          _restoreTimeoutTimer?.cancel();
+          final errorCode = purchaseDetails.error?.code ?? '';
+          // Error code 1 = USER_CANCELED on Android — don't show an error dialog
+          final isCancelledByUser = errorCode == 'BillingResponse.USER_CANCELED' ||
+              errorCode == '1' ||
+              (purchaseDetails.error?.message ?? '').toLowerCase().contains('cancel');
+          if (!isCancelledByUser) {
+            final errorMsg = purchaseDetails.error?.message ?? 'حدث خطأ أثناء عملية الشراء';
+            debugPrint('Purchase error: $errorMsg');
+            onPurchaseResult?.call(false, errorMsg);
+          } else {
+            debugPrint('Purchase cancelled (via error): ${purchaseDetails.productID}');
+          }
         } else if (purchaseDetails.status == PurchaseStatus.purchased ||
             purchaseDetails.status == PurchaseStatus.restored) {
           _hasRestoredAnyItem = true;
@@ -194,28 +255,37 @@ class InAppPurchaseService {
     }
   }
 
-  /// Verify purchase token validity
+  /// Verify purchase token validity and expiration
   Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) async {
-    return purchaseDetails.productID.isNotEmpty &&
-        AppConfig.subscriptionProductIds.contains(purchaseDetails.productID);
+    if (purchaseDetails.productID.isEmpty ||
+        !AppConfig.subscriptionProductIds.contains(purchaseDetails.productID)) {
+      return false;
+    }
+
+    // For restored historical purchases, verify that the duration has not already passed
+    if (purchaseDetails.status == PurchaseStatus.restored &&
+        purchaseDetails.transactionDate != null) {
+      final purchaseDate = SecureStorageHelper.parseTransactionDate(purchaseDetails.transactionDate);
+      final duration = SecureStorageHelper.getSubscriptionDuration(purchaseDetails.productID);
+      final expiry = purchaseDate.add(duration);
+      if (DateTime.now().isAfter(expiry)) {
+        debugPrint('Restored purchase ${purchaseDetails.productID} from $purchaseDate expired on $expiry. Access denied.');
+        return false;
+      }
+    }
+
+    return true;
   }
 
-  /// Save verified license status in hardware-backed encrypted storage
+  /// Save verified license status in hardware-backed encrypted storage with expiration date
   Future<void> _unlockPremiumFeatures(PurchaseDetails purchaseDetails) async {
     try {
-      await SecureStorageHelper.setUserExist(true);
-      await SecureStorageHelper.setTrial(false);
-      await SecureStorageHelper.write(
-        key: 'sec_active_subscription_id',
-        value: purchaseDetails.productID,
+      final purchaseDate = SecureStorageHelper.parseTransactionDate(purchaseDetails.transactionDate);
+      await SecureStorageHelper.recordSubscription(
+        productId: purchaseDetails.productID,
+        purchaseDate: purchaseDate,
       );
-      if (purchaseDetails.transactionDate != null) {
-        await SecureStorageHelper.write(
-          key: 'sec_subscription_date',
-          value: purchaseDetails.transactionDate!,
-        );
-      }
-      debugPrint('Unlocked premium features for ${purchaseDetails.productID}');
+      debugPrint('Unlocked premium features for ${purchaseDetails.productID} purchased on $purchaseDate');
     } catch (e) {
       debugPrint('Error unlocking premium features: $e');
     }

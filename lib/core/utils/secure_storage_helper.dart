@@ -17,10 +17,82 @@ class SecureStorageHelper {
   static const String _keyIsExist = 'sec_is_exist';
   static const String _keyTrial = 'sec_is_trial';
   static const String _keyTrialStartDate = 'sec_trial_start_date';
+  static const String keyActiveSubscriptionId = 'sec_active_subscription_id';
+  static const String _keySubscriptionDate = 'sec_subscription_date';
+  static const String _keySubscriptionExpiryDate = 'sec_subscription_expiry_date';
 
   /// Cached synchronous state for rapid UI checks
   static bool isTrialExpiredSync = false;
   static int remainingTrialDaysSync = AppConfig.trialDurationDays;
+
+  /// Returns duration based on subscription tier
+  static Duration getSubscriptionDuration(String productId) {
+    switch (productId) {
+      case AppConfig.subQuarterly:
+        return const Duration(days: 90);
+      case AppConfig.subBiannual:
+        return const Duration(days: 180);
+      case AppConfig.subYearly:
+        return const Duration(days: 365);
+      case AppConfig.subMonthly:
+      default:
+        return const Duration(days: 30);
+    }
+  }
+
+  /// Parse transaction date string from Google Play (millis or ISO)
+  static DateTime parseTransactionDate(String? raw) {
+    if (raw == null || raw.isEmpty) return DateTime.now();
+    final intMillis = int.tryParse(raw);
+    if (intMillis != null) {
+      return DateTime.fromMillisecondsSinceEpoch(intMillis);
+    }
+    return DateTime.tryParse(raw) ?? DateTime.now();
+  }
+
+  /// Records an active subscription with calculated expiration date
+  static Future<void> recordSubscription({
+    required String productId,
+    DateTime? purchaseDate,
+  }) async {
+    try {
+      final start = purchaseDate ?? DateTime.now();
+      final duration = getSubscriptionDuration(productId);
+      final expiry = start.add(duration);
+
+      await _storage.write(key: keyActiveSubscriptionId, value: productId);
+      await _storage.write(key: _keySubscriptionDate, value: start.toIso8601String());
+      await _storage.write(key: _keySubscriptionExpiryDate, value: expiry.toIso8601String());
+      await setUserExist(true);
+      await setTrial(false);
+      debugPrint('Recorded subscription $productId: started $start, expires $expiry');
+    } catch (e) {
+      debugPrint('Error recording subscription: $e');
+    }
+  }
+
+  /// Get the recorded subscription expiration date
+  static Future<DateTime?> getSubscriptionExpiryDate() async {
+    try {
+      final dateStr = await _storage.read(key: _keySubscriptionExpiryDate);
+      if (dateStr != null && dateStr.isNotEmpty) {
+        return DateTime.parse(dateStr);
+      }
+    } catch (e) {
+      debugPrint('Error reading subscription expiry date: $e');
+    }
+    return null;
+  }
+
+  /// Check whether user ever had a recorded subscription purchase
+  static Future<bool> wasSubscribedBefore() async {
+    try {
+      final subId = await _storage.read(key: keyActiveSubscriptionId);
+      return subId != null && subId.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
 
   /// Initializes secure storage, syncs in-memory flags (`trial`, `iSEXIST`),
   /// and migrates/cleans any legacy unencrypted flags from plain SharedPreferences.
@@ -127,7 +199,23 @@ class SecureStorageHelper {
   static Future<bool> isUserExist() async {
     try {
       final value = await _storage.read(key: _keyIsExist);
-      return value == 'true';
+      final bool markedExist = value == 'true';
+      if (!markedExist) return false;
+
+      // In Play Store mode, verify that subscription has not passed its expiration date
+      if (AppConfig.isPlayStore) {
+        final expiry = await getSubscriptionExpiryDate();
+        if (expiry != null) {
+          final now = DateTime.now();
+          if (now.isAfter(expiry)) {
+            debugPrint('Subscription expired on $expiry (current: $now). Revoking active status.');
+            await setUserExist(false);
+            return false;
+          }
+        }
+      }
+
+      return true;
     } catch (e) {
       debugPrint('Error reading isUserExist from secure storage: $e');
       return false;

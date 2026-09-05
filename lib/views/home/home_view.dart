@@ -11,6 +11,7 @@ import 'components/custom_appbar.dart';
 import 'components/drawer/main_drawer.dart';
 import 'components/dropDownMenuRow.dart';
 import 'components/job_filter_dropdown.dart';
+import 'components/trial_expired_banner.dart';
 import 'components/users_status_listview.dart';
 
 class HomeView extends StatelessWidget {
@@ -38,7 +39,8 @@ class HomeView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 16),
+                    const TrialExpiredBanner(),
+                    const SizedBox(height: 8),
 
                     // ─── Header: Date & Greeting ───────────────────────────────────
                     Padding(

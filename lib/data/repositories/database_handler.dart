@@ -20,9 +20,18 @@ class DatabaseHandler {
         batch.execute("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, job TEXT, salary TEXT, isDeleted INTEGER)");
         batch.execute("CREATE TABLE attendance(id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, todayDate TEXT, weekId INTEGER, status INTEGER, weekStatus INTEGER,overTimeStatus INTEGER, salaryReceived TEXT,salary TEXT,workPlace TEXT,weekEnd TEXT)");
         batch.execute("CREATE TABLE notes(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, dateCreated TEXT, color INTEGER)");
+        batch.execute("CREATE TABLE projects(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, budgetAmount REAL, status TEXT NOT NULL DEFAULT 'active', createdAt TEXT NOT NULL)");
         await batch.commit();
       },
-      version: 1,
+      onUpgrade: (database, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          // Migration v1 → v2: add projects table for existing users
+          await database.execute(
+            "CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, budgetAmount REAL, status TEXT NOT NULL DEFAULT 'active', createdAt TEXT NOT NULL)",
+          );
+        }
+      },
+      version: 2,
     );
     return _database!;
   }
@@ -41,8 +50,3 @@ class DatabaseHandler {
     }
   }
 }
-
-
-
-
-

@@ -9,6 +9,7 @@ import '../../../core/utils/global_methods.dart';
 import '../../../data/models/attendance.dart';
 import '../../../data/models/user.dart';
 import '../../../view_models/attendance_view_model.dart';
+import '../../../view_models/project_view_model.dart';
 import '../../components/constant.dart';
 import '../../components/custom_textField.dart';
 import '../../components/functions.dart';
@@ -44,6 +45,8 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final attendanceViewModel = Provider.of<AttendanceViewModel>(context, listen: true);
+    final projectViewModel = Provider.of<ProjectViewModel>(context, listen: true);
+    final activeProjects = projectViewModel.activeProjects;
     final isPresent = attendanceViewModel.attendanceModel.isNotEmpty &&
         attendanceViewModel.attendanceModel.last.status == 1;
     final isAbsent = attendanceViewModel.attendanceModel.isNotEmpty &&
@@ -197,6 +200,15 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(10),
                   onTap: () async {
+                    final bool isExpired = AppConfig.isPlayStore
+                        ? await SecureStorageHelper.isTrialExpired()
+                        : ((attendanceViewModel.attendanceUser.length) >= AppConfig.maxTrialAttendanceDays && trial);
+
+                    if (isExpired) {
+                      if (context.mounted) showFlushBar(context);
+                      return;
+                    }
+
                     if (attendanceViewModel.attendanceModel.isEmpty) {
                       final Attendance attendance = Attendance(
                         userId: widget.user.id!,
@@ -298,48 +310,107 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                 hint: 'مثال: الورشة، موقع التجمع، فيلا زايد...',
                 prefixIcon: const Icon(Icons.location_on_outlined, size: 20, color: AppColors.primaryAmber),
               ),
-              if (attendanceViewModel.previousWorkPlaces.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: const BouncingScrollPhysics(),
-                  child: Row(
-                    children: attendanceViewModel.previousWorkPlaces.take(8).map((place) {
-                      final isSelected = _workPlaceController.text == place;
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 6),
-                        child: ActionChip(
-                          visualDensity: VisualDensity.compact,
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightAmber,
-                          side: BorderSide(
-                            color: isSelected
-                                ? AppColors.primaryAmber
-                                : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
-                            width: 1,
-                          ),
-                          label: Text(
-                            place,
-                            style: TextStyle(
-                              fontFamily: 'Cairo',
-                              fontSize: 11,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              color: isSelected
-                                  ? AppColors.primaryAmber
-                                  : (isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight),
-                            ),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _workPlaceController.text = place;
-                            });
-                          },
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
+              Builder(
+                builder: (context) {
+                  final activeProjectNames = activeProjects.map((p) => p.name).toSet();
+                  final otherPlaces = attendanceViewModel.previousWorkPlaces
+                      .where((place) => !activeProjectNames.contains(place))
+                      .take(6)
+                      .toList();
+
+                  if (activeProjects.isEmpty && otherPlaces.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      child: Row(
+                        children: [
+                          // 1. Active Projects (Highlighted with construction icon)
+                          ...activeProjects.map((project) {
+                            final isSelected = _workPlaceController.text == project.name;
+                            return Padding(
+                              padding: const EdgeInsets.only(left: 6),
+                              child: ActionChip(
+                                avatar: Icon(
+                                  Icons.construction_rounded,
+                                  size: 14,
+                                  color: isSelected ? Colors.white : AppColors.primaryAmber,
+                                ),
+                                visualDensity: VisualDensity.compact,
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                backgroundColor: isSelected
+                                    ? AppColors.primaryAmber
+                                    : (isDark ? AppColors.darkSurface : AppColors.lightAmber),
+                                side: BorderSide(
+                                  color: isSelected
+                                      ? AppColors.primaryAmber
+                                      : AppColors.primaryAmber.withValues(alpha: 0.5),
+                                  width: isSelected ? 1.5 : 1,
+                                ),
+                                label: Text(
+                                  project.name,
+                                  style: TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 12,
+                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : (isDark ? AppColors.textPrimaryDark : AppColors.primaryAmber),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _workPlaceController.text = project.name;
+                                  });
+                                },
+                              ),
+                            );
+                          }),
+
+                          // 2. Previously used locations (not registered as projects)
+                          ...otherPlaces.map((place) {
+                            final isSelected = _workPlaceController.text == place;
+                            return Padding(
+                              padding: const EdgeInsets.only(left: 6),
+                              child: ActionChip(
+                                visualDensity: VisualDensity.compact,
+                                padding: const EdgeInsets.symmetric(horizontal: 4),
+                                backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+                                side: BorderSide(
+                                  color: isSelected
+                                      ? AppColors.primaryAmber
+                                      : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
+                                  width: 1,
+                                ),
+                                label: Text(
+                                  place,
+                                  style: TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 11,
+                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                    color: isSelected
+                                        ? AppColors.primaryAmber
+                                        : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _workPlaceController.text = place;
+                                  });
+                                },
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),

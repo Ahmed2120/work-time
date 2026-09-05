@@ -1,3 +1,58 @@
+## [2026-09-05] Project / Site Cost Tracking & Budget Management (المشاريع ومواقع العمل)
+- **Project Data & Migration Layer (`Project`, `ProjectStats`, `DatabaseHandler`)**:
+  - Added `Project` model with fields (`id`, `name`, `budgetAmount`, `status`, `createdAt`).
+  - Added `ProjectStats` model aggregating `totalWages`, `totalAdvances`, `totalDays`, and `workerCount`.
+  - Upgraded SQLite schema to version 2 with automated migration creating `projects` table for existing installations without touching legacy attendance tables.
+- **Repository & Reactive State Architecture (`IProjectRepository`, `ProjectRepository`, `ProjectViewModel`)**:
+  - Implemented CRUD methods for managing projects (`insertProject`, `updateProject`, `deleteProject`, `retrieveAll`).
+  - Implemented dynamic aggregation (`getProjectStats(projectName)`) extracting real-time labor costs, withdrawals, and working days by querying the existing `attendance` table filtered by `workPlace`.
+  - Registered repository & view model in `ServiceLocator` and added lazy loaded provider in `main.dart`.
+- **Zero-Friction Design for Single-Location Users**:
+  - No required project association during daily attendance recording; existing flows and single-shop/workshop setups continue working with zero friction.
+  - Workplace names used in attendance seamlessly link with project records of the same name.
+- **Modern UI Suite (`ProjectsView`, `ProjectDetailView`, `BudgetProgressBar`, `ProjectCard`, `AddProjectSheet`, `ProjectsDrawer`)**:
+  - Modularized widgets into separate files to keep code clean, readable, and compliant with user guidelines.
+  - `ProjectsView`: Filterable list distinguishing active vs completed projects, empty state illustrations, and floating add action.
+  - `ProjectCard`: Responsive financial card with status chip, live wage & advance metrics, and visual budget progress.
+  - `ProjectDetailView`: Comprehensive project breakdown with KPI grid, budget consumption meter, and worker attendance stats.
+  - `AddProjectSheet`: Bottom sheet form with name validation and optional estimated budget input.
+  - `ProjectsDrawer`: Added entry in `MainDrawer` styled with industrial amber aesthetics and theme awareness.
+- **Attendance Suggestion Chips Integration (`AttendanceWidget`, `attendance.dart`)**:
+  - Connected `ProjectViewModel.activeProjects` directly into worker daily attendance.
+  - Active projects appear prominently as instant suggestion chips with project icon (`Icons.construction_rounded`) right under "مكان / موقع العمل".
+  - One-tap selection fills the workplace field precisely, eliminating manual typing errors and instantly associating wages/advances with the project.
+- **Project Detail Screen Modern Light Redesign (`project_detail_view.dart`, `ProjectSummaryGrid`, `ProjectFinancialCard`, `ProjectWorkerTile`, `ProjectEmptyWorkersHint`)**:
+  - Implemented crisp, professional light SaaS theme (#F8FAFC, white cards, #E2E8F0 borders, #0F172A typography).
+  - Integrated custom Top App Bar with RTL back navigation, centered project name, and left 3-dot management menu.
+  - Formatted 2x2 statistics grid with Iconly icons, color-coded icon badges, and bold metrics.
+  - Built interactive, clickable worker tiles with avatar initials, role & site subtext, and navigation to worker profile.
+  - Added subtle empty-state and single-worker guidance banner encouraging user to track additional workers.
+
+## [2026-09-01] Google Play Subscription Auto-Sync & Expiration Lifecycle Management
+- **Subscription Expiration Calculation & Timestamp Tracking (`SecureStorageHelper`)**:
+  - Implemented tier duration calculation (`getSubscriptionDuration`): 30 days (Monthly), 90 days (Quarterly), 180 days (Biannual), 365 days (Yearly).
+  - Saved encrypted expiration timestamp (`sec_subscription_expiry_date`) upon purchase or verification.
+  - Automatically compares `DateTime.now()` with `expiryDate` in `isUserExist()`: when expiration passes, instantly revokes active license (`setUserExist(false)`).
+- **Restored Purchase Expiration Validation (`InAppPurchaseService`)**:
+  - Updated `_verifyPurchase` to validate transaction timestamp of restored history items against tier duration. Expired historical purchases from Google Play history are filtered out and denied re-activation.
+- **Silent Background Subscription Verification (`InAppPurchaseService`)**:
+  - Implemented `syncSubscriptionStatusSilently()` called on service initialization in Google Play flavor.
+  - Automatically queries Google Play Billing for active subscriptions for existing/past subscribers.
+  - If an active subscription has expired or was cancelled without renewal, automatically updates encrypted local license state (`setUserExist(false)`).
+- **Subscription History Tracking (`SecureStorageHelper`)**:
+  - Added `wasSubscribedBefore()` and `keyActiveSubscriptionId` to differentiate between new users whose 14-day free trial expired vs paid users whose recurring subscription expired.
+- **Context-Aware Expiration Messages (`functions.dart`, `showFlushBar`)**:
+  - Dynamically switches title, description, and action button text between `"انتهت الفترة التجريبية"` (ترقية الحساب) for trial users and `"انتهت فترة الاشتراك"` (تجديد الاشتراك) for expired paid subscribers.
+- **Attendance Expiration Gatekeeper Fix (`attendance.dart`)**:
+  - Protected the absent (`غائب`) action with `isTrialExpired()` gating matching the present (`حاضر`) button, ensuring robust read-only protection when access expires.
+- **Premium Feature Gatekeeping (PDF & Cloud Backup & Financial Settlements)**:
+  - Protected PDF Export (`reports_view.dart`) so that generating report PDFs prompts non-subscribers to subscribe.
+  - Protected manual Google Drive Backup and Auto-Sync toggle (`backup_view.dart`) while keeping backup restoration open so users never lose previously backed up data.
+  - Protected Cash Advance (`draw_money.dart`) and Weekly Account Settlement (`week_status.dart`) to enforce read-only historical viewing mode upon expiration.
+- **Smart Expiration Banner on Home View (`TrialExpiredBanner`, `home_view.dart`)**:
+  - Created standalone `TrialExpiredBanner` component displayed at the top of `HomeView` when trial/subscription expires.
+  - Reassures the user that their data is safely preserved in read-only mode and provides a direct one-tap renewal button.
+
 ## [2026-08-27] 14-Day Full Unlimited Free Trial Model (Play Store)
 - **Time-Based Free Trial Architecture (`SecureStorageHelper`, `AppConfig`)**:
   - Implemented 14-day full unrestricted trial model (`trialDurationDays = 14`).

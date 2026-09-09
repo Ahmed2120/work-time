@@ -6,6 +6,7 @@ import 'package:work_time/data/models/attendance.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 
+import '../widgets/upgrader_widget.dart';
 import 'components/custom_add_button.dart';
 import 'components/custom_appbar.dart';
 import 'components/drawer/main_drawer.dart';
@@ -27,191 +28,193 @@ class HomeView extends StatelessWidget {
     final totalUsers = userViewModel.users.length;
     final activeStatusFilter = userViewModel.statusFilter;
 
-    return Scaffold(
-      key: keyScaffold,
-      appBar: customAppBar(context),
-      drawer: const MainDrawer(),
-      body: SafeArea(
-        child: userViewModel.clickSearch
-            ? const UsersStatusListview()
-            : SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const TrialExpiredBanner(),
-                    const SizedBox(height: 8),
+    return UpgraderWidget(
+      child: Scaffold(
+        key: keyScaffold,
+        appBar: customAppBar(context),
+        drawer: const MainDrawer(),
+        body: SafeArea(
+          child: userViewModel.clickSearch
+              ? const UsersStatusListview()
+              : SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const TrialExpiredBanner(),
+                      const SizedBox(height: 8),
 
-                    // ─── Header: Date & Greeting ───────────────────────────────────
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${GlobalMethods.getDayName(attendanceViewModel.dateTimeAttendance)}، '
-                            '${GlobalMethods.getDateFormat(attendanceViewModel.dateTimeAttendance)}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              color: isDark
-                                  ? AppColors.textSecondaryDark
-                                  : AppColors.textSecondaryLight,
-                              fontFamily: 'Cairo',
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'صباح الخير 👋',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                              color: isDark
-                                  ? AppColors.textPrimaryDark
-                                  : AppColors.textPrimaryLight,
-                              fontFamily: 'Cairo',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // ─── Attendance Summary Grid (Interactive Filter Cards) ────────
-                    Consumer<AttendanceViewModel>(
-                      builder: (context, attendProvider, _) {
-                        return FutureBuilder<List<int>>(
-                          future: _calculateAttendanceSummary(userViewModel, attendProvider),
-                          builder: (context, snapshot) {
-                            final presentCount = snapshot.data?[0] ?? 0;
-                            final absentCount = snapshot.data?[1] ?? 0;
-                            final pendingCount = snapshot.data?[2] ?? 0;
-
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              child: Row(
-                                children: [
-                                  // Card 1: الكل / إجمالي الموظفين
-                                  Expanded(
-                                    child: _buildSummaryCard(
-                                      context: context,
-                                      title: 'الإجمالي',
-                                      value: '$totalUsers',
-                                      icon: Icons.people_alt_rounded,
-                                      iconColor: AppColors.primary,
-                                      bgColor: isDark
-                                          ? AppColors.darkSurface
-                                          : AppColors.primaryLight,
-                                      isSelected: activeStatusFilter == 'الكل',
-                                      onTap: () => userViewModel.setStatusFilter('الكل'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-
-                                  // Card 2: الحاضرون
-                                  Expanded(
-                                    child: _buildSummaryCard(
-                                      context: context,
-                                      title: 'الحاضرون',
-                                      value: '$presentCount',
-                                      icon: Icons.check_circle_rounded,
-                                      iconColor: AppColors.successText,
-                                      bgColor: isDark
-                                          ? AppColors.successBgDark
-                                          : AppColors.successBgLight,
-                                      isSelected: activeStatusFilter == 'حاضر',
-                                      onTap: () => userViewModel.setStatusFilter('حاضر'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-
-                                  // Card 3: الغائبون
-                                  Expanded(
-                                    child: _buildSummaryCard(
-                                      context: context,
-                                      title: 'الغائبون',
-                                      value: '$absentCount',
-                                      icon: Icons.cancel_rounded,
-                                      iconColor: AppColors.dangerText,
-                                      bgColor: isDark
-                                          ? AppColors.dangerBgDark
-                                          : AppColors.dangerBgLight,
-                                      isSelected: activeStatusFilter == 'غائب',
-                                      onTap: () => userViewModel.setStatusFilter('غائب'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-
-                                  // Card 4: غير المسجلين
-                                  Expanded(
-                                    child: _buildSummaryCard(
-                                      context: context,
-                                      title: 'غير المسجلين',
-                                      value: '$pendingCount',
-                                      icon: Icons.help_outline_rounded,
-                                      iconColor: AppColors.warningText,
-                                      bgColor: isDark
-                                          ? AppColors.warningBgDark
-                                          : AppColors.warningBgLight,
-                                      isSelected: activeStatusFilter == 'لم يسجل',
-                                      onTap: () => userViewModel.setStatusFilter('لم يسجل'),
-                                    ),
-                                  ),
-                                ],
+                      // ─── Header: Date & Greeting ───────────────────────────────────
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${GlobalMethods.getDayName(attendanceViewModel.dateTimeAttendance)}، '
+                              '${GlobalMethods.getDateFormat(attendanceViewModel.dateTimeAttendance)}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: isDark
+                                    ? AppColors.textSecondaryDark
+                                    : AppColors.textSecondaryLight,
+                                fontFamily: 'Cairo',
                               ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // ─── Section Title ───────────────────────────────────────────
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        activeStatusFilter == 'الكل'
-                            ? 'الموظفون'
-                            : 'الموظفون ($activeStatusFilter)',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: isDark
-                              ? AppColors.textPrimaryDark
-                              : AppColors.textPrimaryLight,
-                          fontFamily: 'Cairo',
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'صباح الخير 👋',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+                                color: isDark
+                                    ? AppColors.textPrimaryDark
+                                    : AppColors.textPrimaryLight,
+                                fontFamily: 'Cairo',
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 8),
+                      const SizedBox(height: 16),
 
-                    // ─── Filter Bar + Add Button ──────────────────────────────────
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          const JobFilterDropdown(),
-                          const SizedBox(width: 6),
-                          const DropDownMenuRow(),
-                          const Spacer(),
-                          CustomAddButton(keyScaffold),
-                        ],
+                      // ─── Attendance Summary Grid (Interactive Filter Cards) ────────
+                      Consumer<AttendanceViewModel>(
+                        builder: (context, attendProvider, _) {
+                          return FutureBuilder<List<int>>(
+                            future: _calculateAttendanceSummary(userViewModel, attendProvider),
+                            builder: (context, snapshot) {
+                              final presentCount = snapshot.data?[0] ?? 0;
+                              final absentCount = snapshot.data?[1] ?? 0;
+                              final pendingCount = snapshot.data?[2] ?? 0;
+
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                child: Row(
+                                  children: [
+                                    // Card 1: الكل / إجمالي الموظفين
+                                    Expanded(
+                                      child: _buildSummaryCard(
+                                        context: context,
+                                        title: 'الإجمالي',
+                                        value: '$totalUsers',
+                                        icon: Icons.people_alt_rounded,
+                                        iconColor: AppColors.primary,
+                                        bgColor: isDark
+                                            ? AppColors.darkSurface
+                                            : AppColors.primaryLight,
+                                        isSelected: activeStatusFilter == 'الكل',
+                                        onTap: () => userViewModel.setStatusFilter('الكل'),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+
+                                    // Card 2: الحاضرون
+                                    Expanded(
+                                      child: _buildSummaryCard(
+                                        context: context,
+                                        title: 'الحاضرون',
+                                        value: '$presentCount',
+                                        icon: Icons.check_circle_rounded,
+                                        iconColor: AppColors.successText,
+                                        bgColor: isDark
+                                            ? AppColors.successBgDark
+                                            : AppColors.successBgLight,
+                                        isSelected: activeStatusFilter == 'حاضر',
+                                        onTap: () => userViewModel.setStatusFilter('حاضر'),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+
+                                    // Card 3: الغائبون
+                                    Expanded(
+                                      child: _buildSummaryCard(
+                                        context: context,
+                                        title: 'الغائبون',
+                                        value: '$absentCount',
+                                        icon: Icons.cancel_rounded,
+                                        iconColor: AppColors.dangerText,
+                                        bgColor: isDark
+                                            ? AppColors.dangerBgDark
+                                            : AppColors.dangerBgLight,
+                                        isSelected: activeStatusFilter == 'غائب',
+                                        onTap: () => userViewModel.setStatusFilter('غائب'),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+
+                                    // Card 4: غير المسجلين
+                                    Expanded(
+                                      child: _buildSummaryCard(
+                                        context: context,
+                                        title: 'غير المسجلين',
+                                        value: '$pendingCount',
+                                        icon: Icons.help_outline_rounded,
+                                        iconColor: AppColors.warningText,
+                                        bgColor: isDark
+                                            ? AppColors.warningBgDark
+                                            : AppColors.warningBgLight,
+                                        isSelected: activeStatusFilter == 'لم يسجل',
+                                        onTap: () => userViewModel.setStatusFilter('لم يسجل'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
-                    ),
 
-                    const SizedBox(height: 12),
+                      const SizedBox(height: 20),
 
-                    // ─── Employee List ─────────────────────────────────────────────
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.55,
-                      child: const UsersStatusListview(),
-                    ),
-                  ],
+                      // ─── Section Title ───────────────────────────────────────────
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          activeStatusFilter == 'الكل'
+                              ? 'الموظفون'
+                              : 'الموظفون ($activeStatusFilter)',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: isDark
+                                ? AppColors.textPrimaryDark
+                                : AppColors.textPrimaryLight,
+                            fontFamily: 'Cairo',
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // ─── Filter Bar + Add Button ──────────────────────────────────
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            const JobFilterDropdown(),
+                            const SizedBox(width: 6),
+                            const DropDownMenuRow(),
+                            const Spacer(),
+                            CustomAddButton(keyScaffold),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // ─── Employee List ─────────────────────────────────────────────
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.55,
+                        child: const UsersStatusListview(),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }

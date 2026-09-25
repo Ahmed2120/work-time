@@ -4,7 +4,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'package:work_time/core/services/daily_reminder_service.dart';
+import 'package:work_time/core/services/rate_service.dart';
 import 'package:work_time/core/services/service_locator.dart';
+import 'package:work_time/core/services/telemetry_service.dart';
 import 'package:work_time/view_models/reports_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
@@ -33,6 +35,7 @@ void main() async {
   try {
     await CacheHelper.init();
     await SecureStorageHelper.init();
+    RateService.trackAppLaunch();
   } catch (e) {
     debugPrint("Storage init error: $e");
   }
@@ -49,6 +52,9 @@ void main() async {
   } catch (e) {
     debugPrint("setupServiceLocator error: $e");
   }
+
+  // Silent 24h telemetry ping (unawaited, runs in background)
+  TelemetryService.syncTelemetrySilently();
 
   runApp(const MyApp());
 }

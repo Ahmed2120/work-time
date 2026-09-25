@@ -1,0 +1,14 @@
+{
+  "rules": {
+    "devices": {
+      "$uuid": {
+        ".read": false,
+        ".write": true
+      }
+    },
+    "feedbacks": {
+      ".read": false,
+      ".write": true
+    }
+  }
+}

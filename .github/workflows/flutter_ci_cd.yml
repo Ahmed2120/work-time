@@ -1,0 +1,121 @@
+name: Flutter CI/CD (Shorebird)
+
+on:
+  push:
+    branches:
+      - main
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      action_type:
+        description: 'Choose action to perform (manual trigger)'
+        required: true
+        default: 'none'
+        type: choice
+        options:
+          - none
+          - patch
+          - release
+
+jobs:
+  build:
+    name: Build Android Release/Patch
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Free Disk Space
+        run: |
+          echo "=== Disk space before cleanup ==="
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /opt/hostedtoolcache/go
+          sudo rm -rf /opt/hostedtoolcache/Ruby
+          sudo docker system prune -af --volumes || true
+          echo "=== Disk space after cleanup ==="
+          df -h
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Setup Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          token: ${{ secrets.SHOREBIRD_TOKEN }}
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Lint and Analyze Code
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+
+      - name: Configure Keystore and key.properties
+        if: |
+          (github.ref == 'refs/heads/main' && (contains(github.event.head_commit.message, '[shorebird release]') || contains(github.event.head_commit.message, '[shorebird deploy]') || github.event.inputs.action_type == 'release')) ||
+          ((github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/v')) && (contains(github.event.head_commit.message, '[shorebird patch]') || github.event.inputs.action_type == 'patch'))
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+        run: |
+          # 1. Decode the keystore from Base64 → android/app/upload-keystore.jks
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+
+          # 2. Write key.properties (Gradle reads from android/key.properties)
+          #    storeFile is relative to android/app/ since build.gradle.kts uses file(storeFile)
+          echo "storeFile=upload-keystore.jks" > android/key.properties
+          echo "keyAlias=$KEY_ALIAS" >> android/key.properties
+          echo "keyPassword=$KEY_PASSWORD" >> android/key.properties
+          echo "storePassword=$STORE_PASSWORD" >> android/key.properties
+
+      - name: Build Android Release (Shorebird)
+        if: github.ref == 'refs/heads/main' && (contains(github.event.head_commit.message, '[shorebird release]') || contains(github.event.head_commit.message, '[shorebird deploy]') || github.event.inputs.action_type == 'release')
+        env:
+          SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+        run: |
+          shorebird release android --artifact=aab '--' --obfuscate --split-debug-info=build/app/outputs/symbols
+
+      - name: Build Android Patch (Shorebird)
+        if: (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/v')) && (contains(github.event.head_commit.message, '[shorebird patch]') || github.event.inputs.action_type == 'patch')
+        env:
+          SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+        run: |
+          shorebird patch android --allow-asset-diffs --obfuscate --split-debug-info=build/app/outputs/symbols
+
+      - name: Upload Build Artifact
+        if: github.ref == 'refs/heads/main' && (contains(github.event.head_commit.message, '[shorebird release]') || contains(github.event.head_commit.message, '[shorebird deploy]') || github.event.inputs.action_type == 'release')
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+
+      - name: Deploy to Google Play Store
+        if: github.ref == 'refs/heads/main' && (contains(github.event.head_commit.message, '[shorebird release]') || contains(github.event.head_commit.message, '[shorebird deploy]') || github.event.inputs.action_type == 'release')
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_JSON_KEY }}
+          packageName: com.ashraf.workTime
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed

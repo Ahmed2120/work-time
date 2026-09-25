@@ -4,8 +4,10 @@ import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
 
 import 'components/backup_drawer.dart';
+import 'components/feedback_drawer.dart';
 import 'components/projects_drawer.dart';
 import 'components/purchase_drawer.dart';
+import 'components/rate_drawer.dart';
 import 'components/reminder_drawer.dart';
 import 'components/reports_drawer.dart';
 import 'components/theme_drawer.dart';
@@ -40,6 +42,10 @@ class MainDrawer extends StatelessWidget {
                   if (AppConfig.enableBackupFeature) const BackupDrawer(),
                   if (AppConfig.enableBackupFeature) _divider(isDark),
                   const ThemeDrawer(),
+                  _divider(isDark),
+                  const RateDrawer(),
+                  _divider(isDark),
+                  const FeedbackDrawer(),
                   if (AppConfig.isPlayStore || trial) _divider(isDark),
                   if (AppConfig.isPlayStore || trial) const PurchaseDrawer(),
                 ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/core/services/rate_service.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/data/models/attendance.dart';
@@ -68,6 +69,7 @@ class WeekStatus extends StatelessWidget {
             await attendanceViewModel.updateAttendance(attendance: settled);
             await attendanceViewModel.getWeeklyAttendance(model.userId);
             await attendanceViewModel.getAttendanceUser(model.userId);
+            RateService.checkAndRequestReview();
           },
         ),
       );

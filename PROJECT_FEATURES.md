@@ -1,3 +1,26 @@
+## [2026-09-25] Anonymous Telemetry Sync & User Feedback with In-App Review
+- **24-Hour Silent Telemetry Engine (`TelemetryService`, `lib/core/services/telemetry_service.dart`)**:
+  - Implemented persistent device UUID generation (RFC 4122 v4) stored in local cache.
+  - Automatically queries local SQLite database for aggregate metrics (`employeeCount`, `projectsCount`) and device info (`brand`, `model`, `osVersion`, `isSubscribed`, `firstSeen`, `lastSeen`).
+  - Sends a silent background PATCH request to Firebase Realtime Database (`/devices/{uuid}.json`) throttled to once every 24 hours without interrupting UI or requesting user permissions.
+- **In-App Feedback & Suggestions System (`FeedbackService`, `FeedbackView`, `FeedbackDrawer`)**:
+  - Created standalone `FeedbackView` with clean light brand styling, message type chips (`اقتراح ميزة 💡`, `مشكلة أو عطل ⚠️`, `رأي عام 💬`), message input, and optional contact field.
+  - Posts feedback payloads to Firebase Realtime Database (`/feedbacks.json`) tagged with device UUID and device model.
+  - Automatically prompts the native Google Play In-App Review sheet upon successful submission as requested.
+  - Integrated `FeedbackDrawer` entry in `MainDrawer` for easy accessibility.
+
+## [2026-09-25] Direct 1-Step In-App Review Integration (تقييم التطبيق بخطوة واحدة)
+- **RateService Engine (`RateService`, `lib/core/services/rate_service.dart`)**:
+  - Integrated official `in_app_review: ^2.0.12` package utilizing Google Play In-App Review API.
+  - Implemented background silent guards: verifies launch count (`launchCount >= 3`), 30-day throttle interval (`lastPromptDate`), and single-evaluation flag (`hasRated`).
+  - Added direct fallback to Play Store listing via `openStoreListing()` with external application launcher URL.
+- **Smart Golden Moment Trigger (`WeekStatus`, `week_status.dart`)**:
+  - Automatically invokes 1-step review prompt upon successful weekly account settlement (`تصفية الحساب`) when employer reaches a high-satisfaction milestone.
+  - Displays Google Play native review sheet seamlessly over current screen without disrupting application workflow or navigating away.
+- **Side Drawer Entry (`RateDrawer`, `lib/views/home/components/drawer/components/rate_drawer.dart`, `MainDrawer`)**:
+  - Added dedicated, non-intrusive "قيّم التطبيق" item in the main drawer styled with warm amber star icon.
+  - One-tap direct action opening Google Play Store listing on-demand.
+
 ## [2026-09-05] Project / Site Cost Tracking & Budget Management (المشاريع ومواقع العمل)
 - **Project Data & Migration Layer (`Project`, `ProjectStats`, `DatabaseHandler`)**:
   - Added `Project` model with fields (`id`, `name`, `budgetAmount`, `status`, `createdAt`).

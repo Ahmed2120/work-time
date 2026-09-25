@@ -1,5 +1,7 @@
 {
-  "projects": {},
+  "projects": {
+    "default": "worktime-33fa5"
+  },
   "targets": {},
   "etags": {}
 }

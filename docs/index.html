@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work Time — لوحة القيادة والتحليلات الإدارية</title>
+  <meta name="description" content="لوحة تحكم إدارية احترافية لتطبيق Work Time لمتابعة الأجهزة النشطة والاشتراكات والمقترحات عبر Firebase Realtime Database.">
+
+  <!-- Real App Favicon & Apple Touch Icon -->
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Firebase Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="brand-section">
+        <div class="brand-logo-container">
+          <img src="assets/logo.png" alt="Work Time Logo" class="brand-img-logo">
+        </div>
+        <div class="brand-text">
+          <h1>Work Time <span class="brand-badge">Portal</span></h1>
+          <p>لوحة تحكم وتحليلات التطبيق الذكية</p>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <div id="mode-indicator" class="live-indicator badge-warning">
+          <span class="badge-dot" style="background:#f59e0b"></span> جارٍ التحميل...
+        </div>
+
+        <button id="refresh-btn" class="btn btn-secondary btn-sm" title="تحديث البيانات">
+          🔄 <span id="last-sync-time">الآن</span>
+        </button>
+
+        <button id="theme-toggle-btn" class="btn btn-secondary btn-icon" title="تبديل المظهر">
+          🌓
+        </button>
+
+        <button id="open-login-btn" class="btn btn-primary btn-sm">
+          🔐 تسجيل الدخول
+        </button>
+      </div>
+    </header>
+
+    <!-- Tabs Navigation Bar -->
+    <nav class="tabs-strip">
+      <button class="tab-btn active" data-tab="overview">
+        📊 نظرة عامة
+      </button>
+      <button class="tab-btn" data-tab="devices">
+        📱 الأجهزة والنشاط <span id="tab-count-devices" class="tab-badge">0</span>
+      </button>
+      <button class="tab-btn" data-tab="feedbacks">
+        💬 المقترحات والآراء <span id="tab-count-feedbacks" class="tab-badge">0</span>
+      </button>
+      <button class="tab-btn" data-tab="users">
+        👥 الحسابات والاشتراكات <span id="tab-count-users" class="tab-badge">0</span>
+      </button>
+      <button class="tab-btn" data-tab="settings">
+        ⚙️ الأمان والربط
+      </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- ─── TAB 1: OVERVIEW ─────────────────────────────────────────────── -->
+      <section id="tab-overview" class="tab-content active">
+        <!-- KPI Metrics Grid -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">إجمالي الأجهزة</span>
+              <div class="kpi-icon" style="background:var(--accent-glow); color:var(--accent-primary);">📱</div>
+            </div>
+            <div id="kpi-total-devices" class="kpi-value">0</div>
+            <div class="kpi-footer">
+              <span>جميع الأجهزة التي فتحت التطبيق</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">نشط اليوم (24h)</span>
+              <div class="kpi-icon" style="background:var(--color-success-bg); color:var(--color-success);">🟢</div>
+            </div>
+            <div id="kpi-active-today" class="kpi-value">0</div>
+            <div class="kpi-footer">
+              <span>مستخدمون فتحوا التطبيق اليوم</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">نشط خلال أسبوع</span>
+              <div class="kpi-icon" style="background:var(--color-cyan-bg); color:var(--color-cyan);">⚡</div>
+            </div>
+            <div id="kpi-active-week" class="kpi-value">0</div>
+            <div class="kpi-footer">
+              <span>تفاعلوا خلال آخر 7 أيام</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">نسبة الاشتراكات</span>
+              <div class="kpi-icon" style="background:var(--color-purple-bg); color:var(--color-purple);">💎</div>
+            </div>
+            <div id="kpi-sub-rate" class="kpi-value">0%</div>
+            <div class="kpi-footer">
+              <span>مشتركون مدفوعون</span>
+            </div>
+          </div>
+
+          <div class="kpi-card" style="border-color: rgba(16, 185, 129, 0.4); background: linear-gradient(145deg, var(--bg-card), rgba(16, 185, 129, 0.08));">
+            <div class="kpi-header">
+              <span class="kpi-title" style="color:var(--color-success); font-weight:700;">👑 أصحاب العمل الفعليين</span>
+              <div class="kpi-icon" style="background:var(--color-success-bg); color:var(--color-success);">👑</div>
+            </div>
+            <div id="kpi-real-employers" class="kpi-value" style="color:var(--color-success);">0</div>
+            <div class="kpi-footer">
+              <span>أصحاب عمل أدخلوا عمالاً ومشاريع حقيقية</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">إجمالي العمال المُسجلين</span>
+              <div class="kpi-icon" style="background:var(--color-warning-bg); color:var(--color-warning);">👷</div>
+            </div>
+            <div id="kpi-total-workers" class="kpi-value">0</div>
+            <div class="kpi-footer">
+              <span>في قواعد بيانات المستخدمين</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">إجمالي المشاريع</span>
+              <div class="kpi-icon" style="background:var(--color-purple-bg); color:var(--color-purple);">🏗️</div>
+            </div>
+            <div id="kpi-total-projects" class="kpi-value">0</div>
+            <div class="kpi-footer">
+              <span>مواقع عمل ومقاولات مفتوحة</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">📈 معدل النشاط اليومي (آخر 7 أيام)</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-activity"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">🍩 توزيع الاشتراكات والنسخ التجريبية</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-subscription"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">📱 أكثر موديلات وماركات الأجهزة استخداماً</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-brands"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">👥 أحجام مجموعات العمال لكل صاحب عمل</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-workforce"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── TAB 2: DEVICES & TELEMETRY ──────────────────────────────────── -->
+      <section id="tab-devices" class="tab-content">
+        <!-- Advanced Filter Bar -->
+        <div class="filter-bar">
+          <div class="filter-row-top">
+            <div class="search-wrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="dev-search" class="search-input" placeholder="ابحث برقم المعرف UUID، موديل الجهاز، أو الإصدار...">
+            </div>
+
+            <div class="filter-controls">
+              <select id="dev-engagement-filter" class="filter-select" style="border-color:var(--color-success); color:var(--color-success); font-weight:700;">
+                <option value="all">كل مستويات التفاعل</option>
+                <option value="real-employers">👑 أصحاب العمل الفعليين (عمال > 0)</option>
+                <option value="active-only">🟢 النشطون مؤخراً</option>
+                <option value="dormant">💤 الخاملون (0 عمال)</option>
+              </select>
+
+              <select id="dev-sub-filter" class="filter-select">
+                <option value="all">كل حالات الاشتراك</option>
+                <option value="subscribed">مشترك مدفوع (Subscribed)</option>
+                <option value="trial">فترة تجريبية (Trial)</option>
+                <option value="expired">منتهي التجربة (Free/Expired)</option>
+              </select>
+
+              <select id="dev-activity-filter" class="filter-select">
+                <option value="all">كل أوقات النشاط</option>
+                <option value="today">نشط اليوم (آخر 24 ساعة)</option>
+                <option value="7d">نشط هذا الأسبوع (7 أيام)</option>
+                <option value="30d">نشط هذا الشهر (30 يوماً)</option>
+                <option value="inactive">خامل (أكثر من 30 يوماً)</option>
+              </select>
+
+              <select id="dev-os-filter" class="filter-select">
+                <option value="all">كل إصدارات النظام</option>
+                <option value="android 16">Android 16</option>
+                <option value="android 15">Android 15</option>
+                <option value="android 14">Android 14</option>
+                <option value="android 13">Android 13</option>
+                <option value="android 12">Android 12</option>
+                <option value="android 11">Android 11</option>
+              </select>
+
+              <select id="dev-scale-filter" class="filter-select">
+                <option value="all">كل أحجام العمل</option>
+                <option value="has-workers">لديه عمال مسجلين (> 0)</option>
+                <option value="has-projects">لديه مشاريع مفتوحة (> 0)</option>
+                <option value="zero">تطبيق فارغ (0 عمال ومشاريع)</option>
+              </select>
+
+              <select id="dev-sort-filter" class="filter-select">
+                <option value="lastSeen-desc">الأحدث ظهوراً أولاً</option>
+                <option value="lastSeen-asc">الأقدم ظهوراً أولاً</option>
+                <option value="employeeCount-desc">الأكثر في عدد العمال</option>
+                <option value="projectsCount-desc">الأكثر في عدد المشاريع</option>
+              </select>
+
+              <button id="dev-reset-btn" class="btn btn-secondary btn-sm" title="إعادة تعيين الفلاتر">
+                🔄 مسح الفلاتر
+              </button>
+
+              <button id="export-devices-csv" class="btn btn-primary btn-sm">
+                📥 تصدير CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Chips -->
+          <div class="filter-chips">
+            <span style="font-size:0.75rem; color:var(--text-muted); align-self:center;">فلاتر سريعة:</span>
+            <button class="chip-btn device-chip active" data-filter="all">الكل</button>
+            <button class="chip-btn eng-chip" data-filter="real-employers" style="border-color:var(--color-success); color:var(--color-success); font-weight:700;">👑 أصحاب عمل حقيقيين</button>
+            <button class="chip-btn device-chip" data-filter="subscribed">المشتركون فقط 💎</button>
+            <button class="chip-btn device-chip" data-filter="trial">الفترة التجريبية ⏳</button>
+            <button class="chip-btn eng-chip" data-filter="dormant">الخاملون 💤</button>
+          </div>
+        </div>
+
+        <!-- Devices Table -->
+        <div class="table-wrapper">
+          <div class="table-header-meta">
+            <span>قائمة الأجهزة وتتبع التفاعل الفعلي</span>
+            <span id="filtered-devices-count" style="font-weight:600; color:var(--accent-primary);">0 جهاز</span>
+          </div>
+
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>معرف الجهاز (UUID)</th>
+                  <th>الموديل والماركة</th>
+                  <th>مستوى التفاعل الفعلي</th>
+                  <th>نظام التشغيل</th>
+                  <th>حالة الاشتراك</th>
+                  <th>عدد العمال</th>
+                  <th>المشاريع</th>
+                  <th>آخر ظهور</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="devices-tbody">
+                <!-- Dynamically injected via app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── TAB 3: USER FEEDBACKS ───────────────────────────────────────── -->
+      <section id="tab-feedbacks" class="tab-content">
+        <!-- Feedback Filter Bar -->
+        <div class="filter-bar">
+          <div class="filter-row-top">
+            <div class="search-wrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="fb-search" class="search-input" placeholder="ابحث في نص الرسالة أو رقم الهاتف أو موديل الجهاز...">
+            </div>
+
+            <div class="filter-controls">
+              <select id="fb-type-filter" class="filter-select">
+                <option value="all">كل أنواع الرسائل</option>
+                <option value="feature">💡 اقتراح ميزة جديدة</option>
+                <option value="bug">⚠️ مشكلة أو عطل فني</option>
+                <option value="general">💬 رأي عام وتقييم</option>
+              </select>
+
+              <select id="fb-contact-filter" class="filter-select">
+                <option value="all">كل حالات التواصل</option>
+                <option value="with-contact">يوجد وسيلة تواصل (هاتف / إيميل)</option>
+                <option value="anonymous">بدون وسيلة تواصل</option>
+              </select>
+
+              <select id="fb-time-filter" class="filter-select">
+                <option value="all">كل الأوقات</option>
+                <option value="today">الوارد اليوم</option>
+                <option value="week">آخر 7 أيام</option>
+                <option value="month">هذا الشهر</option>
+              </select>
+
+              <button id="fb-reset-btn" class="btn btn-secondary btn-sm">
+                🔄 مسح الفلاتر
+              </button>
+
+              <button id="export-feedbacks-csv" class="btn btn-primary btn-sm">
+                📥 تصدير CSV
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <h3 style="font-size:1.05rem; font-weight:700;">صندوق الآراء والاقتراحات الواردة</h3>
+          <span id="filtered-feedbacks-count" class="badge badge-purple">0 رسالة</span>
+        </div>
+
+        <!-- Feedback Cards Grid -->
+        <div id="feedbacks-grid" class="feedback-grid">
+          <!-- Dynamically injected via app.js -->
+        </div>
+      </section>
+
+      <!-- ─── TAB 4: USERS & ACCOUNTS ─────────────────────────────────────── -->
+      <section id="tab-users" class="tab-content">
+        <div class="filter-bar">
+          <div class="filter-row-top">
+            <div class="search-wrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="usr-search" class="search-input" placeholder="ابحث بالبريد الإلكتروني أو كود الجهاز المرتبط...">
+            </div>
+            <div>
+              <span id="filtered-users-count" class="badge badge-success">0 حساب</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <div class="table-header-meta">
+            <span>سجل الحسابات والتراخيص المقترنة في قاعدة البيانات (`/users`)</span>
+          </div>
+
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>البريد الإلكتروني</th>
+                  <th>توكن الجهاز المرتبط (Device Token)</th>
+                  <th>الحالة</th>
+                  <th>نوع الباقة</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody">
+                <!-- Dynamically injected via app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── TAB 5: SETTINGS & FIREBASE RULES ────────────────────────────── -->
+      <section id="tab-settings" class="tab-content">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(400px, 1fr)); gap:1.5rem;">
+          <!-- Card 1: Firebase Security Rules -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">🔒 تأمين وقواعد Firebase Realtime Database</h3>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1rem; line-height:1.6;">
+              لتمكين لوحة التحكم من قراءة البيانات بعد تسجيل دخولك كـ Admin، مع منع الزوار غير المصرح لهم، انسخ القواعد التالية وضعها في تبويب <strong>Rules</strong> داخل Firebase Console:
+            </p>
+
+            <pre style="background:var(--bg-input); padding:1rem; border-radius:var(--radius-md); font-family:monospace; font-size:0.8rem; overflow-x:auto; color:#38bdf8; border:1px solid var(--border-color);">
+{
+  "rules": {
+    "devices": {
+      ".read": "auth != null",
+      "$uuid": {
+        ".write": true
+      }
+    },
+    "feedbacks": {
+      ".read": "auth != null",
+      ".write": true
+    },
+    "users": {
+      ".read": "auth != null",
+      "$user": {
+        ".read": true,
+        ".write": true
+      }
+    }
+  }
+}</pre>
+            <div style="margin-top:1rem;">
+              <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(`{\n  \"rules\": {\n    \"devices\": {\n      \".read\": \"auth != null\",\n      \"$uuid\": {\n        \".write\": true\n      }\n    },\n    \"feedbacks\": {\n      \".read\": \"auth != null\",\n      \".write\": true\n    },\n    \"users\": {\n      \".read\": \"auth != null\",\n      \"$user\": {\n        \".read\": true,\n        \".write\": true\n      }\n    }\n  }\n}`)">
+                📋 نسخ القواعد
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: GitHub Pages Deployment Steps -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">🚀 خطوات تفعيل GitHub Pages مجاناً</h3>
+            </div>
+            <ol style="font-size:0.85rem; color:var(--text-secondary); line-height:1.8; padding-right:1.25rem;">
+              <li>ارفع التعديلات إلى GitHub: <code>git push origin main</code></li>
+              <li>ادخل إلى صفحة المشروع في GitHub ثم اضغط على <strong>Settings</strong> ➔ <strong>Pages</strong>.</li>
+              <li>في قسم <strong>Build and deployment</strong>:
+                <br>• اختر Source: <strong>Deploy from a branch</strong>
+                <br>• اختر Branch: <strong>main</strong> و المجلد: <strong>/docs</strong>
+              </li>
+              <li>اضغط <strong>Save</strong>. خلال دقيقة سيظهر لك رابط الموقع المباشر:
+                <br><code style="color:var(--color-success); font-weight:bold;">https://your-username.github.io/work_time/</code>
+              </li>
+              <li>افتح الرابط من هاتفك أو جهازك في أي وقت لمتابعة نشاط التطبيق لايف! 🎯</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div>
+        Work Time Analytics Engine © 2026 • مبني لدعم تطبيق إدارة أوقات العمل والعمال
+      </div>
+      <div class="footer-links">
+        <a href="../privacy_policy.html">سياسة الخصوصية</a>
+        <a href="../terms_of_service.html">شروط الاستخدام</a>
+        <a href="https://github.com" target="_blank">مستودع المشروع</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div style="font-size:2rem; margin-bottom:0.5rem;">🔐</div>
+        <h2>تسجيل دخول المسؤول</h2>
+        <p>سجّل الدخول بحساب Firebase للوصول للبيانات الحية المباشرة</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="login-email">البريد الإلكتروني للـ Admin</label>
+          <input type="email" id="login-email" class="form-input" placeholder="admin@domain.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">كلمة المرور</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:0.65rem; margin-top:1.5rem;">
+          <button type="submit" class="btn btn-primary" style="width:100%;">
+            تسجيل الدخول
+          </button>
+          <button type="button" id="demo-mode-btn" class="btn btn-secondary" style="width:100%;">
+            استكشاف اللوحة بالبيانات التجريبية (Demo Mode) 🚀
+          </button>
+          <button type="button" id="close-modal-btn" class="btn btn-secondary btn-sm" style="margin-top:0.5rem;">
+            إغلاق
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/mock-data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

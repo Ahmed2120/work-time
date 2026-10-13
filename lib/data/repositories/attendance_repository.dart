@@ -77,6 +77,26 @@ class AttendanceRepository implements IAttendanceRepository {
     }
   }
 
+  /// Fetches attendance for ALL users on a specific date in a single DB query.
+  /// Used to preload the today-map cache and avoid N individual calls.
+  @override
+  Future<List<Attendance>> retrieveByDate(DateTime dateTime) async {
+    try {
+      final db = await databaseHandler.initializeDB();
+      final String date =
+          '${dateTime.year}-${dateTime.month < 10 ? '0${dateTime.month}' : '${dateTime.month}'}-${dateTime.day < 10 ? '0${dateTime.day}' : '${dateTime.day}'}';
+      final List<Map<String, Object?>> queryResults = await db.query(
+        _tableName,
+        where: 'todayDate LIKE ?',
+        whereArgs: ['%$date%'],
+      );
+      return queryResults.map((e) => Attendance.fromMap(e)).toList();
+    } catch (e) {
+      print("Error retrieving attendance by date: $e");
+      return [];
+    }
+  }
+
   @override
   Future<List<int>> retrieveWeeks(int userId) async {
     try {

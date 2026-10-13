@@ -125,8 +125,9 @@ class UsersStatusListview extends StatelessWidget {
     required AttendanceViewModel attendProvider,
     required bool isDark,
   }) {
+    final trimmedName = user.name.trim();
     final String firstLetter =
-        user.name.isNotEmpty ? user.name.trim()[0].toUpperCase() : '?';
+        trimmedName.isNotEmpty ? trimmedName[0].toUpperCase() : '?';
 
     return AppCard(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
@@ -202,13 +203,15 @@ class UsersStatusListview extends StatelessWidget {
             ),
           ),
 
-          // Status Badge (حاضر / غائب / لم يسجل)
-          FutureBuilder<Attendance?>(
-            future: attendProvider.getAttendByUserAndDate(userId: user.id!),
-            builder: (context, statusSnapshot) {
-              final title = statusSnapshot.data == null
+          // Status Badge (حاضر / غائب / لم يسجل) - O(1) Memory Cache
+          Builder(
+            builder: (context) {
+              final Attendance? attend = user.id != null
+                  ? attendProvider.getAttendanceFromCache(user.id!)
+                  : null;
+              final title = attend == null
                   ? 'لم يسجل'
-                  : statusSnapshot.data!.status == 1
+                  : attend.status == 1
                       ? 'حاضر'
                       : 'غائب';
               return CustomStatusText(title);
@@ -224,12 +227,14 @@ class UsersStatusListview extends StatelessWidget {
     AttendanceViewModel attendProvider,
     String statusFilter,
   ) async {
+    final userIds = users.where((u) => u.id != null).map((u) => u.id!).toList();
+    await attendProvider.preloadTodayAttendance(userIds);
+
     if (statusFilter == 'الكل') return users;
 
-    List<User> result = [];
+    final List<User> result = [];
     for (var user in users) {
-      final Attendance? attend =
-          await attendProvider.getAttendByUserAndDate(userId: user.id!);
+      final Attendance? attend = attendProvider.getAttendanceFromCache(user.id!);
       if (statusFilter == 'حاضر' && attend != null && attend.status == 1) {
         result.add(user);
       } else if (statusFilter == 'غائب' && attend != null && attend.status == 0) {

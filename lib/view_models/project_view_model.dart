@@ -13,11 +13,19 @@ class ProjectViewModel with ChangeNotifier {
   List<Project> _projects = [];
   List<Project> get projects => _projects;
 
-  List<Project> get activeProjects =>
-      _projects.where((p) => p.status == 'active').toList();
+  // ─── Cached filtered lists (Problem 3) ───────────────────────────────────
+  // بدل ما نعمل .toList() في كل getter call، بنحسبهم مرة واحدة
+  List<Project> _activeProjects = [];
+  List<Project> _completedProjects = [];
 
-  List<Project> get completedProjects =>
-      _projects.where((p) => p.status == 'completed').toList();
+  List<Project> get activeProjects => _activeProjects;
+  List<Project> get completedProjects => _completedProjects;
+
+  /// بيُحدّث الـ cached lists — بيُستدعى فقط لما _projects يتغير.
+  void _updateCachedFilters() {
+    _activeProjects    = _projects.where((p) => p.status == 'active').toList();
+    _completedProjects = _projects.where((p) => p.status == 'completed').toList();
+  }
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -30,6 +38,7 @@ class ProjectViewModel with ChangeNotifier {
     notifyListeners();
     _projects = await _repository.retrieveAll();
     _statsCache.clear();
+    _updateCachedFilters(); // ← هنا بس
     _isLoading = false;
     notifyListeners();
   }
@@ -37,6 +46,7 @@ class ProjectViewModel with ChangeNotifier {
   Future<void> addProject(Project project) async {
     final id = await _repository.insert(project);
     _projects.insert(0, project.copyWith(id: id));
+    _updateCachedFilters(); // ← بعد أي تغيير في _projects
     notifyListeners();
   }
 
@@ -46,6 +56,7 @@ class ProjectViewModel with ChangeNotifier {
     if (index != -1) {
       _projects[index] = project;
       _statsCache.remove(project.name);
+      _updateCachedFilters(); // ← بعد أي تغيير في _projects
       notifyListeners();
     }
   }
@@ -53,6 +64,7 @@ class ProjectViewModel with ChangeNotifier {
   Future<void> deleteProject(int id) async {
     await _repository.delete(id);
     _projects.removeWhere((p) => p.id == id);
+    _updateCachedFilters(); // ← بعد أي تغيير في _projects
     notifyListeners();
   }
 

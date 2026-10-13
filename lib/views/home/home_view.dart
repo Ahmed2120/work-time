@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/global_methods.dart';
-import 'package:work_time/data/models/attendance.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 
@@ -83,12 +82,13 @@ class HomeView extends StatelessWidget {
                       // ─── Attendance Summary Grid (Interactive Filter Cards) ────────
                       Consumer<AttendanceViewModel>(
                         builder: (context, attendProvider, _) {
-                          return FutureBuilder<List<int>>(
+                          return FutureBuilder<Map<String, int>>(
                             future: _calculateAttendanceSummary(userViewModel, attendProvider),
                             builder: (context, snapshot) {
-                              final presentCount = snapshot.data?[0] ?? 0;
-                              final absentCount = snapshot.data?[1] ?? 0;
-                              final pendingCount = snapshot.data?[2] ?? 0;
+                              final summary = snapshot.data;
+                              final presentCount = summary?['present'] ?? 0;
+                              final absentCount = summary?['absent'] ?? 0;
+                              final pendingCount = summary?['pending'] ?? 0;
 
                               return Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -219,26 +219,15 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Future<List<int>> _calculateAttendanceSummary(
+  Future<Map<String, int>> _calculateAttendanceSummary(
     UserViewModel userViewModel,
     AttendanceViewModel attendanceViewModel,
-  ) async {
-    int present = 0;
-    int absent = 0;
-    int pending = 0;
-
-    for (var user in userViewModel.users) {
-      final Attendance? attend =
-          await attendanceViewModel.getAttendByUserAndDate(userId: user.id!);
-      if (attend == null) {
-        pending++;
-      } else if (attend.status == 1) {
-        present++;
-      } else {
-        absent++;
-      }
-    }
-    return [present, absent, pending];
+  ) {
+    final userIds = userViewModel.users
+        .where((u) => u.id != null)
+        .map((u) => u.id!)
+        .toList();
+    return attendanceViewModel.getDailySummary(userIds);
   }
 
   Widget _buildSummaryCard({

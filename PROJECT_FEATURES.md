@@ -1,3 +1,38 @@
+## [2026-10-07] GitHub Pages Web Admin Analytics Dashboard (`docs/`)
+- **Interactive Multi-Filter Admin Dashboard for GitHub Pages Deployment**:
+  - Built a zero-cost, static admin analytics web app hosted directly in `/docs` for 1-click GitHub Pages deployment (`username.github.io/work_time`).
+  - **Modular Architecture**:
+    - `docs/index.html`: Semantic HTML5 portal with tabs (Overview, Devices, Feedbacks, Accounts, Settings), responsive layouts, and modal authentication.
+    - `docs/css/style.css` & `docs/css/components.css`: Modern design system featuring dark/light themes, glassmorphism, responsive grid, status pulses, and KPI cards.
+    - `docs/js/firebase-config.js`: Web client integration with Firebase Realtime Database and Firebase Auth.
+    - `docs/js/state.js` & `docs/js/mock-data.js`: Central reactive state manager with seamless Demo Mode fallback.
+    - `docs/js/charts.js`: Interactive Chart.js visualizations for activity timelines, subscription ratios, top device brands, and workforce group scales.
+    - `docs/js/filters.js`: Multi-criteria filtering engine supporting subscription status, activity timeframes, OS versions, team scales, feedback message types, contact info, and dynamic sorting.
+    - `docs/js/app.js`: Application lifecycle, live refresh, WhatsApp/Email direct actions, and 1-click CSV report exports.
+  - **Branding & Official "ع" Logo**:
+    - Replaced branding assets with the official new "ع" transparent logo (`transparent-logo.png`) across the navbar and browser tab favicon (`docs/assets/logo.png`, `docs/assets/favicon.png`).
+  - **Real Employer & Activity Engagement Detection**:
+    - Implemented smart engagement categorization (`getEngagementStatus()`): identifies real employers (`employeeCount > 0` or `projectsCount > 0`), active users (last 7d), trial testers, and dormant visitors.
+    - Added dedicated Overview KPI card: "👑 أصحاب العمل الفعليين" displaying the exact count of real active contractors/employers.
+    - Added multi-criteria engagement filters and quick chips in the Devices tab (`👑 أصحاب عمل حقيقيين`, `🟢 النشطون مؤخراً`, `💤 الخاملون`).
+  - **Direct Firebase Deletion Support**:
+    - Implemented 1-click user deletion (`handleDeleteUser()`) from `/users` with confirmation modal and state sync.
+    - Implemented 1-click test/device deletion (`handleDeleteDevice()`) from `/devices` with confirmation modal and state sync.
+  - **Live Database Connection & Security Rules (`database.rules.json`)**:
+    - Released and deployed Firebase rules allowing dashboard to read and delete live telemetry, feedbacks, and users.
+    - Configured automatic live data loading on startup with real-time listeners for instant updates.
+
+## [2026-10-07] GC Optimization & Jank Elimination Implementation (Performance Audit & Fixes)
+- **Resolved All 7 GC & Jank Issues Across the Codebase**:
+  - **Problem 1 (Fixed)** (`home_view.dart` & `attendance_view_model.dart`): Replaced N asynchronous DB queries in `_calculateAttendanceSummary` with `getDailySummary(userIds)`, backed by a daily-scoped `_dailySummaryCache`.
+  - **Problem 2 (Fixed)** (`users_status_listview.dart` & `attendance_view_model.dart`): Replaced per-cell `FutureBuilder<Attendance?>` DB queries in `ListView.builder` with preloaded `_todayAttendanceMap` accessed synchronously at O(1) in memory via `getAttendanceFromCache()`.
+  - **Problem 3 (Fixed)** (`project_view_model.dart`): Removed runtime `.where().toList()` filter allocations inside `activeProjects` and `completedProjects` getters; replaced with cached `_activeProjects` and `_completedProjects` lists computed only upon project mutations.
+  - **Problem 4 (Fixed)** (`trial_expired_banner.dart`): Converted `TrialExpiredBanner` from `StatelessWidget` to `StatefulWidget`, initializing the asynchronous `SecureStorageHelper` query once in `initState()` and eliminating duplicate KeyStore I/O calls on every rebuild.
+  - **Problem 5 (Fixed)** (`user_view_model.dart`): Replaced dynamic `.where().toList()` on every `searchResults` getter access with an in-memory cached `_searchResults` list updated only when search query or user list changes.
+  - **Problem 6 (Fixed)** (`attendance_view_model.dart`): Replaced repeated `Map + sort` calculations inside `weekAttendanceMap` and `sortedWeekGroups` getters with a dedicated `_buildWeekCache()` executed once when weekly data arrives.
+  - **Problem 7 (Fixed)** (`users_status_listview.dart`, `project_worker_tile.dart`): Replaced duplicate `.trim()` allocations in `ListView` and tile cards with a single local cached variable per build.
+- **Reference & Interview Guide**: Full analysis with technical reasoning and interview scripts documented in [`GC_JANK_ANALYSIS.md`](file:///c:/my_projects/work_time/GC_JANK_ANALYSIS.md).
+
 ## [2026-09-25] Anonymous Telemetry Sync & User Feedback with In-App Review
 - **24-Hour Silent Telemetry Engine (`TelemetryService`, `lib/core/services/telemetry_service.dart`)**:
   - Implemented persistent device UUID generation (RFC 4122 v4) stored in local cache.

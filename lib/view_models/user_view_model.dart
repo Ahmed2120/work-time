@@ -64,6 +64,7 @@ class UserViewModel with ChangeNotifier {
     user.id = userId;
     _allUsers.add(user);
     _applyCombinedFilters();
+    _updateSearchResults();
     await getSalaries();
     await getJobs();
     notifyListeners();
@@ -72,44 +73,57 @@ class UserViewModel with ChangeNotifier {
   Future<void> getUsers() async {
     _allUsers = await userRepository.retrieve();
     _applyCombinedFilters();
+    _updateSearchResults();
     await getTrash();
     await getSalaries();
     await getJobs();
     notifyListeners();
   }
 
+  List<User> _searchResults = [];
+
   // ─── Search Operations (Searches across ALL users without mutating _users) ──
   void setSearchQuery(String query) {
     _searchQuery = query;
+    _updateSearchResults();
     notifyListeners();
   }
 
   void clearSearch() {
     _searchQuery = '';
+    _updateSearchResults();
     notifyListeners();
   }
 
   List<User> searchUsers(String txt) {
     _searchQuery = txt;
+    _updateSearchResults();
     notifyListeners();
-    return searchResults;
+    return _searchResults;
   }
 
-  /// Returns filtered list over ALL users based on the active query
-  List<User> get searchResults {
-    if (_searchQuery.trim().isEmpty) return _allUsers;
-    final query = _searchQuery.trim().toLowerCase();
-    return _allUsers.where((element) {
+  void _updateSearchResults() {
+    final trimmed = _searchQuery.trim();
+    if (trimmed.isEmpty) {
+      _searchResults = _allUsers;
+      return;
+    }
+    final query = trimmed.toLowerCase();
+    _searchResults = _allUsers.where((element) {
       final nameMatch = element.name.toLowerCase().contains(query);
       final jobMatch = element.job.toLowerCase().contains(query);
       return nameMatch || jobMatch;
     }).toList();
   }
 
+  /// Returns cached filtered list over ALL users based on the active query
+  List<User> get searchResults => _searchResults;
+
   void changeClickSearch() {
     clickSearch = !clickSearch;
     if (!clickSearch) {
       _searchQuery = '';
+      _updateSearchResults();
     }
     notifyListeners();
   }

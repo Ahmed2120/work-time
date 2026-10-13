@@ -20,8 +20,9 @@ class ProjectWorkerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initialLetter = worker.name.trim().isNotEmpty
-        ? worker.name.trim().substring(0, 1).toUpperCase()
+    final trimmedName = worker.name.trim();
+    final initialLetter = trimmedName.isNotEmpty
+        ? trimmedName.substring(0, 1).toUpperCase()
         : 'ع';
 
     return Container(

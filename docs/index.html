@@ -74,6 +74,9 @@
       <button class="tab-btn" data-tab="users">
         👥 الحسابات والاشتراكات <span id="tab-count-users" class="tab-badge">0</span>
       </button>
+      <button class="tab-btn" data-tab="whatsnew">
+        🚀 ما الجديد والتحديثات <span id="tab-count-whatsnew" class="tab-badge">0</span>
+      </button>
       <button class="tab-btn" data-tab="settings">
         ⚙️ الأمان والربط
       </button>
@@ -296,7 +299,7 @@
                   <th>الموديل والماركة</th>
                   <th>مستوى التفاعل الفعلي</th>
                   <th>نظام التشغيل</th>
-                  <th>حالة الاشتراك</th>
+                  <th>حالة وتاريخ الاشتراك</th>
                   <th>عدد العمال</th>
                   <th>المشاريع</th>
                   <th>آخر ظهور</th>
@@ -372,8 +375,11 @@
               <span class="search-icon">🔍</span>
               <input type="text" id="usr-search" class="search-input" placeholder="ابحث بالبريد الإلكتروني أو كود الجهاز المرتبط...">
             </div>
-            <div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
               <span id="filtered-users-count" class="badge badge-success">0 حساب</span>
+              <button id="open-add-user-modal-btn" class="btn btn-primary btn-sm">
+                ➕ تسجيل مستخدم جديد
+              </button>
             </div>
           </div>
         </div>
@@ -389,6 +395,8 @@
                 <tr>
                   <th>البريد الإلكتروني</th>
                   <th>توكن الجهاز المرتبط (Device Token)</th>
+                  <th>📅 تاريخ الاشتراك</th>
+                  <th>⏳ انتهاء الاشتراك</th>
                   <th>الحالة</th>
                   <th>نوع الباقة</th>
                   <th>إجراءات</th>
@@ -398,6 +406,87 @@
                 <!-- Dynamically injected via app.js -->
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── TAB: WHAT'S NEW & RELEASES (ما الجديد والتحديثات) ────────────── -->
+      <section id="tab-whatsnew" class="tab-content">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(360px, 1fr)); gap:1.5rem; margin-bottom:2rem;">
+          <!-- Left: New Release Form -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">✨ نشر تحديث جديد للتطبيق</h3>
+              <span class="badge badge-success">Firebase Realtime</span>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1.25rem;">
+              سيظهر هذا التحديث فوراً في قسم "ما الجديد؟" داخل التطبيق لجميع المستخدمين بدون الحاجة لإعادة رفع التطبيق.
+            </p>
+
+            <form id="whatsnew-form">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" for="wn-version">رقم الإصدار (Version)</label>
+                  <input type="text" id="wn-version" class="form-input" placeholder="مثال: 2.4.0" required>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" for="wn-tag">نوع التحديث (Tag)</label>
+                  <select id="wn-tag" class="form-input" style="height:42px;">
+                    <option value="ميزات جديدة 🚀">ميزات جديدة 🚀</option>
+                    <option value="تحديث رئيسي 🌟">تحديث رئيسي 🌟</option>
+                    <option value="تحسينات وسرعة ⚡">تحسينات وسرعة ⚡</option>
+                    <option value="إصلاحات هامة 🛠️">إصلاحات هامة 🛠️</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="wn-title">عنوان التحديث الرئيسي</label>
+                <input type="text" id="wn-title" class="form-input" placeholder="مثال: إدارة أماكن العمل والتسجيل الجماعي للتمام" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="wn-date">تاريخ الإطلاق</label>
+                <input type="date" id="wn-date" class="form-input" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="wn-description">نبذة ومقدمة عن التحديث</label>
+                <textarea id="wn-description" class="form-input" rows="2" placeholder="وصف مختصر لأهمية التحديث..." style="resize:vertical;"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="wn-features">تفاصيل الميزات (اكتب كل ميزة في سطر جديد)</label>
+                <textarea id="wn-features" class="form-input" rows="4" placeholder="• إمكانية حذف وتعديل أي مكان عمل مسجل&#10;• تسجيل التمام لجميع العمال بنقرة واحدة&#10;• زر وصول سريع من شاشة الموظفين" required style="resize:vertical;"></textarea>
+              </div>
+
+              <div style="margin-bottom:1.25rem;">
+                <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer; color:var(--text-primary);">
+                  <input type="checkbox" id="wn-highlight" checked style="accent-color:var(--accent-primary); width:18px; height:18px;">
+                  <span>عرض نافذة ترحيبية تلقائية في التطبيق (Popup) للمستخدمين فور فتحهم للتطبيق</span>
+                </label>
+              </div>
+
+              <button type="submit" id="btn-save-whatsnew" class="btn btn-primary" style="width:100%;">
+                🚀 نشر التحديث للتطبيق فوراً
+              </button>
+            </form>
+          </div>
+
+          <!-- Right: Published Releases List -->
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+              <h3 style="font-size:1.1rem; font-weight:700; color:var(--text-primary);">
+                📋 التحديثات المنشورة حالياً (<span id="whatsnew-count">0</span>)
+              </h3>
+              <button id="btn-clear-all-whatsnew" class="btn btn-secondary btn-sm" style="color:var(--color-danger); border-color:rgba(239,68,68,0.3);" title="حذف كافة التحديثات لإخفاء قسم ما الجديد من التطبيق">
+                🗑️ حذف الكل (إخفاء القسم من التطبيق)
+              </button>
+            </div>
+
+            <div id="whatsnew-cards-container" style="display:flex; flex-direction:column; gap:1rem;">
+              <!-- Dynamically injected via app.js -->
+            </div>
           </div>
         </div>
       </section>
@@ -507,6 +596,80 @@
           </button>
           <button type="button" id="close-modal-btn" class="btn btn-secondary btn-sm" style="margin-top:0.5rem;">
             إغلاق
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- User Subscription Modal -->
+  <div id="user-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div style="font-size:2rem; margin-bottom:0.5rem;">👑</div>
+        <h2 id="user-modal-title">إدارة اشتراك المستخدم</h2>
+        <p>تسجيل وتعديل بيانات ترخيص المستخدم وتاريخ الاشتراك في Firebase</p>
+      </div>
+
+      <form id="user-subscription-form">
+        <input type="hidden" id="usr-modal-key">
+
+        <div class="form-group">
+          <label class="form-label" for="usr-modal-email">البريد الإلكتروني للعميل</label>
+          <input type="email" id="usr-modal-email" class="form-input" placeholder="client@gmail.com" required>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+          <div class="form-group">
+            <label class="form-label" for="usr-modal-sub-date">📅 تاريخ بدء الاشتراك</label>
+            <input type="date" id="usr-modal-sub-date" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="usr-modal-exp-date">⏳ تاريخ الانتهاء</label>
+            <input type="date" id="usr-modal-exp-date" class="form-input">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+          <div class="form-group">
+            <label class="form-label" for="usr-modal-plan">نوع الباقة</label>
+            <select id="usr-modal-plan" class="form-input" style="height:42px;">
+              <option value="سنوي 👑">سنوي 👑 (12 شهر)</option>
+              <option value="نصف سنوي 💎">نصف سنوي 💎 (6 أشهر)</option>
+              <option value="ربع سنوي ⏳">ربع سنوي ⏳ (3 أشهر)</option>
+              <option value="شهري ⚡">شهري ⚡ (1 شهر)</option>
+              <option value="ترخيص دائم ♾️">ترخيص دائم ♾️</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="usr-modal-status">حالة الترخيص</label>
+            <select id="usr-modal-status" class="form-input" style="height:42px;">
+              <option value="نشط">نشط 🟢</option>
+              <option value="منتهي">منتهي 🔴</option>
+              <option value="معلق">معلق 🟡</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="usr-modal-token">توكن الجهاز المرتبط (Device Token)</label>
+          <div style="display:flex; gap:0.5rem;">
+            <input type="text" id="usr-modal-token" class="form-input" placeholder="اتركه فارغاً للسماح بربط هاتف جديد">
+            <button type="button" id="usr-clear-token-btn" class="btn btn-secondary btn-sm" title="مسح التوكن لفك الارتباط">
+              فك الارتباط
+            </button>
+          </div>
+          <span style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:4px;">
+            مسح التوكن يسمح للعميل بتسجيل الدخول من جهاز جديد.
+          </span>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:0.65rem; margin-top:1.5rem;">
+          <button type="submit" class="btn btn-primary" style="width:100%;">
+            💾 حفظ بيانات الاشتراك في Firebase
+          </button>
+          <button type="button" id="close-user-modal-btn" class="btn btn-secondary btn-sm" style="margin-top:0.5rem;">
+            إلغاء
           </button>
         </div>
       </form>

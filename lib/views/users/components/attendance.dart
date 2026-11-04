@@ -10,6 +10,7 @@ import '../../../data/models/attendance.dart';
 import '../../../data/models/user.dart';
 import '../../../view_models/attendance_view_model.dart';
 import '../../../view_models/project_view_model.dart';
+import '../../../view_models/work_place_view_model.dart';
 import '../../components/constant.dart';
 import '../../components/custom_textField.dart';
 import '../../components/functions.dart';
@@ -119,6 +120,9 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                           salaryReceived: '0',
                         );
                         attendanceViewModel.addAttendance(attendance);
+                        if (placeText.isNotEmpty && placeText != 'الورشة / الموقع') {
+                          Provider.of<WorkPlaceViewModel>(context, listen: false).addWorkPlace(placeText);
+                        }
                         attendanceViewModel.getAttendanceUserToDay(userId: widget.user.id!);
                         attendanceViewModel.getWeeks(widget.user.id!);
                         attendanceViewModel.getWorkPlaces();
@@ -313,10 +317,12 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
               Builder(
                 builder: (context) {
                   final activeProjectNames = activeProjects.map((p) => p.name).toSet();
-                  final otherPlaces = attendanceViewModel.previousWorkPlaces
-                      .where((place) => !activeProjectNames.contains(place))
-                      .take(6)
-                      .toList();
+                  final wpViewModel = Provider.of<WorkPlaceViewModel>(context, listen: true);
+                  final Set<String> placesSet = {
+                    ...wpViewModel.names,
+                    ...attendanceViewModel.previousWorkPlaces,
+                  }..removeWhere((p) => activeProjectNames.contains(p) || p.isEmpty || p == 'لا يوجد');
+                  final otherPlaces = placesSet.take(8).toList();
 
                   if (activeProjects.isEmpty && otherPlaces.isEmpty) {
                     return const SizedBox.shrink();

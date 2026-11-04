@@ -84,6 +84,28 @@ class SecureStorageHelper {
     return null;
   }
 
+  /// Get the recorded subscription start date
+  static Future<DateTime?> getSubscriptionDate() async {
+    try {
+      final dateStr = await _storage.read(key: _keySubscriptionDate);
+      if (dateStr != null && dateStr.isNotEmpty) {
+        return DateTime.parse(dateStr);
+      }
+    } catch (e) {
+      debugPrint('Error reading subscription date: $e');
+    }
+    return null;
+  }
+
+  /// Get the recorded subscription product ID (e.g. sub_yearly, sub_monthly)
+  static Future<String?> getActiveSubscriptionId() async {
+    try {
+      return await _storage.read(key: keyActiveSubscriptionId);
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// Check whether user ever had a recorded subscription purchase
   static Future<bool> wasSubscribedBefore() async {
     try {

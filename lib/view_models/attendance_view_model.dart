@@ -4,6 +4,8 @@ import 'package:work_time/core/utils/global_methods.dart';
 import 'package:work_time/data/models/attendance.dart';
 import 'package:work_time/data/repositories/i_attendance_repository.dart';
 
+import '../data/models/user.dart';
+
 class AttendanceViewModel with ChangeNotifier {
   final IAttendanceRepository attendanceRepository;
 
@@ -259,6 +261,59 @@ class AttendanceViewModel with ChangeNotifier {
 
   Future<void> getWorkPlaces() async {
     _previousWorkPlaces = await attendanceRepository.retrieveWorkPlaces();
+    notifyListeners();
+  }
+
+  /// Bulk attend/absent: inserts or updates attendance records for all [users] at once.
+  /// [status] is 1 for present, 0 for absent.
+  Future<void> bulkAddAttendance({
+    required List<User> users,
+    required int status,
+    required String workPlace,
+  }) async {
+    for (final user in users) {
+      if (user.id == null) continue;
+      final userId = user.id!;
+      final salary = (status == 1) ? user.salary : '0';
+
+      final existing = await attendanceRepository
+          .retrieveByUserIdDateTime(userId, dateTimeAttendance);
+
+      if (existing.isNotEmpty) {
+        final last = existing.last;
+        final updated = Attendance(
+          id: last.id,
+          userId: userId,
+          todayDate: '$dateTimeAttendance',
+          weekId: last.weekId,
+          weekStatus: last.weekStatus,
+          status: status,
+          salaryReceived: last.salaryReceived,
+          workPlace: workPlace.isNotEmpty ? workPlace : last.workPlace,
+          overTimeStatus: last.overTimeStatus,
+          salary: salary,
+          weekEnd: last.weekEnd,
+        );
+        await attendanceRepository.update(attendance: updated);
+      } else {
+        final weekId = await setWeekId(userId: userId, date: dateTimeAttendance);
+        final weekEnd = GlobalMethods.getWeekDay(dateTimeAttendance);
+
+        final attendance = Attendance(
+          userId: userId,
+          todayDate: '$dateTimeAttendance',
+          weekId: weekId,
+          weekStatus: 0,
+          status: status,
+          salaryReceived: '0',
+          workPlace: workPlace.isNotEmpty ? workPlace : 'الورشة / الموقع',
+          salary: salary,
+          weekEnd: '$weekEnd',
+        );
+        await attendanceRepository.insert(attendance);
+      }
+    }
+    invalidateTodayCache();
     notifyListeners();
   }
 }

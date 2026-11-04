@@ -4,8 +4,11 @@ import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/global_methods.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
+import 'package:work_time/view_models/whats_new_view_model.dart';
+import 'package:work_time/views/whats_new/components/whats_new_modal_sheet.dart';
 
 import '../widgets/upgrader_widget.dart';
+import 'components/bulk_attendance_button.dart';
 import 'components/custom_add_button.dart';
 import 'components/custom_appbar.dart';
 import 'components/drawer/main_drawer.dart';
@@ -14,9 +17,33 @@ import 'components/job_filter_dropdown.dart';
 import 'components/trial_expired_banner.dart';
 import 'components/users_status_listview.dart';
 
-class HomeView extends StatelessWidget {
-  HomeView({super.key});
+class HomeView extends StatefulWidget {
+  const HomeView({super.key});
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
   final keyScaffold = GlobalKey<ScaffoldState>();
+  bool _checkedWhatsNew = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkUnseenWhatsNew();
+    });
+  }
+
+  void _checkUnseenWhatsNew() {
+    if (_checkedWhatsNew || !mounted) return;
+    _checkedWhatsNew = true;
+    final wnVM = context.read<WhatsNewViewModel>();
+    if (wnVM.hasUnseen && wnVM.items.isNotEmpty && wnVM.items.first.isHighlight) {
+      showWhatsNewModalSheet(context, wnVM.items.first);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -170,21 +197,27 @@ class HomeView extends StatelessWidget {
 
                       const SizedBox(height: 20),
 
-                      // ─── Section Title ───────────────────────────────────────────
+                      // ─── Section Title & Bulk Attendance Action ──────────────────
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          activeStatusFilter == 'الكل'
-                              ? 'الموظفون'
-                              : 'الموظفون ($activeStatusFilter)',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: isDark
-                                ? AppColors.textPrimaryDark
-                                : AppColors.textPrimaryLight,
-                            fontFamily: 'Cairo',
-                          ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              activeStatusFilter == 'الكل'
+                                  ? 'الموظفون'
+                                  : 'الموظفون ($activeStatusFilter)',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: isDark
+                                    ? AppColors.textPrimaryDark
+                                    : AppColors.textPrimaryLight,
+                                fontFamily: 'Cairo',
+                              ),
+                            ),
+                            if (totalUsers > 0) const BulkAttendanceButton(),
+                          ],
                         ),
                       ),
 

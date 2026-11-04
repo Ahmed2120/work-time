@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:work_time/core/config/app_config.dart';
+import 'package:work_time/core/services/telemetry_service.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 
 class InAppPurchaseService {
@@ -286,6 +287,8 @@ class InAppPurchaseService {
         purchaseDate: purchaseDate,
       );
       debugPrint('Unlocked premium features for ${purchaseDetails.productID} purchased on $purchaseDate');
+      // Sync subscription details to Firebase telemetry immediately
+      unawaited(TelemetryService.syncTelemetrySilently(force: true));
     } catch (e) {
       debugPrint('Error unlocking premium features: $e');
     }

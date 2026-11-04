@@ -1,3 +1,76 @@
+## [2026-11-04] Subscription Date Tracking System (Database & Web Admin Dashboard)
+- **Database & Telemetry Layer (`TelemetryService`, `SecureStorageHelper`, `InAppPurchaseService`, `ApiService`)**:
+  - **Device Telemetry (`/devices/$uuid`)**:
+    - Automatically synchronizes `subscriptionDate`, `subscriptionExpiryDate`, and `subscriptionPlan` to Firebase Realtime Database whenever an active subscription is detected.
+    - Extended `SecureStorageHelper` with `getSubscriptionDate()` and `getActiveSubscriptionId()` to securely read hardware-encrypted subscription dates.
+    - Updated `InAppPurchaseService`: instantly triggers immediate silent telemetry sync (`force: true`) upon subscription completion or restoration to update Firebase in real-time.
+  - **Account Verification (`/users/$encodedEmail`)**:
+    - Updated `ApiService.getUser`: synchronizes and reads `subscriptionDate` and `plan` from Firebase `/users` directly into local encrypted storage when validating direct accounts.
+    - Updated existing user records in Firebase Realtime Database with realistic subscription dates and expiration terms.
+- **Web Admin Dashboard Integration (`docs/index.html`, `docs/js/app.js`, `docs/js/firebase-config.js`, `docs/js/mock-data.js`)**:
+  - **Users Management Tab (`#tab-users`)**:
+    - Added dedicated table columns: **📅 تاريخ الاشتراك** (Subscription Date) and **⏳ انتهاء الاشتراك** (Expiry Date / Renewal).
+    - Status badge indicators dynamically check if subscription has expired (`منتهي 🔴` vs `نشط 🟢`).
+    - Added **User Subscription Modal (`#user-modal`)**:
+      - ➕ Register new user or edit existing account with email, start date, expiry date, plan (`سنوي 👑`, `نصف سنوي 💎`, `ربع سنوي ⏳`, `شهري ⚡`, `ترخيص دائم ♾️`), and status.
+      - Includes "فك الارتباط" button to clear linked device tokens for users migrating to new phones.
+    - Added `saveUser()` method in `firebase-config.js` to persist changes directly to Firebase `/users`.
+  - **Devices Tab (`#tab-devices`)**:
+    - Updated column header to "حالة وتاريخ الاشتراك".
+    - Active subscribed devices (`isSubscribed: true`) now explicitly display their exact subscription start and expiration dates directly under the subscription badge.
+
+## [2026-11-04] "What's New" Updates System & Web Admin Dashboard Integration
+- **100% Dynamic & Remote-Controlled (No Static Data)**:
+  - Completely purged hardcoded/static default release items (`_defaultItems` removed). All content is controlled exclusively from Firebase Realtime Database at `/whats_new`.
+  - **Dynamic Conditional Section Visibility (`MainDrawer`, `WhatsNewService`, `WhatsNewViewModel`)**:
+    - When the admin removes/deletes all updates from the dashboard (or when `/whats_new` is empty/null), local cache is cleared and the "ما الجديد والتحديثات" section and divider in the side drawer are completely hidden (`Consumer<WhatsNewViewModel>` returns `SizedBox.shrink()`).
+    - Startup popup sheet is completely suppressed when no active updates exist.
+    - Added 1-click `حذف الكل (إخفاء القسم من التطبيق)` in the admin dashboard alongside individual delete buttons to purge `/whats_new` instantly.
+- **Zero-Waste Request Architecture & Local Caching (`WhatsNewService`, `WhatsNewViewModel`)**:
+  - **12-Hour Request Throttling**: Eliminates useless polling and repetitive network calls; app only fetches updates from Firebase RTDB at most once every 12 hours or upon manual pull-to-refresh.
+  - **Persistent Offline Cache**: Stores fetched release notes in local `CacheHelper` JSON, allowing instant 0ms rendering on app launch with zero network dependency.
+  - **Unseen Indicator & Smart Highlight Sheet**:
+    - Unseen release updates trigger a subtle `جديد ✨` badge on the `WhatsNewDrawer` item.
+    - If a major highlight release has not been seen by the user, a non-intrusive welcoming bottom sheet (`WhatsNewModalSheet`) appears once upon startup and marks the release as seen immediately.
+- **In-App "What's New" Experience (`WhatsNewView`, `WhatsNewCard`, `WhatsNewDrawer`)**:
+  - Full-screen release history screen with tag badges (`ميزات جديدة 🚀`, `تحسينات ⚡`, `إصلاحات 🛠️`), version tags, dates, and bulleted feature breakdowns.
+  - Pull-to-refresh integration for on-demand sync.
+  - Dedicated side drawer entry (`WhatsNewDrawer`) with live badge indicator.
+- **GitHub Pages Admin Dashboard Integration (`docs/index.html`, `docs/js/app.js`, `docs/js/firebase-config.js`)**:
+  - Added new dedicated tab **"🚀 ما الجديد والتحديثات"** in the web admin portal with real-time release count badge.
+  - Intuitive release publisher form: version, release title, tag selector, date, description, feature bullet points, and highlight toggle.
+  - Instant live publishing directly to Firebase Realtime Database at `/whats_new`.
+  - Management & deletion controls for all published announcements with instant state sync.
+  - Added read/write access rules for `/whats_new` in `database.rules.json`.
+
+## [2026-11-03] Work Place Management (Delete/Edit/Add) & Bulk Attendance Engine
+- **Work Place Management Screen & Persistence Layer (`ManageWorkPlacesView`, `WorkPlaceViewModel`, `WorkPlaceRepository`)**:
+  - **Dedicated Database Table & Migration v3**: Added `work_places` table (`id`, `name UNIQUE`) in SQLite schema with auto-migration from previous versions without affecting legacy attendance records.
+  - **Seed & Reference Sync**: Implemented automatic seeding from legacy attendance strings (`seedFromAttendance()`), plus clean cascade logic: updating a workplace renames historical references in `attendance`, while deleting resets old references to `'الورشة / الموقع'` to eliminate ghost suggestions.
+  - **Dedicated Management Screen (`lib/views/settings/manage_work_places_view.dart`)**:
+    - Add new workplace with instant deduplication and feedback.
+    - Inline dialog to edit/rename workplace name.
+    - Confirmation dialog for permanent deletion.
+    - Added direct navigation entry in `MainDrawer` (`WorkPlacesDrawer`).
+  - **Unified Suggestion Chips Integration (`AttendanceWidget`, `attendance.dart`)**:
+    - Integrated `WorkPlaceViewModel` alongside `ProjectViewModel` and legacy locations.
+    - Any new workplace typed during single-employee attendance recording is auto-saved into `work_places`.
+
+- **Bulk Attendance Recording Engine (`BulkAttendanceView`, `BulkAttendanceButton`, `AttendanceViewModel`)**:
+  - **Contextual & Clear Trigger (`BulkAttendanceButton`, `home_view.dart`)**:
+    - Replaced the ambiguous AppBar groups icon with a dedicated, explicitly labeled action button (`[ 📋 تسجيل جماعي ]`) placed directly beside the "الموظفون" section header.
+    - Non-intrusive: Checkboxes do NOT clutter the main home screen on startup; they only appear upon opening the dedicated Bulk Attendance screen.
+  - **All-at-Once or Custom Checklist Selection**:
+    - Top interactive toggle between `حاضر` (Present) and `غائب` (Absent).
+    - Quick "تحديد الكل" / "إلغاء تحديد الكل" action allowing 1-tap bulk attendance for the entire workforce.
+    - Custom checklist with avatar initials, employee names, and roles for flexible partial selection.
+  - **Workplace Picker Bottom Sheet (`WorkplacePickerSheet`)**:
+    - When submitting attendance as `حاضر`, prompts with a bottom sheet allowing 1-tap selection from registered workplaces or quick entry of a new site.
+    - Automatically skips location prompt when marking `غائب` (defaults cleanly to `'لا يوجد'`).
+  - **Comprehensive Salary & Daily Record Protection**:
+    - Accurately assigns each employee's daily wage (`user.salary`) when present, and `'0'` when absent.
+    - Updates today's existing records or inserts new ones, followed by synchronous cache invalidation to immediately refresh Home summary cards and statuses.
+
 ## [2026-10-07] GitHub Pages Web Admin Analytics Dashboard (`docs/`)
 - **Interactive Multi-Filter Admin Dashboard for GitHub Pages Deployment**:
   - Built a zero-cost, static admin analytics web app hosted directly in `/docs` for 1-click GitHub Pages deployment (`username.github.io/work_time`).

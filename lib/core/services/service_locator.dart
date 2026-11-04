@@ -13,6 +13,10 @@ import 'package:work_time/data/repositories/project_repository.dart';
 import 'package:work_time/view_models/backup_view_model.dart';
 import 'package:work_time/view_models/purchase_view_model.dart';
 import 'package:work_time/view_models/project_view_model.dart';
+import 'package:work_time/data/repositories/i_work_place_repository.dart';
+import 'package:work_time/data/repositories/work_place_repository.dart';
+import 'package:work_time/view_models/work_place_view_model.dart';
+import 'package:work_time/view_models/whats_new_view_model.dart';
 import 'package:work_time/view_models/reports_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
@@ -39,6 +43,9 @@ Future<void> setupServiceLocator() async {
   );
   sl.registerLazySingleton<IProjectRepository>(
     () => ProjectRepository(handler: sl<DatabaseHandler>()),
+  );
+  sl.registerLazySingleton<IWorkPlaceRepository>(
+    () => WorkPlaceRepository(handler: sl<DatabaseHandler>()),
   );
 
   // View Models
@@ -83,5 +90,13 @@ Future<void> setupServiceLocator() async {
     () => ProjectViewModel(
       repository: sl<IProjectRepository>(),
     ),
+  );
+  sl.registerFactory<WorkPlaceViewModel>(
+    () => WorkPlaceViewModel(
+      repository: sl<IWorkPlaceRepository>(),
+    ),
+  );
+  sl.registerFactory<WhatsNewViewModel>(
+    () => WhatsNewViewModel(),
   );
 }

@@ -13,6 +13,7 @@ class AppState {
     this.devices = [];
     this.feedbacks = [];
     this.users = [];
+    this.whatsNew = [];
 
     // Filter criteria for Devices
     this.deviceFilters = {
@@ -84,6 +85,16 @@ class AppState {
       id: key,
       ...val
     }));
+    this.notify();
+  }
+
+  setWhatsNew(whatsNewObj) {
+    this.whatsNew = Object.entries(whatsNewObj || {}).map(([key, val]) => ({
+      id: key,
+      ...val
+    }));
+    // Sort newest date first
+    this.whatsNew.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
     this.notify();
   }
 

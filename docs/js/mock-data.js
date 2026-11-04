@@ -11,6 +11,8 @@ window.mockData = {
       employeeCount: 24,
       projectsCount: 3,
       isSubscribed: true,
+      subscriptionDate: "2026-08-10T14:30:00.000Z",
+      subscriptionExpiryDate: "2027-08-10T14:30:00.000Z",
       isTrial: false,
       firstSeen: "2026-08-10T14:22:00.000Z",
       lastSeen: new Date(Date.now() - 1000 * 60 * 25).toISOString() // 25 mins ago
@@ -33,6 +35,8 @@ window.mockData = {
       employeeCount: 42,
       projectsCount: 5,
       isSubscribed: true,
+      subscriptionDate: "2026-07-15T12:00:00.000Z",
+      subscriptionExpiryDate: "2027-07-15T12:00:00.000Z",
       isTrial: false,
       firstSeen: "2026-07-15T11:40:00.000Z",
       lastSeen: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString() // 5 hours ago
@@ -133,16 +137,50 @@ window.mockData = {
     "ahmed,worktime@gmail,com": {
       deviceToken: "samsung:TP1A.220624.014",
       email: "ahmed.worktime@gmail.com",
-      status: "active",
-      plan: "Premium Lifetime",
+      status: "نشط",
+      plan: "سنوي 👑",
+      subscriptionDate: "2026-07-01",
+      subscriptionExpiryDate: "2027-07-01",
       registeredAt: "2026-07-01T10:00:00.000Z"
     },
     "contractor,cairo@gmail,com": {
       deviceToken: "realme:SP1A.210812.016",
       email: "contractor.cairo@gmail.com",
-      status: "active",
-      plan: "Annual 2026",
+      status: "نشط",
+      plan: "نصف سنوي 💎",
+      subscriptionDate: "2026-08-15",
+      subscriptionExpiryDate: "2027-02-15",
       registeredAt: "2026-08-15T12:30:00.000Z"
+    }
+  },
+
+  whats_new: {
+    "v2_4_0_nov2026": {
+      version: "2.4.0",
+      title: "إدارة أماكن العمل والتسجيل الجماعي للتمام",
+      description: "تحديث رئيسي يضيف إمكانية حذف وتعديل أماكن العمل وتسجيل التمام لجميع العمال بنقرة واحدة.",
+      date: "2026-11-04",
+      tag: "ميزات جديدة 🚀",
+      isHighlight: true,
+      features: [
+        "تسجيل تمام جماعي لجميع العمال أو لمجموعة محددة بنقرة واحدة مع تحديد مكان العمل.",
+        "إمكانية إدارة وتعديل وحذف أي مكان عمل مسجل عبر شاشة مخصصة في القائمة الجانبية.",
+        "زر وصول سريع ومباشر للتسجيل الجماعي بجوار قائمة الموظفين.",
+        "تحسينات عامة في أداء حفظ السجلات ومزامنة البيانات."
+      ]
+    },
+    "v2_3_0_projects": {
+      version: "2.3.0",
+      title: "نظام إدارة المشاريع وتتبع تكاليف المواقع",
+      description: "متابعة شاملة للمواقع والمشاريع الإنشائية ومصروفات الأجور والمسحوبات.",
+      date: "2026-10-07",
+      tag: "تحديث رئيسي 🏗️",
+      isHighlight: false,
+      features: [
+        "إضافة نظام المشاريع لحساب إجمالي أجور العمال ومسحوبات كل موقع بشكل مستقل.",
+        "عداد ونسبة استهلاك الميزانية المحددة لكل مشروع.",
+        "إحصائيات تفاعلية للعمال المشتركين في كل موقع عمل."
+      ]
     }
   }
 };

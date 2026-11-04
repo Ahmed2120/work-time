@@ -11,16 +11,22 @@ class DatabaseHandler {
 
   Future<Database> initializeDB() async {
     if (_database != null) return _database!;
-    
+
     String path = await getDatabasesPath();
     _database = await openDatabase(
       join(path, 'dgi.db'),
       onCreate: (database, version) async {
         Batch batch = database.batch();
-        batch.execute("CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, job TEXT, salary TEXT, isDeleted INTEGER)");
-        batch.execute("CREATE TABLE attendance(id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, todayDate TEXT, weekId INTEGER, status INTEGER, weekStatus INTEGER,overTimeStatus INTEGER, salaryReceived TEXT,salary TEXT,workPlace TEXT,weekEnd TEXT)");
-        batch.execute("CREATE TABLE notes(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, dateCreated TEXT, color INTEGER)");
-        batch.execute("CREATE TABLE projects(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, budgetAmount REAL, status TEXT NOT NULL DEFAULT 'active', createdAt TEXT NOT NULL)");
+        batch.execute(
+            "CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, job TEXT, salary TEXT, isDeleted INTEGER)");
+        batch.execute(
+            "CREATE TABLE attendance(id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, todayDate TEXT, weekId INTEGER, status INTEGER, weekStatus INTEGER,overTimeStatus INTEGER, salaryReceived TEXT,salary TEXT,workPlace TEXT,weekEnd TEXT)");
+        batch.execute(
+            "CREATE TABLE notes(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, dateCreated TEXT, color INTEGER)");
+        batch.execute(
+            "CREATE TABLE projects(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, budgetAmount REAL, status TEXT NOT NULL DEFAULT 'active', createdAt TEXT NOT NULL)");
+        batch.execute(
+            "CREATE TABLE work_places(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE)");
         await batch.commit();
       },
       onUpgrade: (database, oldVersion, newVersion) async {
@@ -30,8 +36,14 @@ class DatabaseHandler {
             "CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, budgetAmount REAL, status TEXT NOT NULL DEFAULT 'active', createdAt TEXT NOT NULL)",
           );
         }
+        if (oldVersion < 3) {
+          // Migration v2 → v3: add dedicated work_places table
+          await database.execute(
+            "CREATE TABLE IF NOT EXISTS work_places(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE)",
+          );
+        }
       },
-      version: 2,
+      version: 3,
     );
     return _database!;
   }

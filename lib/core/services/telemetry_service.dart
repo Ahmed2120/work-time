@@ -31,17 +31,19 @@ class TelemetryService {
   }
 
   /// مزامنة صامتة كل 24 ساعة بدون إزعاج المستخدم أو التأثير على سرعة التطبيق
-  static Future<void> syncTelemetrySilently() async {
+  static Future<void> syncTelemetrySilently({bool force = false}) async {
     try {
       final now = DateTime.now();
 
-      // التحقق مما إذا تم التزامن خلال آخر 24 ساعة
-      final String? lastSyncStr = CacheHelper.getData(key: _keyLastSync) as String?;
-      if (lastSyncStr != null) {
-        final lastSync = DateTime.tryParse(lastSyncStr);
-        if (lastSync != null && now.difference(lastSync).inHours < 24) {
-          debugPrint('Telemetry already synced within 24 hours.');
-          return;
+      // التحقق مما إذا تم التزامن خلال آخر 24 ساعة (ما لم يتم فرض التزامن)
+      if (!force) {
+        final String? lastSyncStr = CacheHelper.getData(key: _keyLastSync) as String?;
+        if (lastSyncStr != null) {
+          final lastSync = DateTime.tryParse(lastSyncStr);
+          if (lastSync != null && now.difference(lastSync).inHours < 24) {
+            debugPrint('Telemetry already synced within 24 hours.');
+            return;
+          }
         }
       }
 
@@ -89,12 +91,27 @@ class TelemetryService {
         }
       } catch (_) {}
 
-      // التحقق من حالة الاشتراك والتجربة
+      // التحقق من حالة الاشتراك والتجربة وتاريخ الاشتراك
       bool isSubscribed = false;
       bool isTrial = true;
+      String? subscriptionDate;
+      String? subscriptionExpiryDate;
+      String? subscriptionPlan;
+
       try {
         isSubscribed = await SecureStorageHelper.isUserExist();
         isTrial = await SecureStorageHelper.isTrial();
+        if (isSubscribed) {
+          final subDate = await SecureStorageHelper.getSubscriptionDate();
+          if (subDate != null) {
+            subscriptionDate = subDate.toIso8601String();
+          }
+          final expiryDate = await SecureStorageHelper.getSubscriptionExpiryDate();
+          if (expiryDate != null) {
+            subscriptionExpiryDate = expiryDate.toIso8601String();
+          }
+          subscriptionPlan = await SecureStorageHelper.getActiveSubscriptionId();
+        }
       } catch (_) {}
 
       // تجهيز الحزمة الإحصائية
@@ -108,6 +125,9 @@ class TelemetryService {
         'isTrial': isTrial,
         'firstSeen': firstSeen,
         'lastSeen': now.toIso8601String(),
+        if (subscriptionDate != null) 'subscriptionDate': subscriptionDate,
+        if (subscriptionExpiryDate != null) 'subscriptionExpiryDate': subscriptionExpiryDate,
+        if (subscriptionPlan != null) 'subscriptionPlan': subscriptionPlan,
       };
 
       // إرسال البيانات إلى Firebase Realtime Database عبر PATCH

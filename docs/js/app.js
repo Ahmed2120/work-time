@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 6. Setup Export & Actions
   setupExportActions();
+  setupWhatsNewActions();
+  setupUserModalActions();
 
   // 7. Setup Auth & Demo Mode
   setupAuthHandlers();
@@ -81,8 +83,18 @@ function setupAuthHandlers() {
   const logoutBtn = document.getElementById('logout-btn');
 
   if (openLoginBtn) {
-    openLoginBtn.addEventListener('click', () => {
-      modal.classList.add('show');
+    openLoginBtn.addEventListener('click', async () => {
+      if (window.firebaseService.auth && window.firebaseService.auth.currentUser) {
+        const email = window.firebaseService.auth.currentUser.email || 'Admin';
+        if (confirm(`أنت مسجل الدخول حالياً بحساب:\n${email}\n\nهل ترغب في تسجيل الخروج والعودة للوضع التجريبي؟`)) {
+          await window.firebaseService.signOut();
+          window.appState.isAuthenticated = false;
+          enableDemoMode();
+          showToast('تم تسجيل الخروج — تم التحويل للوضع التجريبي');
+        }
+      } else {
+        modal.classList.add('show');
+      }
     });
   }
 
@@ -115,7 +127,7 @@ function setupAuthHandlers() {
         await window.firebaseService.signIn(email, pass);
         modal.classList.remove('show');
         showToast('تم تسجيل الدخول بنجاح! جارٍ تحميل البيانات الحية');
-        loadLiveFirebaseData();
+        await loadLiveFirebaseData();
       } catch (err) {
         alert('فشل تسجيل الدخول: ' + (err.message || 'تأكد من البريد وكلمة المرور في Firebase'));
       } finally {
@@ -139,13 +151,14 @@ function setupAuthHandlers() {
   if (refreshBtn) {
     refreshBtn.addEventListener('click', async () => {
       refreshBtn.classList.add('spinning');
-      if (window.appState.isDemoMode) {
-        enableDemoMode();
-      } else {
+      try {
         await loadLiveFirebaseData();
+        showToast('تم تحديث البيانات الحية بنجاح 🔄');
+      } catch (e) {
+        showToast('تعذر التحديث المباشر — تحقق من الاتصال');
+      } finally {
+        setTimeout(() => refreshBtn.classList.remove('spinning'), 600);
       }
-      setTimeout(() => refreshBtn.classList.remove('spinning'), 600);
-      showToast('تم تحديث البيانات بنجاح 🔄');
     });
   }
 }
@@ -161,12 +174,28 @@ async function checkInitialAuthAndLoad() {
 
   // 2. Setup auth listener if Firebase Auth is active
   if (window.firebaseService.auth) {
-    window.firebaseService.auth.onAuthStateChanged((user) => {
+    window.firebaseService.auth.onAuthStateChanged(async (user) => {
       if (user) {
         window.appState.isAuthenticated = true;
         const loginBtn = document.getElementById('open-login-btn');
         if (loginBtn) {
           loginBtn.textContent = '👤 ' + (user.email ? user.email.split('@')[0] : 'Admin');
+          loginBtn.title = 'اضغط لتسجيل الخروج';
+        }
+        // Auto-load live data when user is authenticated
+        if (window.appState.isDemoMode) {
+          try {
+            await loadLiveFirebaseData();
+          } catch (e) {
+            console.warn("Auto-load live data failed after auth restore:", e);
+          }
+        }
+      } else {
+        window.appState.isAuthenticated = false;
+        const loginBtn = document.getElementById('open-login-btn');
+        if (loginBtn) {
+          loginBtn.textContent = '🔐 تسجيل الدخول';
+          loginBtn.title = 'تسجيل الدخول كمسؤول';
         }
       }
     });
@@ -178,6 +207,7 @@ function enableDemoMode() {
   window.appState.setDevices(window.mockData.devices);
   window.appState.setFeedbacks(window.mockData.feedbacks);
   window.appState.setUsers(window.mockData.users);
+  window.appState.setWhatsNew(window.mockData.whats_new);
 }
 
 async function loadLiveFirebaseData() {
@@ -188,10 +218,11 @@ async function loadLiveFirebaseData() {
   }
 
   try {
-    const [devices, feedbacks, users] = await Promise.all([
+    const [devices, feedbacks, users, whatsNew] = await Promise.all([
       window.firebaseService.fetchDevices(),
       window.firebaseService.fetchFeedbacks(),
-      window.firebaseService.fetchUsers()
+      window.firebaseService.fetchUsers(),
+      window.firebaseService.fetchWhatsNew()
     ]);
 
     const devCount = Object.keys(devices || {}).length;
@@ -200,6 +231,7 @@ async function loadLiveFirebaseData() {
     window.appState.setDevices(devices);
     window.appState.setFeedbacks(feedbacks);
     window.appState.setUsers(users);
+    window.appState.setWhatsNew(whatsNew);
 
     updateSyncTimestamp();
     showToast(`تم تحميل البيانات الحية بنجاح (${devCount} جهاز) 🟢`);
@@ -212,6 +244,9 @@ async function loadLiveFirebaseData() {
       });
       window.firebaseService.listenFeedbacks((liveFbs) => {
         window.appState.setFeedbacks(liveFbs);
+      });
+      window.firebaseService.listenWhatsNew((liveWn) => {
+        window.appState.setWhatsNew(liveWn);
       });
     }
   } catch (err) {
@@ -400,6 +435,9 @@ function renderDashboard(state) {
   const usrBadge = document.getElementById('tab-count-users');
   if (usrBadge) usrBadge.textContent = state.users.length;
 
+  const wnBadge = document.getElementById('tab-count-whatsnew');
+  if (wnBadge) wnBadge.textContent = state.whatsNew.length;
+
   // Render KPIs
   renderOverviewKPIs(state);
 
@@ -410,6 +448,7 @@ function renderDashboard(state) {
   renderDevicesTab();
   renderFeedbacksTab();
   renderUsersTab();
+  renderWhatsNewCards(state);
 }
 
 function renderOverviewKPIs(state) {
@@ -478,11 +517,20 @@ function renderDevicesTab() {
   }
 
   tbody.innerHTML = filtered.map((dev) => {
-    const subBadge = dev.isSubscribed
-      ? '<span class="badge badge-success"><span class="badge-dot"></span> مشترك مدفوع</span>'
-      : dev.isTrial
-        ? '<span class="badge badge-warning"><span class="badge-dot"></span> فترة تجريبية</span>'
-        : '<span class="badge badge-neutral"><span class="badge-dot"></span> منتهي التجربة</span>';
+    let subBadge = '';
+    if (dev.isSubscribed) {
+      const subDateStr = dev.subscriptionDate ? dev.subscriptionDate.split('T')[0] : '';
+      const expDateStr = dev.subscriptionExpiryDate ? dev.subscriptionExpiryDate.split('T')[0] : '';
+      subBadge = `
+        <span class="badge badge-success"><span class="badge-dot"></span> مشترك مدفوع</span>
+        ${subDateStr ? `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">📅 بدء: <strong>${subDateStr}</strong></div>` : ''}
+        ${expDateStr ? `<div style="font-size:0.72rem; color:var(--text-muted);">⏳ انتهاء: ${expDateStr}</div>` : ''}
+      `;
+    } else if (dev.isTrial) {
+      subBadge = '<span class="badge badge-warning"><span class="badge-dot"></span> فترة تجريبية</span>';
+    } else {
+      subBadge = '<span class="badge badge-neutral"><span class="badge-dot"></span> منتهي التجربة</span>';
+    }
 
     const eng = window.FilterEngine.getEngagementStatus(dev);
     const shortUuid = dev.uuid ? `${dev.uuid.substring(0, 8)}...` : 'N/A';
@@ -627,21 +675,165 @@ function renderUsersTab() {
   tbody.innerHTML = filtered.map((u) => {
     const rawKey = u.id || '';
     const email = u.email || rawKey.replace(/,/g, '.');
+    const subDate = u.subscriptionDate ? u.subscriptionDate.split('T')[0] : (u.registeredAt ? u.registeredAt.split('T')[0] : 'غير مسجل');
+    const expDate = u.subscriptionExpiryDate ? u.subscriptionExpiryDate.split('T')[0] : 'غير محدد';
+
+    const isExpired = u.subscriptionExpiryDate && new Date(u.subscriptionExpiryDate) < new Date();
+    const statusLabel = isExpired ? 'منتهي 🔴' : (u.status || 'نشط 🟢');
+    const statusBadgeClass = isExpired ? 'badge-neutral' : (u.status === 'معلق' ? 'badge-warning' : 'badge-success');
+
     return `
       <tr>
         <td><strong>${escapeHtml(email)}</strong></td>
         <td><code>${escapeHtml(u.deviceToken || 'غير مرتبط')}</code></td>
-        <td><span class="badge badge-success"><span class="badge-dot"></span> ${u.status || 'Active'}</span></td>
-        <td><span class="badge badge-purple">${u.plan || 'Standard'}</span></td>
         <td>
-          <button class="btn btn-secondary btn-sm" onclick="handleDeleteUser('${rawKey}')" style="color:var(--color-danger); border-color:rgba(239,68,68,0.25);" title="حذف الحساب من قاعدة البيانات">
-            🗑️ حذف الحساب
-          </button>
+          <span style="font-weight:600; color:var(--accent-primary);">📅 ${subDate}</span>
+        </td>
+        <td>
+          <span style="color:var(--text-muted); font-size:0.85rem;">⏳ ${expDate}</span>
+        </td>
+        <td>
+          <span class="badge ${statusBadgeClass}"><span class="badge-dot"></span> ${statusLabel}</span>
+        </td>
+        <td><span class="badge badge-purple">${escapeHtml(u.plan || 'سنوي 👑')}</span></td>
+        <td>
+          <div style="display:flex; gap:0.4rem;">
+            <button class="btn btn-secondary btn-sm" onclick="openEditUserModal('${escapeHtml(rawKey)}')" title="تعديل تاريخ الاشتراك والترخيص">
+              ✏️ تعديل
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="handleDeleteUser('${escapeHtml(rawKey)}')" style="color:var(--color-danger); border-color:rgba(239,68,68,0.25);" title="حذف الحساب من قاعدة البيانات">
+              🗑️
+            </button>
+          </div>
         </td>
       </tr>
     `;
   }).join('');
 }
+
+// ─── USER SUBSCRIPTION MODAL & ACTIONS ───────────────────────────────────────
+
+function setupUserModalActions() {
+  const modal = document.getElementById('user-modal');
+  const openBtn = document.getElementById('open-add-user-modal-btn');
+  const closeBtn = document.getElementById('close-user-modal-btn');
+  const form = document.getElementById('user-subscription-form');
+  const clearTokenBtn = document.getElementById('usr-clear-token-btn');
+
+  if (openBtn) {
+    openBtn.addEventListener('click', () => {
+      openAddUserModal();
+    });
+  }
+
+  if (closeBtn && modal) {
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('show');
+    });
+  }
+
+  if (clearTokenBtn) {
+    clearTokenBtn.addEventListener('click', () => {
+      const tokenInput = document.getElementById('usr-modal-token');
+      if (tokenInput) tokenInput.value = '';
+    });
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'جارٍ الحفظ...';
+
+      try {
+        const key = document.getElementById('usr-modal-key').value;
+        const email = document.getElementById('usr-modal-email').value;
+        const subDate = document.getElementById('usr-modal-sub-date').value;
+        const expDate = document.getElementById('usr-modal-exp-date').value;
+        const plan = document.getElementById('usr-modal-plan').value;
+        const status = document.getElementById('usr-modal-status').value;
+        const deviceToken = document.getElementById('usr-modal-token').value;
+
+        const updated = await window.firebaseService.saveUser({
+          key,
+          email,
+          subscriptionDate: subDate,
+          subscriptionExpiryDate: expDate,
+          plan,
+          status,
+          deviceToken
+        });
+
+        // Update local state
+        const targetKey = key || email.replace(/\./g, ',');
+        const usersObj = { ...window.appState.users.reduce((acc, cur) => { acc[cur.id] = cur; return acc; }, {}) };
+        usersObj[targetKey] = { id: targetKey, ...updated };
+        window.appState.setUsers(usersObj);
+
+        modal.classList.remove('show');
+        showToast('تم حفظ تاريخ الاشتراك وبيانات المستخدم بنجاح في Firebase 👑');
+      } catch (err) {
+        alert('حدث خطأ أثناء الحفظ: ' + err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '💾 حفظ بيانات الاشتراك في Firebase';
+      }
+    });
+  }
+}
+
+function openAddUserModal() {
+  const modal = document.getElementById('user-modal');
+  if (!modal) return;
+
+  document.getElementById('user-modal-title').textContent = '➕ تسجيل مستخدم وتحديد الاشتراك';
+  document.getElementById('usr-modal-key').value = '';
+  document.getElementById('usr-modal-email').value = '';
+  document.getElementById('usr-modal-email').removeAttribute('readonly');
+
+  const today = new Date().toISOString().split('T')[0];
+  const nextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+  document.getElementById('usr-modal-sub-date').value = today;
+  document.getElementById('usr-modal-exp-date').value = nextYear;
+  document.getElementById('usr-modal-plan').value = 'سنوي 👑';
+  document.getElementById('usr-modal-status').value = 'نشط';
+  document.getElementById('usr-modal-token').value = '';
+
+  modal.classList.add('show');
+}
+window.openAddUserModal = openAddUserModal;
+
+function openEditUserModal(userKey) {
+  const modal = document.getElementById('user-modal');
+  if (!modal) return;
+
+  const user = window.appState.users.find(u => u.id === userKey);
+  if (!user) return;
+
+  document.getElementById('user-modal-title').textContent = '✏️ تعديل اشتراك: ' + (user.email || userKey.replace(/,/g, '.'));
+  document.getElementById('usr-modal-key').value = userKey;
+  document.getElementById('usr-modal-email').value = user.email || userKey.replace(/,/g, '.');
+  document.getElementById('usr-modal-email').setAttribute('readonly', 'true');
+
+  const subDate = user.subscriptionDate ? user.subscriptionDate.split('T')[0] : (user.registeredAt ? user.registeredAt.split('T')[0] : new Date().toISOString().split('T')[0]);
+  let expDate = user.subscriptionExpiryDate ? user.subscriptionExpiryDate.split('T')[0] : '';
+  if (!expDate && subDate) {
+    const d = new Date(subDate);
+    d.setFullYear(d.getFullYear() + 1);
+    expDate = d.toISOString().split('T')[0];
+  }
+
+  document.getElementById('usr-modal-sub-date').value = subDate;
+  document.getElementById('usr-modal-exp-date').value = expDate;
+  document.getElementById('usr-modal-plan').value = user.plan || 'سنوي 👑';
+  document.getElementById('usr-modal-status').value = user.status || 'نشط';
+  document.getElementById('usr-modal-token').value = user.deviceToken || '';
+
+  modal.classList.add('show');
+}
+window.openEditUserModal = openEditUserModal;
 
 // ─── DELETE HANDLERS ─────────────────────────────────────────────────────────
 
@@ -786,3 +978,175 @@ function escapeHtml(str) {
     "'": '&#39;'
   })[m]);
 }
+
+// ─── WHAT'S NEW SECTION CONTROLLER ───────────────────────────────────────────
+
+function setupWhatsNewActions() {
+  const form = document.getElementById('whatsnew-form');
+  const dateInput = document.getElementById('wn-date');
+  if (dateInput && !dateInput.value) {
+    dateInput.value = new Date().toISOString().split('T')[0];
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const version = document.getElementById('wn-version').value.trim();
+      const tag = document.getElementById('wn-tag').value;
+      const title = document.getElementById('wn-title').value.trim();
+      const date = document.getElementById('wn-date').value;
+      const description = document.getElementById('wn-description').value.trim();
+      const featuresRaw = document.getElementById('wn-features').value.trim();
+      const isHighlight = document.getElementById('wn-highlight').checked;
+
+      const features = featuresRaw
+        .split('\n')
+        .map(f => f.replace(/^[•\-\*]\s*/, '').trim())
+        .filter(f => f.length > 0);
+
+      const submitBtn = document.getElementById('btn-save-whatsnew');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'جارٍ النشر للتطبيق...';
+      }
+
+      try {
+        const item = {
+          id: 'v' + version.replace(/[^a-zA-Z0-9]/g, '_') + '_' + Date.now(),
+          version,
+          tag,
+          title,
+          date,
+          description,
+          features,
+          isHighlight
+        };
+
+        if (window.appState.isDemoMode) {
+          window.mockData.whats_new[item.id] = item;
+          window.appState.setWhatsNew(window.mockData.whats_new);
+        } else {
+          await window.firebaseService.saveWhatsNew(item);
+          const liveWn = await window.firebaseService.fetchWhatsNew();
+          window.appState.setWhatsNew(liveWn);
+        }
+
+        form.reset();
+        if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+        document.getElementById('wn-highlight').checked = true;
+        showToast('تم نشر التحديث بنجاح! سيظهر في قسم "ما الجديد؟" داخل التطبيق 🚀');
+      } catch (err) {
+        alert('حدث خطأ أثناء النشر: ' + err.message);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = '🚀 نشر التحديث للتطبيق فوراً';
+        }
+      }
+    });
+  }
+
+  const clearAllBtn = document.getElementById('btn-clear-all-whatsnew');
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener('click', async () => {
+      if (!confirm('هل تريد بالتأكيد إزالة كافة التحديثات؟\nعند إزالتها، سيختفي قسم "ما الجديد والتحديثات" تلقائياً من التطبيق لدى جميع المستخدمين.')) return;
+      try {
+        if (window.appState.isDemoMode) {
+          window.mockData.whats_new = {};
+          window.appState.setWhatsNew({});
+        } else {
+          await window.firebaseService.clearAllWhatsNew();
+          window.appState.setWhatsNew({});
+        }
+        showToast('تمت إزالة كافة التحديثات وإخفاء القسم من التطبيق 🗑️');
+      } catch (err) {
+        alert('فشل الإزالة: ' + err.message);
+      }
+    });
+  }
+}
+
+function renderWhatsNewCards(state) {
+  const container = document.getElementById('whatsnew-cards-container');
+  const countEl = document.getElementById('whatsnew-count');
+  if (!container) return;
+
+  const items = state.whatsNew || [];
+  if (countEl) countEl.textContent = items.length;
+
+  if (items.length === 0) {
+    container.innerHTML = `
+      <div style="background:var(--bg-card); padding:2.5rem; border-radius:var(--radius-lg); text-align:center; color:var(--text-secondary); border:1px dashed var(--border-color);">
+        <div style="font-size:2.5rem; margin-bottom:0.75rem;">🚀</div>
+        <h4 style="font-size:1.1rem; color:var(--text-primary); margin-bottom:0.5rem;">لا توجد تحديثات منشورة حالياً</h4>
+        <p style="font-size:0.85rem; line-height:1.6; color:var(--color-success); font-weight:600;">
+          💡 تم إخفاء قسم "ما الجديد والتحديثات" تلقائياً من التطبيق لدى المستخدمين لعدم وجود أي تحديثات.
+        </p>
+        <p style="font-size:0.8rem; margin-top:0.5rem; color:var(--text-muted);">
+          بمجرد كتابة ونشر تحديث جديد من النموذج على اليمين، سيظهر القسم فوراً داخل التطبيق.
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = items.map((item, index) => {
+    const isLatest = index === 0;
+    const featuresList = (item.features || []).map(f => `
+      <li style="display:flex; align-items:flex-start; gap:0.5rem; margin-bottom:0.4rem; font-size:0.85rem; color:var(--text-primary);">
+        <span style="color:var(--color-success); font-weight:bold;">✔</span>
+        <span>${escapeHtml(f)}</span>
+      </li>
+    `).join('');
+
+    return `
+      <div class="chart-card" style="border:${isLatest ? '1.5px solid var(--accent-primary)' : '1px solid var(--border-color)'}; position:relative;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem; margin-bottom:0.6rem;">
+          <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+            <span class="badge ${isLatest ? 'badge-primary' : 'badge-warning'}" style="font-size:0.75rem;">${escapeHtml(item.tag || 'ميزات جديدة 🚀')}</span>
+            <span class="badge" style="background:var(--bg-input); font-size:0.75rem;">v${escapeHtml(item.version || '1.0')}</span>
+            ${item.isHighlight ? '<span class="badge badge-success" style="font-size:0.75rem;">🌟 نافذة منبثقة</span>' : ''}
+          </div>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <span style="font-size:0.75rem; color:var(--text-secondary);">${escapeHtml(item.date || '')}</span>
+            <button class="btn btn-secondary btn-icon" style="color:var(--color-danger); width:32px; height:32px; padding:0;" title="حذف التحديث" onclick="handleDeleteWhatsNew('${item.id}')">
+              🗑️
+            </button>
+          </div>
+        </div>
+
+        <h4 style="font-size:1.05rem; font-weight:700; color:var(--text-primary); margin-bottom:0.4rem;">
+          ${escapeHtml(item.title || '')}
+        </h4>
+
+        ${item.description ? `<p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.75rem; line-height:1.5;">${escapeHtml(item.description)}</p>` : ''}
+
+        ${item.features && item.features.length ? `
+          <div style="border-top:1px solid var(--border-color); padding-top:0.75rem; margin-top:0.5rem;">
+            <ul style="list-style:none; padding:0; margin:0;">
+              ${featuresList}
+            </ul>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+window.handleDeleteWhatsNew = async function(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا التحديث؟ لن يظهر في التطبيق بعد الآن.')) return;
+
+  try {
+    if (window.appState.isDemoMode) {
+      delete window.mockData.whats_new[id];
+      window.appState.setWhatsNew(window.mockData.whats_new);
+    } else {
+      await window.firebaseService.deleteWhatsNew(id);
+      const liveWn = await window.firebaseService.fetchWhatsNew();
+      window.appState.setWhatsNew(liveWn);
+    }
+    showToast('تم حذف التحديث بنجاح 🗑️');
+  } catch (err) {
+    alert('فشل الحذف: ' + err.message);
+  }
+};

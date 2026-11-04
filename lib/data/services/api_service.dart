@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:http/http.dart' as http;
+import 'package:work_time/core/utils/secure_storage_helper.dart';
 
 class ApiService {
 
@@ -38,6 +39,18 @@ class ApiService {
 
       if (userData['deviceToken'] == '' || userData['deviceToken'] == null || userData['deviceToken'] == deviceToken) {
         await setDeviceToken(encodedEmail);
+
+        // Record subscription date from Firebase into local secure storage
+        if (userData['subscriptionDate'] != null) {
+          final subDate = DateTime.tryParse(userData['subscriptionDate'].toString());
+          if (subDate != null) {
+            await SecureStorageHelper.recordSubscription(
+              productId: userData['plan']?.toString() ?? 'direct_license',
+              purchaseDate: subDate,
+            );
+          }
+        }
+
         print('User verified successfully');
         return true;
       }
@@ -62,14 +75,9 @@ class ApiService {
     await http.patch(Uri.parse(url),
         body: json.encode({
           'deviceToken': deviceToken,
+          'lastLogin': DateTime.now().toIso8601String(),
         }));
     
     print('Device token updated for: $encodedEmail');
   }
 }
-
-
-
-
-
-

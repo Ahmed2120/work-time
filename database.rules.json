@@ -16,6 +16,10 @@
         ".read": true,
         ".write": true
       }
+    },
+    "whats_new": {
+      ".read": true,
+      ".write": true
     }
   }
 }

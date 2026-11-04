@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
+import 'package:work_time/view_models/whats_new_view_model.dart';
 
 import 'components/backup_drawer.dart';
 import 'components/feedback_drawer.dart';
@@ -12,6 +14,8 @@ import 'components/reminder_drawer.dart';
 import 'components/reports_drawer.dart';
 import 'components/theme_drawer.dart';
 import 'components/title_drawer.dart';
+import 'components/whats_new_drawer.dart';
+import 'components/work_places_drawer.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
@@ -37,6 +41,22 @@ class MainDrawer extends StatelessWidget {
                   _divider(isDark),
                   const ProjectsDrawer(),
                   _divider(isDark),
+                  const WorkPlacesDrawer(),
+                  _divider(isDark),
+                  Consumer<WhatsNewViewModel>(
+                    builder: (context, whatsNewVM, _) {
+                      if (whatsNewVM.items.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const WhatsNewDrawer(),
+                          _divider(isDark),
+                        ],
+                      );
+                    },
+                  ),
                   const ReminderDrawer(),
                   _divider(isDark),
                   if (AppConfig.enableBackupFeature) const BackupDrawer(),

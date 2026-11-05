@@ -73,7 +73,7 @@ class ProjectRepository implements IProjectRepository {
           COUNT(*) AS totalDays,
           userId
         FROM $_attendanceTable
-        WHERE workPlace = ? AND status = 1
+        WHERE TRIM(workPlace) = TRIM(?) AND status = 1
         GROUP BY userId
         ''',
         [projectName],

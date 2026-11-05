@@ -43,20 +43,6 @@ class MainDrawer extends StatelessWidget {
                   _divider(isDark),
                   const WorkPlacesDrawer(),
                   _divider(isDark),
-                  Consumer<WhatsNewViewModel>(
-                    builder: (context, whatsNewVM, _) {
-                      if (whatsNewVM.items.isEmpty) {
-                        return const SizedBox.shrink();
-                      }
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const WhatsNewDrawer(),
-                          _divider(isDark),
-                        ],
-                      );
-                    },
-                  ),
                   const ReminderDrawer(),
                   _divider(isDark),
                   if (AppConfig.enableBackupFeature) const BackupDrawer(),
@@ -68,6 +54,20 @@ class MainDrawer extends StatelessWidget {
                   const FeedbackDrawer(),
                   if (AppConfig.isPlayStore || trial) _divider(isDark),
                   if (AppConfig.isPlayStore || trial) const PurchaseDrawer(),
+                  Consumer<WhatsNewViewModel>(
+                    builder: (context, whatsNewVM, _) {
+                      if (whatsNewVM.items.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _divider(isDark),
+                          const WhatsNewDrawer(),
+                        ],
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

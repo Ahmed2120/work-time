@@ -69,8 +69,8 @@ class ProjectViewModel with ChangeNotifier {
   }
 
   /// Returns cached stats or fetches from DB
-  Future<ProjectStats> getStats(String projectName) async {
-    if (_statsCache.containsKey(projectName)) {
+  Future<ProjectStats> getStats(String projectName, {bool forceRefresh = false}) async {
+    if (!forceRefresh && _statsCache.containsKey(projectName)) {
       return _statsCache[projectName]!;
     }
     final stats = await _repository.getProjectStats(projectName);
@@ -78,5 +78,12 @@ class ProjectViewModel with ChangeNotifier {
     return stats;
   }
 
-  void clearStatsCache() => _statsCache.clear();
+  void clearStatsCache([String? projectName]) {
+    if (projectName != null) {
+      _statsCache.remove(projectName);
+    } else {
+      _statsCache.clear();
+    }
+    notifyListeners();
+  }
 }

@@ -1,3 +1,13 @@
+## [2026-11-05] Projects Financial & Attendance Real-Time Sync Fix
+- **Live Sync & Invalidation (`ProjectsView`, `ProjectDetailView`, `ProjectViewModel`, `ProjectRepository`)**:
+  - **The Issue**: When adding attendance, drawing an advance, or settling worker accounts on a project, navigating to `ProjectsView` still displayed stale stats until the app was completely restarted due to an uninvalidated in-memory cache (`_statsCache`) and `ProjectsView` being a static `StatelessWidget`.
+  - **Resolution**:
+    - Converted `ProjectsView` to a `StatefulWidget` with automatic `loadProjects()` on entry (`initState`) which clears `_statsCache` and re-aggregates project financials directly from SQLite.
+    - Added `RefreshIndicator` (pull-to-refresh) and an AppBar manual refresh button (`Icons.refresh_rounded`) to `ProjectsView`.
+    - Added `RefreshIndicator` and entry cache-invalidation to `ProjectDetailView` allowing instant refresh of project stats and worker lists.
+    - Updated `ProjectDetailView` navigation return callback (`.then()`) in `ProjectsView` to refresh project list immediately when returning.
+    - Safeguarded SQL aggregation in `ProjectRepository.getProjectStats` with `TRIM(workPlace) = TRIM(?)` to prevent whitespace mismatches.
+
 ## [2026-11-04] Subscription Date Tracking System (Database & Web Admin Dashboard)
 - **Database & Telemetry Layer (`TelemetryService`, `SecureStorageHelper`, `InAppPurchaseService`, `ApiService`)**:
   - **Device Telemetry (`/devices/$uuid`)**:

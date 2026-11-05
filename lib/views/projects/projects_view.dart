@@ -6,8 +6,23 @@ import 'package:work_time/views/projects/components/add_project_sheet.dart';
 import 'package:work_time/views/projects/components/project_card.dart';
 import 'package:work_time/views/projects/project_detail_view.dart';
 
-class ProjectsView extends StatelessWidget {
+class ProjectsView extends StatefulWidget {
   const ProjectsView({super.key});
+
+  @override
+  State<ProjectsView> createState() => _ProjectsViewState();
+}
+
+class _ProjectsViewState extends State<ProjectsView> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<ProjectViewModel>().loadProjects();
+      }
+    });
+  }
 
   void _showAddSheet(BuildContext context, ProjectViewModel vm, {project}) {
     showModalBottomSheet(
@@ -48,6 +63,12 @@ class ProjectsView extends StatelessWidget {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.refresh_rounded, size: 24),
+            color: AppColors.primaryAmber,
+            tooltip: 'تحديث البيانات',
+            onPressed: () => vm.loadProjects(),
+          ),
+          IconButton(
             icon: const Icon(Icons.add_circle_outline_rounded, size: 26),
             color: AppColors.primaryAmber,
             tooltip: 'إضافة مشروع',
@@ -56,11 +77,15 @@ class ProjectsView extends StatelessWidget {
           const SizedBox(width: 4),
         ],
       ),
-      body: vm.isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primaryAmber))
-          : vm.projects.isEmpty
-              ? _EmptyState(onAdd: () => _showAddSheet(context, vm))
-              : _ProjectsList(vm: vm, isDark: isDark, onAdd: () => _showAddSheet(context, vm)),
+      body: RefreshIndicator(
+        color: AppColors.primaryAmber,
+        onRefresh: () => vm.loadProjects(),
+        child: vm.isLoading
+            ? const Center(child: CircularProgressIndicator(color: AppColors.primaryAmber))
+            : vm.projects.isEmpty
+                ? _EmptyState(onAdd: () => _showAddSheet(context, vm))
+                : _ProjectsList(vm: vm, isDark: isDark, onAdd: () => _showAddSheet(context, vm)),
+      ),
       floatingActionButton: vm.projects.isNotEmpty
           ? FloatingActionButton.extended(
               onPressed: () => _showAddSheet(context, vm),
@@ -85,55 +110,61 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.construction_rounded,
-              size: 72,
-              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+      children: [
+        SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.construction_rounded,
+                  size: 72,
+                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'لا يوجد مشاريع بعد',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Cairo',
+                    color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'أضف مشروعاً أو موقع عمل لمتابعة تكلفة العمالة في كل موقع على حدة',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'Cairo',
+                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  ),
+                ),
+                const SizedBox(height: 28),
+                ElevatedButton.icon(
+                  onPressed: onAdd,
+                  icon: const Icon(Icons.add_rounded, color: Colors.white),
+                  label: const Text(
+                    'إضافة أول مشروع',
+                    style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryAmber,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    elevation: 0,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              'لا يوجد مشاريع بعد',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                fontFamily: 'Cairo',
-                color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'أضف مشروعاً أو موقع عمل لمتابعة تكلفة العمالة في كل موقع على حدة',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontFamily: 'Cairo',
-                color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-              ),
-            ),
-            const SizedBox(height: 28),
-            ElevatedButton.icon(
-              onPressed: onAdd,
-              icon: const Icon(Icons.add_rounded, color: Colors.white),
-              label: const Text(
-                'إضافة أول مشروع',
-                style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryAmber,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                elevation: 0,
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -156,7 +187,9 @@ class _ProjectsList extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => ProjectDetailView(project: project, viewModel: vm),
       ),
-    );
+    ).then((_) {
+      vm.loadProjects();
+    });
   }
 
   void _confirmDelete(BuildContext context, project) {

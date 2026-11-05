@@ -33,6 +33,7 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
   void initState() {
     super.initState();
     currentProject = widget.project;
+    widget.viewModel.clearStatsCache(currentProject.name);
   }
 
   void _showEditSheet(BuildContext context) {
@@ -264,10 +265,16 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
                 .where((u) => u.id != null && stats.workerIds.contains(u.id!))
                 .toList();
 
-            return SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-              child: Column(
+            return RefreshIndicator(
+              color: const Color(0xFFEA580C),
+              onRefresh: () async {
+                widget.viewModel.clearStatsCache(currentProject.name);
+                if (mounted) setState(() {});
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // ── 1. حالة المشروع ──────────────────────────────────────
@@ -427,8 +434,9 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
                   const SizedBox(height: 32),
                 ],
               ),
-            );
-          },
+            ),
+          );
+        },
         ),
       ),
     );

@@ -2,10 +2,10 @@
 - **File**: `lib/data/repositories/project_repository.dart`
 - **The Bug**: "أيام العمل" (work days) in Projects view increased by 1 for each user attended in a project — even without new attendance — whenever the Projects page was opened.
 - **Root Cause**: The SQL query used `COUNT(*)` which counted ALL attendance rows per user (including rows from past wage/advance updates that could share the same `todayDate`). Additionally, any scenario where the same calendar day produced more than one row (date format variations, etc.) would inflate the count.
-- **Fix**: Replaced the flat `COUNT(*) + SUM()` with a two-level aggregation:
-  - **Inner query**: Groups by `(userId, SUBSTR(todayDate, 1, 10))` — deduplicates to one row per user per calendar day, taking `MAX(salary)` and `MAX(salaryReceived)` to get the most up-to-date values.
-  - **Outer query**: `COUNT(*)` now counts unique calendar days, `SUM(wages)` and `SUM(advances)` aggregate the deduplicated per-day values.
-- **Result**: Work days and financial totals in Projects view are now always accurate regardless of how many times the page is visited or how many draw/settle operations occurred.
+- **Fix**: Split into two separate SQL queries:
+  1. **Financial query** (wages + advances per user): Inner groups by `(userId, SUBSTR(todayDate, 1, 10))` using `MAX()` to deduplicate same-day rows; outer sums per user. Builds `workerIds` set for worker count.
+  2. **Days query**: `COUNT(DISTINCT SUBSTR(todayDate, 1, 10))` across **all workers** — counts unique calendar days the project had any attendance, regardless of how many workers attended that day.
+- **Result**: "أيام العمل" = calendar days the project ran (e.g. 3 workers all attending on the same day = 1 work day, not 3). Financial totals are correctly deduplicated per user per day.
 
 ## [2026-11-05] Projects Financial & Attendance Real-Time Sync Fix
 - **Live Sync & Invalidation (`ProjectsView`, `ProjectDetailView`, `ProjectViewModel`, `ProjectRepository`)**:

@@ -65,18 +65,18 @@ class ProjectRepository implements IProjectRepository {
     try {
       final db = await databaseHandler.initializeDB();
 
-      final results = await db.rawQuery(
+      // ── Financial totals (per user) ──────────────────────────────────────
+      final financialResults = await db.rawQuery(
         '''
         SELECT
           userId,
-          SUM(wages)        AS totalWages,
-          SUM(advances)     AS totalAdvances,
-          COUNT(*)          AS totalDays
+          SUM(wages)    AS totalWages,
+          SUM(advances) AS totalAdvances
         FROM (
           SELECT
             userId,
-            SUBSTR(todayDate, 1, 10)         AS workDay,
-            MAX(CAST(salary AS REAL))        AS wages,
+            SUBSTR(todayDate, 1, 10)          AS workDay,
+            MAX(CAST(salary AS REAL))         AS wages,
             MAX(CAST(salaryReceived AS REAL)) AS advances
           FROM $_attendanceTable
           WHERE TRIM(workPlace) = TRIM(?) AND status = 1
@@ -87,19 +87,30 @@ class ProjectRepository implements IProjectRepository {
         [projectName],
       );
 
+      // ── Unique calendar days the project had ANY attendance ───────────────
+      final daysResult = await db.rawQuery(
+        '''
+        SELECT COUNT(DISTINCT SUBSTR(todayDate, 1, 10)) AS totalDays
+        FROM $_attendanceTable
+        WHERE TRIM(workPlace) = TRIM(?) AND status = 1
+        ''',
+        [projectName],
+      );
+
       double totalWages = 0;
       double totalAdvances = 0;
-      int totalDays = 0;
       final Set<int> workerIds = {};
 
-      for (final row in results) {
+      for (final row in financialResults) {
         totalWages += (row['totalWages'] as num? ?? 0).toDouble();
         totalAdvances += (row['totalAdvances'] as num? ?? 0).toDouble();
-        totalDays += (row['totalDays'] as int? ?? 0);
         if (row['userId'] != null) {
           workerIds.add(row['userId'] as int);
         }
       }
+
+      final int totalDays =
+          (daysResult.first['totalDays'] as int? ?? 0);
 
       return ProjectStats(
         projectName: projectName,

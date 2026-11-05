@@ -1,3 +1,12 @@
+## [2026-11-05] Fix: Project Work Days Count Inflated (Duplicate-Day Deduplication)
+- **File**: `lib/data/repositories/project_repository.dart`
+- **The Bug**: "أيام العمل" (work days) in Projects view increased by 1 for each user attended in a project — even without new attendance — whenever the Projects page was opened.
+- **Root Cause**: The SQL query used `COUNT(*)` which counted ALL attendance rows per user (including rows from past wage/advance updates that could share the same `todayDate`). Additionally, any scenario where the same calendar day produced more than one row (date format variations, etc.) would inflate the count.
+- **Fix**: Replaced the flat `COUNT(*) + SUM()` with a two-level aggregation:
+  - **Inner query**: Groups by `(userId, SUBSTR(todayDate, 1, 10))` — deduplicates to one row per user per calendar day, taking `MAX(salary)` and `MAX(salaryReceived)` to get the most up-to-date values.
+  - **Outer query**: `COUNT(*)` now counts unique calendar days, `SUM(wages)` and `SUM(advances)` aggregate the deduplicated per-day values.
+- **Result**: Work days and financial totals in Projects view are now always accurate regardless of how many times the page is visited or how many draw/settle operations occurred.
+
 ## [2026-11-05] Projects Financial & Attendance Real-Time Sync Fix
 - **Live Sync & Invalidation (`ProjectsView`, `ProjectDetailView`, `ProjectViewModel`, `ProjectRepository`)**:
   - **The Issue**: When adding attendance, drawing an advance, or settling worker accounts on a project, navigating to `ProjectsView` still displayed stale stats until the app was completely restarted due to an uninvalidated in-memory cache (`_statsCache`) and `ProjectsView` being a static `StatelessWidget`.

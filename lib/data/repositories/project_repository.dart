@@ -67,13 +67,21 @@ class ProjectRepository implements IProjectRepository {
 
       final results = await db.rawQuery(
         '''
-        SELECT 
-          SUM(CAST(salary AS REAL)) AS totalWages,
-          SUM(CAST(salaryReceived AS REAL)) AS totalAdvances,
-          COUNT(*) AS totalDays,
-          userId
-        FROM $_attendanceTable
-        WHERE TRIM(workPlace) = TRIM(?) AND status = 1
+        SELECT
+          userId,
+          SUM(wages)        AS totalWages,
+          SUM(advances)     AS totalAdvances,
+          COUNT(*)          AS totalDays
+        FROM (
+          SELECT
+            userId,
+            SUBSTR(todayDate, 1, 10)         AS workDay,
+            MAX(CAST(salary AS REAL))        AS wages,
+            MAX(CAST(salaryReceived AS REAL)) AS advances
+          FROM $_attendanceTable
+          WHERE TRIM(workPlace) = TRIM(?) AND status = 1
+          GROUP BY userId, SUBSTR(todayDate, 1, 10)
+        )
         GROUP BY userId
         ''',
         [projectName],

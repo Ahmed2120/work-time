@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 import '../../../data/models/attendance.dart';
 import '../../../data/models/user.dart';
@@ -74,7 +75,7 @@ class _OverTimeState extends State<OverTime> {
                   const Icon(Icons.timer_outlined, color: AppColors.primaryAmber, size: 22),
                   const SizedBox(width: 8),
                   Text(
-                    'تخصيص حساب السهرة (الوقت الإضافي)',
+                    context.l10n.customOvertimeTitle,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -91,7 +92,7 @@ class _OverTimeState extends State<OverTime> {
               ),
               const SizedBox(height: 6),
               Text(
-                'اليومية الأساسية: ${widget.user.salary} ج.م',
+                '${context.l10n.baseDailyWage}: ${widget.user.salary} ${context.l10n.currency}',
                 style: TextStyle(
                   fontSize: 13,
                   color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -100,7 +101,7 @@ class _OverTimeState extends State<OverTime> {
               ),
               const SizedBox(height: 16),
               Text(
-                'اختر معامل السهرة السريع:',
+                context.l10n.chooseOvertimeMultiplier,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -118,7 +119,7 @@ class _OverTimeState extends State<OverTime> {
                     backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightAmber,
                     side: const BorderSide(color: AppColors.primaryAmber, width: 1),
                     label: Text(
-                      '×$multiplier ($calculated ج.م)',
+                      '×$multiplier ($calculated ${context.l10n.currency})',
                       style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontWeight: FontWeight.bold,
@@ -135,7 +136,7 @@ class _OverTimeState extends State<OverTime> {
               ),
               const SizedBox(height: 16),
               Text(
-                'أو أدخل إجمالي يومية السهرة يدوياً:',
+                context.l10n.orEnterOvertimeManually,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -152,8 +153,8 @@ class _OverTimeState extends State<OverTime> {
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
-                        hintText: 'مثال: 350',
-                        suffixText: 'ج.م',
+                        hintText: context.l10n.overtimeHintAmount,
+                        suffixText: context.l10n.currency,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                       ),
@@ -173,7 +174,7 @@ class _OverTimeState extends State<OverTime> {
                       }
                       Navigator.pop(ctx);
                     },
-                    child: const Text('تطبيق', style: TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.bold)),
+                    child: Text(context.l10n.apply, style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -225,7 +226,7 @@ class _OverTimeState extends State<OverTime> {
             child: Row(
               children: [
                 Text(
-                  'إضافة سهرة',
+                  context.l10n.addOvertimeLabel,
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -244,7 +245,7 @@ class _OverTimeState extends State<OverTime> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '${model.salary} ج.م',
+                          '${model.salary} ${context.l10n.currency}',
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,

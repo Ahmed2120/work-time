@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/services/pdf_report_service.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/view_models/reports_view_model.dart';
 import 'package:work_time/views/components/app_button.dart';
@@ -30,24 +32,26 @@ class _ReportsViewState extends State<ReportsView> {
     final reportsVM = Provider.of<ReportsViewModel>(context);
     final summary = reportsVM.reportSummary;
 
-    final String monthName = _getMonthName(reportsVM.selectedMonth.month);
+    final String monthName = _getMonthName(reportsVM.selectedMonth.month, context);
     final String monthYearTitle = '$monthName ${reportsVM.selectedMonth.year}';
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('التقارير الشهرية'),
+        title: Text(context.l10n.monthlyReports),
         actions: [
           if (summary != null && summary.workerReports.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.picture_as_pdf_rounded, color: AppColors.primaryPurple),
-              tooltip: 'تصدير PDF',
+              tooltip: context.l10n.exportPdf,
               onPressed: () async {
                 final isExpired = await SecureStorageHelper.isTrialExpired();
                 if (isExpired) {
                   if (context.mounted) {
                     showFlushBar(
                       context,
-                      customMessage: 'تصدير ملفات PDF ميزة حصرية للمشتركين. يرجى الاشتراك للمتابعة.',
+                      customMessage: context.isArabic
+                          ? 'تصدير ملفات PDF ميزة حصرية للمشتركين. يرجى الاشتراك للمتابعة.'
+                          : 'Exporting PDF reports is exclusive to subscribers. Please subscribe to continue.',
                     );
                   }
                   return;
@@ -74,7 +78,7 @@ class _ReportsViewState extends State<ReportsView> {
                   IconButton(
                     icon: const Icon(Icons.chevron_right_rounded, size: 28),
                     onPressed: () => reportsVM.previousMonth(),
-                    tooltip: 'الشهر السابق',
+                    tooltip: context.isArabic ? 'الشهر السابق' : 'Previous Month',
                   ),
                   InkWell(
                     borderRadius: BorderRadius.circular(10),
@@ -115,7 +119,7 @@ class _ReportsViewState extends State<ReportsView> {
                   IconButton(
                     icon: const Icon(Icons.chevron_left_rounded, size: 28),
                     onPressed: () => reportsVM.nextMonth(),
-                    tooltip: 'الشهر التالي',
+                    tooltip: context.isArabic ? 'الشهر التالي' : 'Next Month',
                   ),
                 ],
               ),
@@ -145,7 +149,7 @@ class _ReportsViewState extends State<ReportsView> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'كشف حساب العمال (${summary.workerReports.length})',
+                                    '${context.l10n.workersStatement} (${summary.workerReports.length})',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -154,7 +158,7 @@ class _ReportsViewState extends State<ReportsView> {
                                     ),
                                   ),
                                   Text(
-                                    'شهر $monthName',
+                                    '${context.l10n.monthPrefix} $monthName',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -172,7 +176,7 @@ class _ReportsViewState extends State<ReportsView> {
 
                               // ─── Export PDF Button ──────────────────────────────
                               AppButton(
-                                label: 'تصدير تقرير PDF ومشاركته',
+                                label: context.l10n.exportAndSharePdf,
                                 icon: Icons.picture_as_pdf_rounded,
                                 style: AppButtonStyle.primary,
                                 onPressed: () => PdfReportService.generateAndPreviewReport(summary),
@@ -196,8 +200,8 @@ class _ReportsViewState extends State<ReportsView> {
           children: [
             Expanded(
               child: _kpiTile(
-                title: 'إجمالي المستحق',
-                value: '${summary.totalSalaryEarned.toStringAsFixed(1)} ر.س',
+                title: context.l10n.totalEarned,
+                value: '${summary.totalSalaryEarned.toStringAsFixed(1)} ${context.l10n.currency}',
                 icon: Icons.account_balance_wallet_rounded,
                 iconColor: AppColors.primaryPurple,
                 bgColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
@@ -207,8 +211,8 @@ class _ReportsViewState extends State<ReportsView> {
             const SizedBox(width: 10),
             Expanded(
               child: _kpiTile(
-                title: 'المسحوب / المدفوع',
-                value: '${summary.totalSalaryReceived.toStringAsFixed(1)} ر.س',
+                title: context.l10n.withdrawnPaid,
+                value: '${summary.totalSalaryReceived.toStringAsFixed(1)} ${context.l10n.currency}',
                 icon: Icons.payments_outlined,
                 iconColor: AppColors.error,
                 bgColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
@@ -222,8 +226,8 @@ class _ReportsViewState extends State<ReportsView> {
           children: [
             Expanded(
               child: _kpiTile(
-                title: 'صافي المتبقي للعمال',
-                value: '${summary.totalRemaining.toStringAsFixed(1)} ر.س',
+                title: context.l10n.netRemaining,
+                value: '${summary.totalRemaining.toStringAsFixed(1)} ${context.l10n.currency}',
                 icon: Icons.savings_outlined,
                 iconColor: AppColors.success,
                 bgColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
@@ -234,8 +238,8 @@ class _ReportsViewState extends State<ReportsView> {
             const SizedBox(width: 10),
             Expanded(
               child: _kpiTile(
-                title: 'أيام الحضور الكلية',
-                value: '${summary.totalDaysPresent} يوم',
+                title: context.l10n.totalDaysPresent,
+                value: '${summary.totalDaysPresent} ${context.l10n.day}',
                 icon: Icons.check_circle_outline_rounded,
                 iconColor: AppColors.primaryPurple,
                 bgColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
@@ -332,7 +336,9 @@ class _ReportsViewState extends State<ReportsView> {
                       ),
                     ),
                     Text(
-                      w.userJob.isNotEmpty ? '${w.userJob} • اليومية: ${w.dailyRate} ر.س' : 'اليومية: ${w.dailyRate} ر.س',
+                      w.userJob.isNotEmpty
+                          ? '${w.userJob} • ${context.l10n.wageCol}: ${w.dailyRate} ${context.l10n.currency}'
+                          : '${context.l10n.wageCol}: ${w.dailyRate} ${context.l10n.currency}',
                       style: TextStyle(
                         fontSize: 12,
                         color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -354,9 +360,9 @@ class _ReportsViewState extends State<ReportsView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text('المتبقي', style: TextStyle(fontSize: 10, color: AppColors.primaryPurple)),
+                    Text(context.l10n.remainingAmount, style: const TextStyle(fontSize: 10, color: AppColors.primaryPurple)),
                     Text(
-                      '${w.remaining.toStringAsFixed(1)} ر.س',
+                      '${w.remaining.toStringAsFixed(1)} ${context.l10n.currency}',
                       style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primaryPurple),
                     ),
                   ],
@@ -370,10 +376,10 @@ class _ReportsViewState extends State<ReportsView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _statChip('حاضر', '${w.daysPresent} يوم', AppColors.success),
-              _statChip('غائب', '${w.daysAbsent} يوم', AppColors.error),
-              _statChip('سهرات', '${w.overtimeDays}', AppColors.warning),
-              _statChip('المسحوب', '${w.totalReceived} ر.س', AppColors.textSecondaryLight),
+              _statChip(context.l10n.present, '${w.daysPresent} ${context.l10n.day}', AppColors.success),
+              _statChip(context.l10n.absent, '${w.daysAbsent} ${context.l10n.day}', AppColors.error),
+              _statChip(context.l10n.overtimeCol, '${w.overtimeDays}', AppColors.warning),
+              _statChip(context.l10n.drawnCol, '${w.totalReceived} ${context.l10n.currency}', AppColors.textSecondaryLight),
             ],
           ),
         ],
@@ -406,7 +412,7 @@ class _ReportsViewState extends State<ReportsView> {
           ),
           const SizedBox(height: 16),
           Text(
-            'لا توجد بيانات لهذا الشهر',
+            context.l10n.noDataForMonth,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -416,7 +422,7 @@ class _ReportsViewState extends State<ReportsView> {
           ),
           const SizedBox(height: 6),
           Text(
-            'قم باختيار شهر آخر أو تسجيل حضور العمال لعرض التقارير.',
+            context.l10n.selectAnotherMonthHint,
             style: TextStyle(
               fontSize: 13,
               color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -429,24 +435,13 @@ class _ReportsViewState extends State<ReportsView> {
     );
   }
 
-  String _getMonthName(int month) {
-    const months = [
-      'يناير',
-      'فبراير',
-      'مارس',
-      'أبريل',
-      'مايو',
-      'يونيو',
-      'يوليو',
-      'أغسطس',
-      'سبتمبر',
-      'أكتوبر',
-      'نوفمبر',
-      'ديسمبر',
-    ];
-    if (month >= 1 && month <= 12) {
-      return months[month - 1];
+  String _getMonthName(int month, BuildContext context) {
+    try {
+      final date = DateTime(2024, month, 1);
+      final locale = Localizations.localeOf(context).languageCode;
+      return DateFormat.MMMM(locale).format(date);
+    } catch (_) {
+      return '';
     }
-    return '';
   }
 }

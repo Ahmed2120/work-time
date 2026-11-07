@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/global_methods.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
@@ -77,7 +78,7 @@ class _HomeViewState extends State<HomeView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${GlobalMethods.getDayName(attendanceViewModel.dateTimeAttendance)}، '
+                              '${GlobalMethods.getDayName(attendanceViewModel.dateTimeAttendance, Localizations.localeOf(context).languageCode)}${context.isArabic ? '، ' : ', '}'
                               '${GlobalMethods.getDateFormat(attendanceViewModel.dateTimeAttendance)}',
                               style: TextStyle(
                                 fontSize: 13,
@@ -90,7 +91,7 @@ class _HomeViewState extends State<HomeView> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'صباح الخير 👋',
+                              context.l10n.goodMorning,
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w700,
@@ -125,7 +126,7 @@ class _HomeViewState extends State<HomeView> {
                                     Expanded(
                                       child: _buildSummaryCard(
                                         context: context,
-                                        title: 'الإجمالي',
+                                        title: context.l10n.totalWorkers,
                                         value: '$totalUsers',
                                         icon: Icons.people_alt_rounded,
                                         iconColor: AppColors.primary,
@@ -142,7 +143,7 @@ class _HomeViewState extends State<HomeView> {
                                     Expanded(
                                       child: _buildSummaryCard(
                                         context: context,
-                                        title: 'الحاضرون',
+                                        title: context.l10n.present,
                                         value: '$presentCount',
                                         icon: Icons.check_circle_rounded,
                                         iconColor: AppColors.successText,
@@ -159,7 +160,7 @@ class _HomeViewState extends State<HomeView> {
                                     Expanded(
                                       child: _buildSummaryCard(
                                         context: context,
-                                        title: 'الغائبون',
+                                        title: context.l10n.absent,
                                         value: '$absentCount',
                                         icon: Icons.cancel_rounded,
                                         iconColor: AppColors.dangerText,
@@ -176,7 +177,7 @@ class _HomeViewState extends State<HomeView> {
                                     Expanded(
                                       child: _buildSummaryCard(
                                         context: context,
-                                        title: 'غير المسجلين',
+                                        title: context.l10n.notRecorded,
                                         value: '$pendingCount',
                                         icon: Icons.help_outline_rounded,
                                         iconColor: AppColors.warningText,
@@ -205,8 +206,12 @@ class _HomeViewState extends State<HomeView> {
                           children: [
                             Text(
                               activeStatusFilter == 'الكل'
-                                  ? 'الموظفون'
-                                  : 'الموظفون ($activeStatusFilter)',
+                                  ? context.l10n.workers
+                                  : activeStatusFilter == 'حاضر'
+                                      ? '${context.l10n.workers} (${context.l10n.present})'
+                                      : activeStatusFilter == 'غائب'
+                                          ? '${context.l10n.workers} (${context.l10n.absent})'
+                                          : '${context.l10n.workers} (${context.l10n.notRecorded})',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,

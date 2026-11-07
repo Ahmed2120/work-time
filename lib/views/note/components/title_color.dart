@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/view_models/note_view_model.dart';
 
 class SwitchColor extends StatelessWidget {
@@ -34,7 +35,7 @@ class SwitchColor extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'لون الملاحظة',
+          context.l10n.noteColor,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,

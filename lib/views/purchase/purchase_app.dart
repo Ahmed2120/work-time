@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/views/components/constant.dart';
 
 import 'components/playstore_paywall.dart';
@@ -27,7 +28,7 @@ class PurchaseApp extends StatelessWidget {
           ),
         ),
         title: Text(
-          AppConfig.isPlayStore ? 'ترقية الحساب والاشتراك' : 'تفعيل ترخيص التطبيق',
+          AppConfig.isPlayStore ? context.l10n.upgradeAccountAndSub : context.l10n.activateLicense,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -81,7 +82,7 @@ class PurchaseApp extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'جميع البيانات والنسخ الاحتياطي مشفرة ومحمية بالكامل',
+                      context.l10n.allDataEncryptedProtected,
                       style: TextStyle(
                         fontSize: 12,
                         color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,

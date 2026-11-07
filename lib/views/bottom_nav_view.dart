@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconly_plus/iconly_plus.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 import 'home/home_view.dart';
 import 'note/note_view.dart';
@@ -43,13 +44,13 @@ class _BottomNavViewState extends State<BottomNavView> {
         child: BottomNavigationBar(
           onTap: _selectedPage,
           currentIndex: _selectedIndex,
-          items: bottomNavigationBarItems(isDark),
+          items: bottomNavigationBarItems(context, isDark),
         ),
       ),
     );
   }
 
-  List<BottomNavigationBarItem> bottomNavigationBarItems(bool isDark) {
+  List<BottomNavigationBarItem> bottomNavigationBarItems(BuildContext context, bool isDark) {
     return [
       BottomNavigationBarItem(
         icon: _buildNavItem(
@@ -57,7 +58,7 @@ class _BottomNavViewState extends State<BottomNavView> {
           isSelected: _selectedIndex == 0,
           isDark: isDark,
         ),
-        label: 'الرئيسية',
+        label: context.l10n.home,
       ),
       BottomNavigationBarItem(
         icon: _buildNavItem(
@@ -65,7 +66,7 @@ class _BottomNavViewState extends State<BottomNavView> {
           isSelected: _selectedIndex == 1,
           isDark: isDark,
         ),
-        label: 'الملاحظات',
+        label: context.l10n.notes,
       ),
       BottomNavigationBarItem(
         icon: _buildNavItem(
@@ -73,7 +74,7 @@ class _BottomNavViewState extends State<BottomNavView> {
           isSelected: _selectedIndex == 2,
           isDark: isDark,
         ),
-        label: 'خارج العمل',
+        label: context.l10n.outOfWork,
       ),
     ];
   }

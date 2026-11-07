@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'package:work_time/core/services/daily_reminder_service.dart';
@@ -17,6 +16,7 @@ import 'package:work_time/view_models/project_view_model.dart';
 import 'package:work_time/view_models/work_place_view_model.dart';
 import 'package:work_time/view_models/whats_new_view_model.dart';
 import 'package:work_time/view_models/theme_view_model.dart';
+import 'package:work_time/view_models/locale_view_model.dart';
 import 'package:work_time/views/splash_view.dart';
 
 import 'package:work_time/core/theme/theme.dart';
@@ -98,20 +98,18 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => sl<WhatsNewViewModel>()..loadWhatsNew(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => sl<LocaleViewModel>(),
+        ),
       ],
-      child: Consumer<ThemeViewModel>(
-        builder: (context, themeViewModel, child) {
+      child: Consumer2<ThemeViewModel, LocaleViewModel>(
+        builder: (context, themeViewModel, localeViewModel, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            locale: const Locale('ar'), // Arabic default
+            locale: localeViewModel.locale,
             supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            title: 'عُمَّالي',
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            title: localeViewModel.isArabic ? 'عُمَّالي' : 'Work Time',
             theme: lightThemeData,
             darkTheme: darkThemeData,
             themeMode: themeViewModel.themeMode,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/note.dart';
 import 'package:work_time/view_models/note_view_model.dart';
 import 'package:work_time/views/components/app_button.dart';
@@ -42,10 +43,11 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
   void _saveNote(NoteViewModel noteViewModel) {
+    final defaultTitle = context.l10n.untitled;
     if (widget.note == null) {
       if (_titleController.text.isEmpty && _descriptionController.text.isEmpty) {
         noteViewModel.addNote(Note(
-          title: 'بدون عنوان',
+          title: defaultTitle,
           description: _descriptionController.text,
           dateCreated: '${DateTime.now()}',
           color: noteViewModel.colorVal,
@@ -66,13 +68,13 @@ class _NoteEditorState extends State<NoteEditor> {
           color: noteViewModel.colorVal,
         ));
       }
-      showToast(context, 'تم حفظ الملاحظة بنجاح');
+      showToast(context, context.l10n.noteSavedSuccess);
       Navigator.of(context).pop();
     } else {
       if (_titleController.text.isEmpty && _descriptionController.text.isEmpty) {
         noteViewModel.updateNote(Note(
           id: widget.note!.id,
-          title: 'بدون عنوان',
+          title: defaultTitle,
           description: _descriptionController.text,
           dateCreated: '${DateTime.now()}',
           color: noteViewModel.colorVal,
@@ -95,7 +97,7 @@ class _NoteEditorState extends State<NoteEditor> {
           color: noteViewModel.colorVal,
         ));
       }
-      showToast(context, 'تم تعديل الملاحظة بنجاح');
+      showToast(context, context.l10n.noteUpdatedSuccess);
       Navigator.of(context).pop();
     }
   }
@@ -111,7 +113,7 @@ class _NoteEditorState extends State<NoteEditor> {
           appBar: AppBar(
             centerTitle: true,
             title: Text(
-              widget.note == null ? 'إضافة ملاحظة جديدة' : 'تعديل الملاحظة',
+              widget.note == null ? context.l10n.addNewNote : context.l10n.editNote,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -127,7 +129,7 @@ class _NoteEditorState extends State<NoteEditor> {
                   color: AppColors.primary,
                   size: 24,
                 ),
-                tooltip: 'حفظ الملاحظة',
+                tooltip: context.l10n.saveNote,
               ),
               const SizedBox(width: 8),
             ],
@@ -150,7 +152,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
                   // ─── Note Title Input ─────────────────────────────────────
                   Text(
-                    'العنوان',
+                    context.l10n.noteTitle,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -168,7 +170,7 @@ class _NoteEditorState extends State<NoteEditor> {
                       fontFamily: 'Cairo',
                     ),
                     decoration: InputDecoration(
-                      hintText: 'اكتب عنوان الملاحظة...',
+                      hintText: context.l10n.noteTitleHint,
                       hintStyle: TextStyle(
                         fontSize: 14,
                         color: isDark ? AppColors.textSecondaryDark : const Color(0xFF94A3B8),
@@ -196,7 +198,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
                   // ─── Note Content Area ────────────────────────────────────
                   Text(
-                    'محتوى الملاحظة',
+                    context.l10n.noteContent,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -225,7 +227,7 @@ class _NoteEditorState extends State<NoteEditor> {
                         fontFamily: 'Cairo',
                       ),
                       decoration: InputDecoration(
-                        hintText: 'اكتب ملاحظتك هنا...',
+                        hintText: context.l10n.noteContent,
                         hintStyle: TextStyle(
                           fontSize: 14,
                           color: isDark ? AppColors.textSecondaryDark : const Color(0xFF94A3B8),
@@ -243,7 +245,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
                   // ─── Full-width Save Button ───────────────────────────────
                   AppButton(
-                    label: widget.note == null ? 'حفظ الملاحظة' : 'حفظ التعديلات',
+                    label: widget.note == null ? context.l10n.saveNote : context.l10n.saveChanges,
                     icon: Icons.check_circle_outline_rounded,
                     onPressed: () => _saveNote(noteViewModel),
                   ),

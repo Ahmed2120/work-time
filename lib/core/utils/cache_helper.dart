@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CacheHelper {
@@ -17,7 +16,7 @@ class CacheHelper {
   }
 
   static dynamic getData({required String key}) {
-    return sharedPreferences.get(key) ?? null;
+    return sharedPreferences.get(key);
   }
 
   static Future<bool> removeData({required String key}) async {
@@ -27,7 +26,7 @@ class CacheHelper {
     return await sharedPreferences.clear();
   }
 }
-var trial;
+bool trial = true;
 bool iSEXIST = false;
 
 

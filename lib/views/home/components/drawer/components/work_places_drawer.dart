@@ -42,7 +42,7 @@ class WorkPlacesDrawer extends StatelessWidget {
                 const SizedBox(width: 14),
                 Expanded(
                   child: Text(
-                    'إدارة أماكن العمل',
+                    context.l10n.manageWorkplaces,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,

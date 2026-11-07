@@ -13,6 +13,7 @@ import 'components/rate_drawer.dart';
 import 'components/reminder_drawer.dart';
 import 'components/reports_drawer.dart';
 import 'components/theme_drawer.dart';
+import 'components/language_drawer.dart';
 import 'components/title_drawer.dart';
 import 'components/whats_new_drawer.dart';
 import 'components/work_places_drawer.dart';
@@ -48,6 +49,8 @@ class MainDrawer extends StatelessWidget {
                   if (AppConfig.enableBackupFeature) const BackupDrawer(),
                   if (AppConfig.enableBackupFeature) _divider(isDark),
                   const ThemeDrawer(),
+                  _divider(isDark),
+                  const LanguageDrawer(),
                   _divider(isDark),
                   const RateDrawer(),
                   _divider(isDark),

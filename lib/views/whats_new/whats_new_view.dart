@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/view_models/whats_new_view_model.dart';
 import 'package:work_time/views/whats_new/components/whats_new_card.dart';
 
@@ -27,9 +28,9 @@ class _WhatsNewViewState extends State<WhatsNewView> {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: AppBar(
-        title: const Text(
-          'ما الجديد والتحديثات ✨',
-          style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
+        title: Text(
+          '${context.l10n.whatsNew} ✨',
+          style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
@@ -67,7 +68,7 @@ class _WhatsNewViewState extends State<WhatsNewView> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'أنت على أحدث إصدار!',
+                    context.l10n.youAreOnLatestVersion,
                     style: TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 16,
@@ -77,7 +78,7 @@ class _WhatsNewViewState extends State<WhatsNewView> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'سيتم نشر التحديثات والميزات الجديدة هنا فور إطلاقها.',
+                    context.l10n.updatesWillBePostedHere,
                     style: TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 13,

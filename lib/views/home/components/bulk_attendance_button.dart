@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/views/components/constant.dart';
 import 'package:work_time/views/home/bulk_attendance/bulk_attendance_view.dart';
 
@@ -39,7 +40,7 @@ class BulkAttendanceButton extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                'تسجيل جماعي',
+                context.l10n.bulkAttendance,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,

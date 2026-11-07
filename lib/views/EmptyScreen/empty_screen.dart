@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 class EmptyScreen extends StatelessWidget {
   const EmptyScreen({required this.title, super.key});
@@ -33,7 +34,7 @@ class EmptyScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'لا تـوجد بيانات',
+              context.l10n.noData,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,

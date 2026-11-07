@@ -1,3 +1,87 @@
+## [2026-11-07] Flutter Analyze & Code Quality Cleanup (0 Errors, 0 Warnings)
+- **Scope**: Executed full project analysis via `flutter analyze` and resolved all compilation errors, syntax inconsistencies, and warnings across the codebase.
+- **Key Issues Resolved**:
+  - **`lib/views/feedback/feedback_view.dart`**: Fixed syntax breakdown caused by duplicate bracket/closure structure at the bottom of the file (resolved 24 cascading parsing errors).
+  - **`lib/views/purchase/components/playstore_paywall.dart`**: Resolved `invalid_constant` errors where dynamic localized strings (`context.l10n...`) were used inside `const Text` and `const Row` widgets.
+  - **`lib/core/utils/global_methods.dart`**: Unified `getDayName` parameter signature to optional positional argument and updated callers in `backup_view.dart` and `item_note.dart` accordingly; removed redundant `this.` qualifiers.
+  - **`lib/core/utils/cache_helper.dart`**: Removed unused `material.dart` import, eliminated redundant null coalescing (`?? null`), and added explicit boolean typing to global flags (`trial`).
+  - **`lib/data/models/attendance.dart`**: Removed unused import `attendance_view_model.dart`.
+  - **`lib/main.dart`**: Removed unused import `flutter_localizations.dart`.
+  - **`lib/views/home/components/drawer/components/title_drawer.dart`**: Cleaned up unused local variable `isArabic`.
+  - **`lib/views/home/components/drawer/components/theme_drawer.dart`**: Migrated deprecated `activeColor` parameter on `Switch.adaptive` to modern `activeThumbColor`.
+- **Status**: Verified clean analysis via `flutter analyze` with **0 errors and 0 warnings**.
+
+## [2026-11-07] Complete App-Wide Localization & Static String Migration (Arabic & English)
+- **Scope & Objective**: Complete extraction and localization of all remaining hardcoded static Arabic texts across every view, widget, modal sheet, drawer item, and utility dialog into both Arabic (`ar`) and English (`en`).
+- **Files Modified**:
+  - `lib/l10n/app_ar.arb` & `lib/l10n/app_en.arb` (Added 130+ comprehensive translation keys)
+  - `lib/l10n/app_localizations.dart`, `lib/l10n/app_localizations_ar.dart`, `lib/l10n/app_localizations_en.dart`
+  - `lib/views/purchase/components/purchase_data.dart` (License activation form, email field, validation, status feedback)
+  - `lib/views/purchase/components/playstore_paywall.dart` (Full paywall UI, tier selection, feature checklist, legal links)
+  - `lib/views/purchase/purchase_app.dart` (AppBar, security note, encrypted backup banner)
+  - `lib/views/purchase/components/subscription_plan_card.dart` (Duration label, discount percentage badge)
+  - `lib/views/users/components/attendance.dart` (Segmented status buttons, quick workplace suggestion chips, alert dialogs)
+  - `lib/views/users/components/over_time.dart` (Custom overtime calculation sheet, multiplier chips, manual input, currency)
+  - `lib/views/users/components/appbar.dart` (Title, actions, deletion notifications)
+  - `lib/views/users/components/draw_money.dart` (Advance withdrawal form, expiration alert, confirmation toast)
+  - `lib/views/users/components/user_data.dart` (Worker info rows, fallback labels)
+  - `lib/views/users/components/slid_bottom_sheet/components/week_status.dart` (Settlement confirmation, expiration alert)
+  - `lib/views/home/components/trial_expired_banner.dart` (Trial and subscription expiration banner, read-only mode warning)
+  - `lib/views/home/components/drawer/components/purchase_drawer.dart` (Dynamic drawer status badge, remaining days, unlimited tier)
+  - `lib/views/home/components/drawer/components/reminder_drawer.dart` (Daily reminder toggle, time picker dialog, time formatter)
+  - `lib/views/home/components/drawer/components/title_drawer.dart` (App title and slogan via l10n)
+  - `lib/views/home/components/drawer/components/whats_new_drawer.dart` (New badge indicator)
+  - `lib/views/projects/project_detail_view.dart` (Project status, budget tracking, financial summary, deletion dialog, popup menu)
+  - `lib/views/settings/manage_work_places_view.dart` (Add/edit/delete workplaces, confirmation dialogs, snackbar alerts, empty state)
+  - `lib/views/whats_new/whats_new_view.dart` & `whats_new_modal_sheet.dart` (Latest version hint, update announcement modal)
+  - `lib/views/reports/reports_view.dart` (Month navigation tooltips, PDF subscription paywall message)
+  - `lib/views/components/functions.dart` (`showFlushBar` bilingual message handling and expiration notifications)
+  - `lib/views/EmptyScreen/empty_screen.dart` (Empty state label via `context.l10n.noData`)
+  - `lib/views/home/components/custom_appbar.dart` & `lib/views/home/home_view.dart` (Localized comma separator for date display)
+  - `lib/views/home/bulk_attendance/bulk_attendance_view.dart` (Localized bulk attendance confirmation notification)
+- **Key Architecture & Design Standards**:
+  - Maintained complete separation of concerns: UI views strictly consume localized strings via `context.l10n` or `context.isArabic`.
+  - Preserved internal database and business logic keys (`'حاضر'`, `'غائب'`, `'لم يسجل'`, `'الكل'`) while displaying localized representations in the UI.
+  - Directionality awareness: replaced hardcoded `TextDirection.rtl` with `context.textDirection` across text fields for seamless LTR/RTL support.
+
+## [2026-11-06] Comprehensive Localization System (Arabic & English Support)
+- **Files**:
+  - `lib/view_models/locale_view_model.dart`
+  - `lib/l10n/app_ar.arb`
+  - `lib/l10n/app_en.arb`
+  - `lib/l10n/app_localizations.dart`
+  - `lib/l10n/app_localizations_ar.dart`
+  - `lib/l10n/app_localizations_en.dart`
+  - `lib/views/home/components/drawer/components/language_drawer.dart`
+  - `lib/core/services/service_locator.dart`
+  - `lib/core/utils/extensions/context_extension.dart`
+  - `lib/core/utils/global_methods.dart`
+  - `lib/main.dart`
+- **Features & Architecture**:
+  - **State Management & Persistence (`LocaleViewModel`)**:
+    - Created `LocaleViewModel` implementing `ChangeNotifier` to manage the active `Locale` ('ar' or 'en').
+    - Persistent language choice saved securely in `CacheHelper` under key `app_locale` with Arabic ('ar') as default.
+    - Registered as a lazy singleton in `GetIt` and provided via `MultiProvider` at the root of the widget tree.
+  - **Reactive Root Configuration (`main.dart`)**:
+    - Connected `MaterialApp` to `Consumer2<ThemeViewModel, LocaleViewModel>` for instant, flicker-free language switching at runtime.
+    - Configured delegates (`AppLocalizations.localizationsDelegates`) and supported locales (`['ar', 'en']`).
+  - **In-App Language Switcher (`LanguageDrawer`)**:
+    - Added a sleek `LanguageDrawer` widget inside the main navigation drawer with quick toggle between العربية and English.
+  - **Date & Time Localization (`GlobalMethods`)**:
+    - Enhanced `getDayName` and `getTimeFormat` to dynamically adapt to the active language code.
+  - **UI Internationalization**:
+    - Integrated `context.l10n` convenience getter in `context_extension.dart`.
+    - Localized main screens and widgets including Home View, Custom AppBar, Summary Cards, Bulk Attendance, Status Pills, User Details, Projects, Reports, Notes, and Trash.
+
+## [2026-11-06] Bulk Attendance: Skip Already-Attended Employees
+- **Files**: `lib/views/home/bulk_attendance/bulk_attendance_view.dart`, `lib/views/home/bulk_attendance/components/employee_check_tile.dart`
+- **Feature**: When opening the bulk attendance screen, employees that were already attended individually for today are automatically excluded:
+  - Loaded via the existing `preloadTodayAttendance` + `getAttendanceFromCache` cache — no extra DB queries.
+  - Already-attended employees appear greyed-out with a **"مسجّل مسبقاً"** label and a green ✓ icon instead of a checkbox.
+  - They are locked (taps ignored) and cannot be selected or included in the bulk submit.
+  - The selection counter shows only eligible (not-yet-attended) employees.
+  - "تحديد الكل" only selects eligible employees; already-attended are never touched.
+
 ## [2026-11-05] Fix: Project Work Days Count Inflated (Duplicate-Day Deduplication)
 - **File**: `lib/data/repositories/project_repository.dart`
 - **The Bug**: "أيام العمل" (work days) in Projects view increased by 1 for each user attended in a project — even without new attendance — whenever the Projects page was opened.

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/view_models/theme_view_model.dart';
 
 class ThemeDrawer extends StatelessWidget {
@@ -36,7 +37,7 @@ class ThemeDrawer extends StatelessWidget {
             const SizedBox(width: 14),
             Expanded(
               child: Text(
-                isDark ? 'الوضع الداكن' : 'الوضع الفاتح',
+                isDark ? context.l10n.darkMode : context.l10n.lightMode,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
@@ -47,7 +48,7 @@ class ThemeDrawer extends StatelessWidget {
             ),
             Switch.adaptive(
               value: isDark,
-              activeColor: Colors.white,
+              activeThumbColor: Colors.white,
               activeTrackColor: AppColors.primaryPurple,
               inactiveThumbColor: Colors.white,
               inactiveTrackColor: const Color(0xFFCBD5E1),

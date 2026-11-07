@@ -42,7 +42,7 @@ class BackupDrawer extends StatelessWidget {
                 const SizedBox(width: 14),
                 Expanded(
                   child: Text(
-                    'نسخ احتياطي',
+                    context.l10n.backup,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,

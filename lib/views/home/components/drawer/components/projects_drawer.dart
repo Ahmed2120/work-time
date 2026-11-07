@@ -40,7 +40,7 @@ class ProjectsDrawer extends StatelessWidget {
                 const SizedBox(width: 14),
                 Expanded(
                   child: Text(
-                    'المشاريع والمواقع',
+                    context.l10n.projectsAndSites,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,

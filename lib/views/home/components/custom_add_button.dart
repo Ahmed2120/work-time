@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 
@@ -42,18 +43,18 @@ class CustomAddButton extends StatelessWidget {
               return;
             }
             keyScaffold.currentState!
-                .showBottomSheet((context) => AddingUserBottomSheet());
+                .showBottomSheet((context) => const AddingUserBottomSheet());
           },
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.person_add_alt_1_rounded, size: 18, color: Colors.white),
-                SizedBox(width: 6),
+                const Icon(Icons.person_add_alt_1_rounded, size: 18, color: Colors.white),
+                const SizedBox(width: 6),
                 Text(
-                  'إضافة',
-                  style: TextStyle(
+                  context.isArabic ? 'إضافة' : 'Add',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                     fontWeight: FontWeight.bold,

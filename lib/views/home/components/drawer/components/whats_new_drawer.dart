@@ -47,7 +47,7 @@ class WhatsNewDrawer extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        'ما الجديد؟',
+                        context.l10n.whatsNew,
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -63,9 +63,9 @@ class WhatsNewDrawer extends StatelessWidget {
                             color: AppColors.primary,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Text(
-                            'جديد ✨',
-                            style: TextStyle(
+                          child: Text(
+                            context.l10n.newBadge,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,

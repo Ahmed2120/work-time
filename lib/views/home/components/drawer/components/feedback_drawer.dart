@@ -44,7 +44,7 @@ class FeedbackDrawer extends StatelessWidget {
                 const SizedBox(width: 14),
                 Expanded(
                   child: Text(
-                    'شاركنا رأيك واقتراحك',
+                    context.l10n.feedback,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,

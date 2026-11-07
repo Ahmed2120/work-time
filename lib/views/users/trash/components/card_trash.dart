@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/views/components/app_card.dart';
 
 import '../../../../data/models/user.dart';
@@ -63,7 +64,7 @@ class CustomCardTrash extends StatelessWidget {
                   color: AppColors.success,
                   size: 22,
                 ),
-                tooltip: 'إستعادة',
+                tooltip: context.l10n.restoreTooltip,
               ),
               IconButton(
                 onPressed: () {
@@ -74,7 +75,7 @@ class CustomCardTrash extends StatelessWidget {
                   color: AppColors.danger,
                   size: 22,
                 ),
-                tooltip: 'حذف نهائي',
+                tooltip: context.l10n.permanentDelete,
               ),
             ],
           ),

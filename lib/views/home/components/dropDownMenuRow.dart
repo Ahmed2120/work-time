@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 
 class DropDownMenuRow extends StatelessWidget {
@@ -47,7 +48,7 @@ class DropDownMenuRow extends StatelessWidget {
                 return DropdownMenuItem<String>(
                   value: item,
                   child: Text(
-                    item,
+                    item == 'الكل' ? context.l10n.all : item,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

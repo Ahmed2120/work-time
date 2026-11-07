@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/services/local_auth_service.dart';
 
 import 'bottom_nav_view.dart';
@@ -67,7 +68,7 @@ class _LoginViewState extends State<LoginView> {
 
                 // ─── Welcome Header ────────────────────────────────────────
                 Text(
-                  'مرحباً بك مجدداً',
+                  context.l10n.welcomeBack,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -78,7 +79,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'يرجى المصادقة بالبصمة أو رمز القفل للوصول إلى بيانات العمل',
+                  context.l10n.biometricAuthPrompt,
                   style: TextStyle(
                     fontSize: 13,
                     color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -140,7 +141,7 @@ class _LoginViewState extends State<LoginView> {
                         const Icon(Icons.lock_open_rounded, size: 20, color: Colors.white),
                         const SizedBox(width: 10),
                         Text(
-                          _isAuthenticating ? 'جاري التحقق...' : 'فتح التطبيق بالبصمة',
+                          _isAuthenticating ? context.l10n.verifying : context.l10n.unlockWithFingerprint,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -172,14 +173,14 @@ class _LoginViewState extends State<LoginView> {
                         MaterialPageRoute(builder: (context) => const BottomNavView()),
                       );
                     },
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.play_circle_outline_rounded, size: 18, color: AppColors.primaryPurple),
-                        SizedBox(width: 8),
+                        const Icon(Icons.play_circle_outline_rounded, size: 18, color: AppColors.primaryPurple),
+                        const SizedBox(width: 8),
                         Text(
-                          'نسخة تجريبية',
-                          style: TextStyle(
+                          context.l10n.trialVersion,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             fontFamily: 'Cairo',

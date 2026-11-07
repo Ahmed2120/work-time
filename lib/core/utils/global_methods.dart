@@ -2,9 +2,12 @@ import 'package:intl/intl.dart';
 
 class GlobalMethods{
 
-  static String getDayName(DateTime dateTime) {
-    var enName = DateFormat('EEEE').format(dateTime);
-    Map<String, String> day = {
+  static String getDayName(DateTime dateTime, [String? locale]) {
+    final enName = DateFormat('EEEE', 'en').format(dateTime);
+    if (locale == 'en') {
+      return enName;
+    }
+    const Map<String, String> day = {
       "Saturday": "السبت",
       "Sunday": "الاحد",
       "Monday": "الاثنين",
@@ -13,19 +16,19 @@ class GlobalMethods{
       "Thursday": "الخميس",
       "Friday": "الجمعة",
     };
-    return day[enName]!;
+    return day[enName] ?? enName;
   }
 
   static String getDateFormat(DateTime dateTime) {
-
     return '${dateTime.year}-${dateTime.month<10?'0${dateTime.month}':dateTime.month}-${dateTime.day<10?'0${dateTime.day}':dateTime.day}';
   }
 
-  static String getTimeFormat(DateTime dateTime) {
-
-    String minute = dateTime.minute < 10 ? '0${dateTime.minute}' : '${dateTime.minute}';
-    String time = dateTime.hour < 12 ? '${dateTime.hour}:$minute صباحاً' : '${dateTime.hour-12}:$minute مساءً';
-    return time ;
+  static String getTimeFormat(DateTime dateTime, [String? locale]) {
+    final minute = dateTime.minute < 10 ? '0${dateTime.minute}' : '${dateTime.minute}';
+    final isAm = dateTime.hour < 12;
+    final hour = isAm ? (dateTime.hour == 0 ? 12 : dateTime.hour) : (dateTime.hour == 12 ? 12 : dateTime.hour - 12);
+    final period = locale == 'en' ? (isAm ? 'AM' : 'PM') : (isAm ? 'صباحاً' : 'مساءً');
+    return '$hour:$minute $period';
   }
 
   /// Returns the Friday that closes the Saturday→Friday week containing [dateTime].
@@ -43,9 +46,9 @@ class GlobalMethods{
 
 extension DateTimeExtension on DateTime {
   DateTime next(int day) {
-    return this.add(
+    return add(
       Duration(
-        days: (day - this.weekday) % DateTime.daysPerWeek,
+        days: (day - weekday) % DateTime.daysPerWeek,
       ),
     );
   }

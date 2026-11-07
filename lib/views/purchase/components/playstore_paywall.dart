@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/view_models/purchase_view_model.dart';
 import 'package:work_time/views/bottom_nav_view.dart';
 import 'package:work_time/views/components/app_button.dart';
@@ -69,7 +70,7 @@ class PlayStorePaywall extends StatelessWidget {
 
             // ─── Header Title & Slogan ───────────────────────────────
             Text(
-              'ترقية حساب عُمَّالي إلى غير المحدود',
+              context.l10n.upgradeToUnlimited,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -80,7 +81,7 @@ class PlayStorePaywall extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'اختر الباقة المناسبة لمؤسستك واستمتع بجميع الميزات بلا حدود',
+              context.l10n.choosePackage,
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -103,10 +104,10 @@ class PlayStorePaywall extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _buildFeatureRow('إضافة عدد غير محدود من العمال والورش', isDark),
-                  _buildFeatureRow('تسجيل الحضور والغياب والسهرات بلا قيود', isDark),
-                  _buildFeatureRow('مزامنة سحابية أسبوعية تلقائية على Google Drive', isDark),
-                  _buildFeatureRow('تصدير كشوف رواتب وحسابات PDF بلا حدود', isDark),
+                  _buildFeatureRow(context.l10n.proFeatureUnlimitedWorkers, isDark),
+                  _buildFeatureRow(context.l10n.proFeatureUnlimitedAttendance, isDark),
+                  _buildFeatureRow(context.l10n.proFeatureCloudSync, isDark),
+                  _buildFeatureRow(context.l10n.proFeaturePdf, isDark),
                 ],
               ),
             ),
@@ -117,7 +118,7 @@ class PlayStorePaywall extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                'اختر خطة الاشتراك:',
+                context.l10n.chooseSubscriptionPlan,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -144,7 +145,7 @@ class PlayStorePaywall extends StatelessWidget {
 
             // ─── Main Purchase Button ────────────────────────────────
             AppButton(
-              label: 'الاشتراك الآن عبر Google Play',
+              label: context.l10n.subscribeNowGooglePlay,
               icon: Icons.lock_open_rounded,
               style: AppButtonStyle.primary,
               isLoading: purchaseVM.isPurchasing,
@@ -157,9 +158,9 @@ class PlayStorePaywall extends StatelessWidget {
             TextButton.icon(
               onPressed: purchaseVM.isPurchasing ? null : () => purchaseVM.restorePurchases(),
               icon: const Icon(Icons.restore_rounded, size: 18, color: AppColors.primaryAmber),
-              label: const Text(
-                'استعادة المشتريات السابقة (Restore)',
-                style: TextStyle(
+              label: Text(
+                context.l10n.restorePreviousPurchases,
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: AppColors.primaryAmber,
@@ -176,14 +177,14 @@ class PlayStorePaywall extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildLegalLink(context, 'سياسة الخصوصية', privacyPolicyUrl),
+                _buildLegalLink(context, context.l10n.privacyPolicy, privacyPolicyUrl),
                 Text(
                   ' • ',
                   style: TextStyle(
                     color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                   ),
                 ),
-                _buildLegalLink(context, 'شروط الاستخدام', termsUrl),
+                _buildLegalLink(context, context.l10n.termsOfService, termsUrl),
               ],
             ),
           ],
@@ -235,13 +236,13 @@ class PlayStorePaywall extends StatelessWidget {
           if (!launched) {
             final fallbackLaunched = await launchUrl(uri, mode: LaunchMode.platformDefault);
             if (!fallbackLaunched && context.mounted) {
-              showToast(context, 'تعذر فتح الرابط في المتصفح');
+              showToast(context, context.l10n.cannotOpenLink);
             }
           }
         } catch (e) {
           debugPrint('Error launching URL: $e');
           if (context.mounted) {
-            showToast(context, 'تعذر فتح الرابط: $e');
+            showToast(context, context.l10n.cannotOpenLinkError);
           }
         }
       },
@@ -266,13 +267,13 @@ class PlayStorePaywall extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.error_outline_rounded, color: AppColors.danger, size: 24),
-            SizedBox(width: 8),
+            const Icon(Icons.error_outline_rounded, color: AppColors.danger, size: 24),
+            const SizedBox(width: 8),
             Text(
-              'تنبيه عملية الشراء',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+              context.l10n.purchaseAlertTitle,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
             ),
           ],
         ),
@@ -287,7 +288,7 @@ class PlayStorePaywall extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('حسناً', style: TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+            child: Text(context.l10n.dialogOk, style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
           ),
         ],
       ),

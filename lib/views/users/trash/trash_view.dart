@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/views/users/trash/components/card_trash.dart';
 
 import '../../../data/models/user.dart';
@@ -16,7 +17,7 @@ class TrashView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('خارج العمل'),
+        title: Text(context.l10n.outOfWork),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Divider(
@@ -35,7 +36,7 @@ class TrashView extends StatelessWidget {
                   itemCount: userTrash.length,
                   itemBuilder: (ctx, index) => CustomCardTrash(userTrash[index]),
                 )
-              : const EmptyScreen(title: 'لا يوجد عمال خارج العمل حالياً');
+              : EmptyScreen(title: context.l10n.noOutOfWork);
         },
       ),
     );

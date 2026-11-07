@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconly_plus/iconly_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/project.dart';
 import 'package:work_time/data/models/project_stats.dart';
 import 'package:work_time/view_models/project_view_model.dart';
@@ -61,16 +62,16 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'حذف المشروع',
-          style: TextStyle(
+        title: Text(
+          context.l10n.deleteProject,
+          style: const TextStyle(
             fontFamily: 'Cairo',
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
         ),
         content: Text(
-          'هل أنت متأكد من حذف مشروع "${currentProject.name}"؟',
+          '${context.l10n.deleteProjectConfirm}\n(${currentProject.name})',
           style: const TextStyle(
             fontFamily: 'Cairo',
             fontSize: 13,
@@ -80,9 +81,9 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              'إلغاء',
-              style: TextStyle(fontFamily: 'Cairo', color: Color(0xFF64748B)),
+            child: Text(
+              context.l10n.cancel,
+              style: const TextStyle(fontFamily: 'Cairo', color: Color(0xFF64748B)),
             ),
           ),
           TextButton(
@@ -93,9 +94,9 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
                 Navigator.pop(context);
               }
             },
-            child: const Text(
-              'حذف',
-              style: TextStyle(
+            child: Text(
+              context.l10n.delete,
+              style: const TextStyle(
                 fontFamily: 'Cairo',
                 color: Color(0xFFEF4444),
                 fontWeight: FontWeight.bold,
@@ -110,7 +111,7 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.rtl,
+      textDirection: context.textDirection,
       child: Scaffold(
         backgroundColor: const Color(0xFFF8FAFC), // Light brand background
         appBar: PreferredSize(
@@ -182,15 +183,15 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
                         }
                       },
                       itemBuilder: (_) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'edit',
                           child: Row(
                             children: [
-                              Icon(IconlyLight.edit, size: 18, color: Color(0xFF0F172A)),
-                              SizedBox(width: 10),
+                              const Icon(IconlyLight.edit, size: 18, color: Color(0xFF0F172A)),
+                              const SizedBox(width: 10),
                               Text(
-                                'تعديل المشروع',
-                                style: TextStyle(fontFamily: 'Cairo', fontSize: 13),
+                                context.l10n.editProject,
+                                style: const TextStyle(fontFamily: 'Cairo', fontSize: 13),
                               ),
                             ],
                           ),
@@ -209,22 +210,22 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
                               const SizedBox(width: 10),
                               Text(
                                 currentProject.status == 'active'
-                                    ? 'تحديد كمكتمل'
-                                    : 'إعادة كنشط',
+                                    ? context.l10n.markCompleted
+                                    : context.l10n.reopenActive,
                                 style: const TextStyle(fontFamily: 'Cairo', fontSize: 13),
                               ),
                             ],
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(IconlyLight.delete, size: 18, color: Color(0xFFEF4444)),
-                              SizedBox(width: 10),
+                              const Icon(IconlyLight.delete, size: 18, color: Color(0xFFEF4444)),
+                              const SizedBox(width: 10),
                               Text(
-                                'حذف المشروع',
-                                style: TextStyle(
+                                context.l10n.deleteProject,
+                                style: const TextStyle(
                                   fontFamily: 'Cairo',
                                   fontSize: 13,
                                   color: Color(0xFFEF4444),
@@ -293,8 +294,8 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
                       const SizedBox(width: 8),
                       Text(
                         currentProject.status == 'active'
-                            ? 'مشروع نشط'
-                            : 'مشروع مكتمل',
+                            ? context.l10n.activeProject
+                            : context.l10n.completedProject,
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -307,9 +308,9 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
                   const SizedBox(height: 16),
 
                   // ── 2. قسم الملخص المالي (2x2 Grid) ─────────────────────
-                  const Text(
-                    'الملخص المالي',
-                    style: TextStyle(
+                  Text(
+                    context.l10n.financialSummary,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       fontFamily: 'Cairo',
@@ -346,9 +347,9 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
-                                'متابعة الميزانية',
-                                style: TextStyle(
+                              Text(
+                                context.l10n.budgetTracking,
+                                style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                   fontFamily: 'Cairo',
@@ -356,7 +357,7 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
                                 ),
                               ),
                               Text(
-                                'الميزانية: ${currentProject.budgetAmount!.toStringAsFixed(0)} ج',
+                                '${context.l10n.budget}: ${currentProject.budgetAmount!.toStringAsFixed(0)} ${context.l10n.currency}',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
@@ -380,9 +381,9 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
                   const SizedBox(height: 22),
                   Row(
                     children: [
-                      const Text(
-                        'العمال',
-                        style: TextStyle(
+                      Text(
+                        context.l10n.workers,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           fontFamily: 'Cairo',

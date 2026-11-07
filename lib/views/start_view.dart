@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/views/components/functions.dart';
 
@@ -60,9 +61,9 @@ class StartView extends StatelessWidget {
                       ),
                     ),
                     icon: const Icon(Icons.send_time_extension_outlined, size: 18),
-                    label: const Text(
-                      'المتابعة بنسخة تجريبية',
-                      style: TextStyle(
+                    label: Text(
+                      context.l10n.continueWithTrial,
+                      style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         fontFamily: 'Cairo',
@@ -82,7 +83,7 @@ class StartView extends StatelessWidget {
 
                 // ─── Footer Note ───────────────────────────────────────
                 Text(
-                  'النسخة التجريبية محدودة المدة — للحصول على الترخيص الكامل تواصل معنا',
+                  context.l10n.trialLimitedNote,
                   style: TextStyle(
                     fontSize: 11,
                     color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,

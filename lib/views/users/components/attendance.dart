@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 import '../../../core/utils/cache_helper.dart';
 import '../../../core/utils/secure_storage_helper.dart';
@@ -60,7 +61,7 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
       // Priority 1: today's already-recorded attendance
       if (attendanceViewModel.attendanceModel.isNotEmpty) {
         final currentPlace = attendanceViewModel.attendanceModel.last.workPlace;
-        if (currentPlace.isNotEmpty && currentPlace != 'لا يوجد') {
+        if (currentPlace.isNotEmpty && currentPlace != 'لا يوجد' && currentPlace != context.l10n.noWorkplace) {
           placeToFill = currentPlace;
         }
       }
@@ -111,7 +112,7 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                           userId: widget.user.id!,
                           weekEnd: '${GlobalMethods.getWeekDay(attendanceViewModel.dateTimeAttendance)}',
                           todayDate: '${attendanceViewModel.dateTimeAttendance}',
-                          workPlace: placeText.isNotEmpty ? placeText : 'الورشة / الموقع',
+                          workPlace: placeText.isNotEmpty ? placeText : context.l10n.defaultWorkplace,
                           weekId: await attendanceViewModel.setWeekId(userId: widget.user.id!),
                           weekStatus: 0,
                           overTimeStatus: 0,
@@ -120,7 +121,7 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                           salaryReceived: '0',
                         );
                         attendanceViewModel.addAttendance(attendance);
-                        if (placeText.isNotEmpty && placeText != 'الورشة / الموقع') {
+                        if (placeText.isNotEmpty && placeText != context.l10n.defaultWorkplace) {
                           Provider.of<WorkPlaceViewModel>(context, listen: false).addWorkPlace(placeText);
                         }
                         attendanceViewModel.getAttendanceUserToDay(userId: widget.user.id!);
@@ -132,7 +133,7 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                             context: context,
                             builder: (ctx) => alert(
                               context: context,
-                              txt: 'حاضر',
+                              txt: context.l10n.present,
                               color: AppColors.success,
                               onPressed: () {
                                 final attendance = Attendance(
@@ -157,7 +158,7 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                             ),
                           );
                         } else {
-                          showToast(context, 'تم تسجيل التمام مسبقاً');
+                          showToast(context, context.l10n.attendanceAlreadyPresent);
                         }
                       }
                     }
@@ -181,7 +182,7 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'حاضر',
+                          context.l10n.present,
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -224,7 +225,7 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                         overTimeStatus: 0,
                         salary: '0',
                         salaryReceived: '0',
-                        workPlace: 'لا يوجد',
+                        workPlace: context.l10n.noWorkplace,
                       );
                       attendanceViewModel.addAttendance(attendance);
                       attendanceViewModel.getAttendanceUserToDay(userId: widget.user.id!);
@@ -235,7 +236,7 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                           context: context,
                           builder: (ctx) => alert(
                             context: context,
-                            txt: 'غائب',
+                            txt: context.l10n.absent,
                             color: AppColors.danger,
                             onPressed: () {
                               final attendance = Attendance(
@@ -249,7 +250,7 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                                 overTimeStatus: 0,
                                 salary: '0',
                                 salaryReceived: '0',
-                                workPlace: 'لا يوجد',
+                                workPlace: context.l10n.noWorkplace,
                               );
                               attendanceViewModel.updateAttendance(attendance: attendance);
                               attendanceViewModel.getAttendanceUserToDay(userId: widget.user.id!);
@@ -258,7 +259,7 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                           ),
                         );
                       } else {
-                        showToast(context, 'تم تسجيل الغياب مسبقاً');
+                        showToast(context, context.l10n.attendanceAlreadyAbsent);
                       }
                     }
                   },
@@ -281,7 +282,7 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'غائب',
+                          context.l10n.absent,
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -310,8 +311,8 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
             children: [
               CustomTextField(
                 controller: _workPlaceController,
-                label: 'مكان / موقع العمل (اختياري)',
-                hint: 'مثال: الورشة، موقع التجمع، فيلا زايد...',
+                label: context.l10n.workplaceLabel,
+                hint: context.l10n.workplaceHint,
                 prefixIcon: const Icon(Icons.location_on_outlined, size: 20, color: AppColors.primaryAmber),
               ),
               Builder(
@@ -321,7 +322,7 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                   final Set<String> placesSet = {
                     ...wpViewModel.names,
                     ...attendanceViewModel.previousWorkPlaces,
-                  }..removeWhere((p) => activeProjectNames.contains(p) || p.isEmpty || p == 'لا يوجد');
+                  }..removeWhere((p) => activeProjectNames.contains(p) || p.isEmpty || p == 'لا يوجد' || p == context.l10n.noWorkplace);
                   final otherPlaces = placesSet.take(8).toList();
 
                   if (activeProjects.isEmpty && otherPlaces.isEmpty) {

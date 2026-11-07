@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 /// Toggle between حاضر (present) and غائب (absent)
 class BulkStatusToggle extends StatelessWidget {
@@ -26,7 +27,7 @@ class BulkStatusToggle extends StatelessWidget {
       child: Row(
         children: [
           _ToggleOption(
-            label: 'حاضر',
+            label: context.l10n.present,
             icon: Icons.check_circle_rounded,
             color: AppColors.success,
             isSelected: selectedStatus == 1,
@@ -35,7 +36,7 @@ class BulkStatusToggle extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           _ToggleOption(
-            label: 'غائب',
+            label: context.l10n.absent,
             icon: Icons.cancel_rounded,
             color: AppColors.danger,
             isSelected: selectedStatus == 0,

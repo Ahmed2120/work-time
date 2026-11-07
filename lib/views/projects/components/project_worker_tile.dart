@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconly_plus/iconly_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/user.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
@@ -112,7 +113,7 @@ class ProjectWorkerTile extends StatelessWidget {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              '${worker.job.isNotEmpty ? worker.job : "عامل"} • $projectName',
+                              '${worker.job.isNotEmpty ? worker.job : context.l10n.worker} • $projectName',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(

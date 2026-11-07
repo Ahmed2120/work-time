@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 /// شريط تقدم الميزانية — يُظهر نسبة ما تم صرفه من الميزانية التقديرية
 class BudgetProgressBar extends StatelessWidget {
@@ -28,7 +29,7 @@ class BudgetProgressBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'الميزانية',
+              context.l10n.budget,
               style: TextStyle(
                 fontSize: 12,
                 fontFamily: 'Cairo',
@@ -48,7 +49,7 @@ class BudgetProgressBar extends StatelessWidget {
                     ),
                   ),
                   TextSpan(
-                    text: '/ ${budget.toStringAsFixed(0)} ج',
+                    text: '/ ${budget.toStringAsFixed(0)} ${context.l10n.currency}',
                     style: TextStyle(
                       fontSize: 12,
                       fontFamily: 'Cairo',
@@ -73,7 +74,7 @@ class BudgetProgressBar extends StatelessWidget {
         if (isOverBudget) ...[
           const SizedBox(height: 4),
           Text(
-            '⚠️ تجاوزت الميزانية بمقدار ${(spent - budget).toStringAsFixed(0)} ج',
+            '⚠️ ${context.l10n.budgetExceededBy} ${(spent - budget).toStringAsFixed(0)} ${context.l10n.currency}',
             style: const TextStyle(
               fontSize: 11,
               fontFamily: 'Cairo',

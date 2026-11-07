@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/view_models/note_view_model.dart';
 
 import 'package:work_time/core/utils/secure_storage_helper.dart';
@@ -27,7 +28,7 @@ class NoteView extends StatelessWidget {
         final notes = noteViewModel.notes;
         return Scaffold(
           appBar: AppBar(
-            title: const Text('الملاحظات'),
+            title: Text(context.l10n.notes),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(1),
               child: Divider(
@@ -44,8 +45,7 @@ class NoteView extends StatelessWidget {
                 padding: const EdgeInsets.all(16.0),
                 child: SearchNote(controller: _searchController),
               ),
-              if (notes.isEmpty)
-                const EmptyScreen(title: 'لا توجد ملاحظات، أضف ملاحظة جديدة'),
+              if (notes.isEmpty) EmptyScreen(title: context.l10n.noNotes),
               ...notes.map((note) => ItemNote(note: note)),
             ],
           ),
@@ -56,7 +56,8 @@ class NoteView extends StatelessWidget {
             onPressed: () async {
               final bool isExpired = AppConfig.isPlayStore
                   ? await SecureStorageHelper.isTrialExpired()
-                  : ((noteViewModel.notes.length) >= AppConfig.maxTrialNotes && trial);
+                  : ((noteViewModel.notes.length) >= AppConfig.maxTrialNotes &&
+                        trial);
 
               if (isExpired) {
                 if (context.mounted) showFlushBar(context);

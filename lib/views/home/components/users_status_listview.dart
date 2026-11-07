@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/attendance.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
@@ -29,7 +30,7 @@ class UsersStatusListview extends StatelessWidget {
           if (searchList.isEmpty) {
             return SingleChildScrollView(
               child: EmptyScreen(
-                title: 'لا يوجد عمال يطابقون "${userViewModel.searchQuery}"',
+                title: '${context.l10n.noWorkersFound} "${userViewModel.searchQuery}"',
               ),
             );
           }
@@ -40,7 +41,7 @@ class UsersStatusListview extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 child: Text(
-                  'نتائج البحث (${searchList.length} عامل)',
+                  '${context.l10n.searchResults} (${searchList.length} ${context.l10n.workerUnit})',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -74,8 +75,8 @@ class UsersStatusListview extends StatelessWidget {
         final String statusFilter = userViewModel.statusFilter;
 
         if (allUsers.isEmpty) {
-          return const SingleChildScrollView(
-            child: EmptyScreen(title: 'من فضلك أضف عمال لمتابعة التمام'),
+          return SingleChildScrollView(
+            child: EmptyScreen(title: context.l10n.addWorkerToTrack),
           );
         }
 
@@ -91,9 +92,18 @@ class UsersStatusListview extends StatelessWidget {
             final filteredList = snapshot.data ?? allUsers;
 
             if (filteredList.isEmpty) {
+              String displayStatus = statusFilter;
+              if (statusFilter == 'حاضر') {
+                displayStatus = context.l10n.present;
+              } else if (statusFilter == 'غائب') {
+                displayStatus = context.l10n.absent;
+              } else if (statusFilter == 'لم يسجل') {
+                displayStatus = context.l10n.notRecorded;
+              }
+
               return SingleChildScrollView(
                 child: EmptyScreen(
-                  title: 'لا يوجد عمال بحالة "$statusFilter" حالياً',
+                  title: '${context.l10n.noWorkersWithStatus} "$displayStatus" ${context.l10n.currently}',
                 ),
               );
             }

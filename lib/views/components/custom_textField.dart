@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
@@ -39,7 +40,7 @@ class CustomTextField extends StatelessWidget {
     return TextFormField(
       style: TextStyle(color: textColor, fontSize: 16, fontFamily: 'Cairo'),
       controller: _controller,
-      textDirection: TextDirection.rtl,
+      textDirection: context.textDirection,
       keyboardType: keyboardType,
       inputFormatters: keyboardType == TextInputType.text
           ? null
@@ -78,7 +79,7 @@ class CustomTextField extends StatelessWidget {
       ),
       validator: (val) {
         if (_controller.text.isEmpty) {
-          return 'من فضلك اكتب $label';
+          return '${context.l10n.pleaseWrite} ${label ?? ''}';
         }
         return null;
       },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/view_models/project_view_model.dart';
 import 'package:work_time/views/projects/components/add_project_sheet.dart';
 import 'package:work_time/views/projects/components/project_card.dart';
@@ -48,7 +49,7 @@ class _ProjectsViewState extends State<ProjectsView> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'المشاريع والمواقع',
+          context.l10n.projectsAndSites,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -65,13 +66,13 @@ class _ProjectsViewState extends State<ProjectsView> {
           IconButton(
             icon: const Icon(Icons.refresh_rounded, size: 24),
             color: AppColors.primaryAmber,
-            tooltip: 'تحديث البيانات',
+            tooltip: context.l10n.refreshData,
             onPressed: () => vm.loadProjects(),
           ),
           IconButton(
             icon: const Icon(Icons.add_circle_outline_rounded, size: 26),
             color: AppColors.primaryAmber,
-            tooltip: 'إضافة مشروع',
+            tooltip: context.l10n.addProject,
             onPressed: () => _showAddSheet(context, vm),
           ),
           const SizedBox(width: 4),
@@ -91,9 +92,9 @@ class _ProjectsViewState extends State<ProjectsView> {
               onPressed: () => _showAddSheet(context, vm),
               backgroundColor: AppColors.primaryAmber,
               icon: const Icon(Icons.add_rounded, color: Colors.white),
-              label: const Text(
-                'مشروع جديد',
-                style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white),
+              label: Text(
+                context.l10n.addProject,
+                style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white),
               ),
             )
           : null,
@@ -127,7 +128,7 @@ class _EmptyState extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'لا يوجد مشاريع بعد',
+                  context.l10n.noProjects,
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
@@ -137,7 +138,7 @@ class _EmptyState extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'أضف مشروعاً أو موقع عمل لمتابعة تكلفة العمالة في كل موقع على حدة',
+                  context.l10n.noProjects,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
@@ -149,9 +150,9 @@ class _EmptyState extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: onAdd,
                   icon: const Icon(Icons.add_rounded, color: Colors.white),
-                  label: const Text(
-                    'إضافة أول مشروع',
-                    style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white),
+                  label: Text(
+                    context.l10n.addProject,
+                    style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryAmber,

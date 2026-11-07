@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/project.dart';
 import 'package:work_time/view_models/project_view_model.dart';
 
@@ -107,7 +108,7 @@ class _AddProjectSheetState extends State<AddProjectSheet> {
 
               // Title
               Text(
-                isEditMode ? 'تعديل المشروع' : 'إضافة مشروع / موقع جديد',
+                isEditMode ? context.l10n.editProject : context.l10n.addNewProjectTitle,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
@@ -120,19 +121,19 @@ class _AddProjectSheetState extends State<AddProjectSheet> {
               // Name field
               TextFormField(
                 controller: _nameController,
-                textDirection: TextDirection.rtl,
+                textDirection: context.textDirection,
                 style: TextStyle(
                   fontFamily: 'Cairo',
                   color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
                 ),
                 decoration: _inputDecoration(
                   isDark: isDark,
-                  label: 'اسم المشروع / الموقع *',
-                  hint: 'مثال: فيلا التجمع، شقة المعادي...',
+                  label: context.l10n.projectNameRequired,
+                  hint: context.l10n.projectNameRequired,
                   icon: Icons.location_on_outlined,
                 ),
                 validator: (val) => (val == null || val.trim().isEmpty)
-                    ? 'الرجاء إدخال اسم المشروع'
+                    ? context.l10n.pleaseEnterProjectName
                     : null,
               ),
               const SizedBox(height: 14),
@@ -140,7 +141,7 @@ class _AddProjectSheetState extends State<AddProjectSheet> {
               // Budget field (optional)
               TextFormField(
                 controller: _budgetController,
-                textDirection: TextDirection.rtl,
+                textDirection: context.textDirection,
                 keyboardType: TextInputType.number,
                 style: TextStyle(
                   fontFamily: 'Cairo',
@@ -148,10 +149,10 @@ class _AddProjectSheetState extends State<AddProjectSheet> {
                 ),
                 decoration: _inputDecoration(
                   isDark: isDark,
-                  label: 'الميزانية التقديرية للأجور (اختياري)',
-                  hint: 'مثال: 50000',
+                  label: context.l10n.projectBudgetOptional,
+                  hint: '50000',
                   icon: Icons.account_balance_wallet_outlined,
-                  suffix: 'ج',
+                  suffix: context.l10n.currency,
                 ),
               ),
               const SizedBox(height: 24),
@@ -180,7 +181,7 @@ class _AddProjectSheetState extends State<AddProjectSheet> {
                           ),
                         )
                       : Text(
-                          isEditMode ? 'حفظ التعديلات' : 'إضافة المشروع',
+                          isEditMode ? context.l10n.saveChanges : context.l10n.addProject,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

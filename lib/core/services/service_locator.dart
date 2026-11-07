@@ -22,6 +22,7 @@ import 'package:work_time/view_models/user_view_model.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/note_view_model.dart';
 import 'package:work_time/view_models/theme_view_model.dart';
+import 'package:work_time/view_models/locale_view_model.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -51,6 +52,9 @@ Future<void> setupServiceLocator() async {
   // View Models
   sl.registerLazySingleton<ThemeViewModel>(
     () => ThemeViewModel(),
+  );
+  sl.registerLazySingleton<LocaleViewModel>(
+    () => LocaleViewModel(),
   );
 
   sl.registerFactory<BackupViewModel>(

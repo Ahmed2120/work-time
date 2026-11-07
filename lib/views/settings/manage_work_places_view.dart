@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/work_place.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/work_place_view_model.dart';
@@ -32,9 +33,9 @@ class _ManageWorkPlacesViewState extends State<ManageWorkPlacesView> {
       _controller.clear();
       _focusNode.unfocus();
       context.read<AttendanceViewModel>().getWorkPlaces();
-      _showSnack('تم إضافة مكان العمل بنجاح ✅', AppColors.success);
+      _showSnack(context.l10n.workplaceAddedSuccess, AppColors.success);
     } else {
-      _showSnack('مكان العمل موجود بالفعل', AppColors.warning);
+      _showSnack(context.l10n.workplaceAlreadyExists, AppColors.warning);
     }
   }
 
@@ -46,25 +47,25 @@ class _ManageWorkPlacesViewState extends State<ManageWorkPlacesView> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          'تعديل اسم مكان العمل',
-          style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 17),
+        title: Text(
+          context.l10n.editWorkplaceTitle,
+          style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 17),
         ),
         content: Form(
           key: formKey,
           child: TextFormField(
             controller: editController,
-            textDirection: TextDirection.rtl,
+            textDirection: context.textDirection,
             autofocus: true,
             style: const TextStyle(fontFamily: 'Cairo'),
             decoration: InputDecoration(
-              hintText: 'اسم مكان العمل الجديد',
+              hintText: context.l10n.newWorkplaceHint,
               prefixIcon: const Icon(Icons.edit_location_outlined, color: AppColors.primary),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
             validator: (val) {
               if (val == null || val.trim().isEmpty) {
-                return 'يرجى كتابة الاسم';
+                return context.l10n.pleaseWriteName;
               }
               return null;
             },
@@ -73,7 +74,7 @@ class _ManageWorkPlacesViewState extends State<ManageWorkPlacesView> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('إلغاء', style: TextStyle(fontFamily: 'Cairo')),
+            child: Text(context.l10n.cancel, style: const TextStyle(fontFamily: 'Cairo')),
           ),
           ElevatedButton(
             onPressed: () {
@@ -86,7 +87,7 @@ class _ManageWorkPlacesViewState extends State<ManageWorkPlacesView> {
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('حفظ التعديل', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+            child: Text(context.l10n.saveEdit, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -97,9 +98,9 @@ class _ManageWorkPlacesViewState extends State<ManageWorkPlacesView> {
       if (!mounted) return;
       if (updated) {
         context.read<AttendanceViewModel>().getWorkPlaces();
-        _showSnack('تم تعديل مكان العمل بنجاح ✏️', AppColors.success);
+        _showSnack(context.l10n.workplaceUpdatedSuccess, AppColors.success);
       } else {
-        _showSnack('اسم مكان العمل مستخدم بالفعل', AppColors.warning);
+        _showSnack(context.l10n.workplaceNameInUse, AppColors.warning);
       }
     }
   }
@@ -109,20 +110,20 @@ class _ManageWorkPlacesViewState extends State<ManageWorkPlacesView> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('حذف مكان العمل', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+        title: Text(context.l10n.deleteWorkplaceTitle, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
         content: Text(
-          'هل تريد حذف "${wp.name}"؟\nسيتم حذفه من قائمة الاقتراحات ولن يظهر مجدداً.',
+          '${context.l10n.deleteWorkplaceConfirm}\n(${wp.name})',
           style: const TextStyle(fontFamily: 'Cairo', fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('إلغاء', style: TextStyle(fontFamily: 'Cairo')),
+            child: Text(context.l10n.cancel, style: const TextStyle(fontFamily: 'Cairo')),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-            child: const Text('حذف', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+            child: Text(context.l10n.delete, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -132,7 +133,7 @@ class _ManageWorkPlacesViewState extends State<ManageWorkPlacesView> {
       await vm.deleteWorkPlace(wp);
       if (!mounted) return;
       context.read<AttendanceViewModel>().getWorkPlaces();
-      _showSnack('تم حذف مكان العمل بنجاح', AppColors.danger);
+      _showSnack(context.l10n.workplaceDeletedSuccess, AppColors.danger);
     }
   }
 
@@ -155,9 +156,9 @@ class _ManageWorkPlacesViewState extends State<ManageWorkPlacesView> {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: AppBar(
-        title: const Text(
-          'إدارة أماكن العمل',
-          style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
+        title: Text(
+          context.l10n.manageWorkplaces,
+          style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
@@ -180,13 +181,13 @@ class _ManageWorkPlacesViewState extends State<ManageWorkPlacesView> {
                       child: TextField(
                         controller: _controller,
                         focusNode: _focusNode,
-                        textDirection: TextDirection.rtl,
+                        textDirection: context.textDirection,
                         style: TextStyle(
                           fontFamily: 'Cairo',
                           color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
                         ),
                         decoration: InputDecoration(
-                          hintText: 'أضف مكان عمل (مثال: الورشة، الموقع الرئيسي)',
+                          hintText: context.l10n.addWorkplaceHintInput,
                           hintStyle: TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 13,
@@ -225,7 +226,7 @@ class _ManageWorkPlacesViewState extends State<ManageWorkPlacesView> {
                   child: Row(
                     children: [
                       Text(
-                        'أماكن العمل المسجلة (${vm.workPlaces.length})',
+                        '${context.l10n.registeredWorkplaces} (${vm.workPlaces.length})',
                         style: TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 13,
@@ -340,12 +341,12 @@ class _WorkPlaceTile extends StatelessWidget {
           IconButton(
             onPressed: onEdit,
             icon: const Icon(Icons.edit_outlined, color: AppColors.primary, size: 20),
-            tooltip: 'تعديل',
+            tooltip: context.l10n.edit,
           ),
           IconButton(
             onPressed: onDelete,
             icon: const Icon(Icons.delete_outline_rounded, color: AppColors.danger, size: 20),
-            tooltip: 'حذف',
+            tooltip: context.l10n.delete,
           ),
         ],
       ),
@@ -375,7 +376,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'لا توجد أماكن عمل مضافة',
+            context.l10n.noWorkplacesAdded,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -385,7 +386,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'أضف أماكن العمل هنا لتظهر في الاقتراحات وإمكانية تعديلها أو حذفها بسهولة',
+            context.l10n.addWorkplacesHintDesc,
             style: TextStyle(
               fontSize: 13,
               fontFamily: 'Cairo',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 import '../../../data/models/user.dart';
 import '../../../view_models/user_view_model.dart';
@@ -11,23 +12,23 @@ AppBar appBar(UserViewModel userViewModel, BuildContext context, User user, Glob
   final isDark = Theme.of(context).brightness == Brightness.dark;
 
   final List<PopupMenuItem<String>> menuItems = [
-    const PopupMenuItem(
+    PopupMenuItem(
       value: 'add',
       child: Row(
         children: [
-          Icon(Icons.edit_outlined, size: 18, color: AppColors.primaryPurple),
-          SizedBox(width: 8),
-          Text("تعديل البيانات", style: TextStyle(fontSize: 14, fontFamily: 'Cairo')),
+          const Icon(Icons.edit_outlined, size: 18, color: AppColors.primaryPurple),
+          const SizedBox(width: 8),
+          Text(context.l10n.editWorker, style: const TextStyle(fontSize: 14, fontFamily: 'Cairo')),
         ],
       ),
     ),
-    const PopupMenuItem(
+    PopupMenuItem(
       value: 'remove',
       child: Row(
         children: [
-          Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.error),
-          SizedBox(width: 8),
-          Text("حذف العامل", style: TextStyle(fontSize: 14, color: AppColors.error, fontFamily: 'Cairo')),
+          const Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.error),
+          const SizedBox(width: 8),
+          Text(context.l10n.deleteWorker, style: const TextStyle(fontSize: 14, color: AppColors.error, fontFamily: 'Cairo')),
         ],
       ),
     ),
@@ -39,7 +40,7 @@ AppBar appBar(UserViewModel userViewModel, BuildContext context, User user, Glob
     scrolledUnderElevation: 0,
     centerTitle: true,
     title: Text(
-      'التفاصيل',
+      context.l10n.details,
       style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
@@ -67,7 +68,7 @@ AppBar appBar(UserViewModel userViewModel, BuildContext context, User user, Glob
             final userModel = User(id: user.id, name: user.name, job: user.job, salary: user.salary, isDeleted: 1);
             userViewModel.updateUser(userModel);
             Navigator.pop(context);
-            showToast(context, 'تم حذف العامل ونقله الي خارج العمل', color: AppColors.error);
+            showToast(context, context.l10n.workerMovedToOutOfWork, color: AppColors.error);
           } else {
             keyScaffold.currentState!.showBottomSheet(
               (context) => ChangeNotifierProvider.value(value: user, child: AddingUserBottomSheet(user: user)),

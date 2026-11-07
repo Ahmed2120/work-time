@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/views/components/constant.dart';
 import 'package:work_time/views/purchase/purchase_app.dart';
@@ -45,8 +46,12 @@ class _TrialExpiredBannerState extends State<TrialExpiredBanner> {
         }
 
         final wasSubscribed = snapshot.data!.wasSubscribed;
-        final title = wasSubscribed ? 'انتهت فترة الاشتراك' : 'انتهت الفترة التجريبية';
-        final btnText = wasSubscribed ? 'تجديد الاشتراك' : 'ترقية الحساب';
+        final title = wasSubscribed
+            ? context.l10n.subscriptionExpired
+            : context.l10n.trialExpired;
+        final btnText = wasSubscribed
+            ? context.l10n.renewSubscription
+            : context.l10n.upgradeAccount;
 
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -98,7 +103,7 @@ class _TrialExpiredBannerState extends State<TrialExpiredBanner> {
                       ),
                     ),
                     Text(
-                      'بياناتك محفوظة بالكامل • وضع القراءة فقط',
+                      context.l10n.dataSavedReadOnly,
                       style: TextStyle(
                         fontSize: 11,
                         color: isDark ? AppColors.textSecondaryDark : const Color(0xFFC2410C),

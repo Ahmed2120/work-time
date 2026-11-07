@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/view_models/work_place_view_model.dart';
 
 /// Shows a bottom sheet to pick an existing workplace or type a new one.
@@ -74,7 +75,7 @@ class _WorkplacePickerSheetState extends State<_WorkplacePickerSheet> {
 
             // ─── Title ─────────────────────────────────────────────────
             Text(
-              'اختر مكان العمل',
+              context.l10n.chooseWorkplace,
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
@@ -144,7 +145,7 @@ class _WorkplacePickerSheetState extends State<_WorkplacePickerSheet> {
 
             // ─── Custom Input ───────────────────────────────────────────
             Text(
-              places.isEmpty ? 'اكتب مكان العمل' : 'أو اكتب مكاناً جديداً',
+              places.isEmpty ? context.l10n.workplace : context.l10n.addNewWorkplace,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -155,14 +156,14 @@ class _WorkplacePickerSheetState extends State<_WorkplacePickerSheet> {
             const SizedBox(height: 8),
             TextField(
               controller: _controller,
-              textDirection: TextDirection.rtl,
+              textDirection: context.textDirection,
               onChanged: (_) => setState(() {}),
               style: TextStyle(
                 fontFamily: 'Cairo',
                 color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
               ),
               decoration: InputDecoration(
-                hintText: 'مثال: الموقع الرئيسي',
+                hintText: '...',
                 hintStyle: TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 13,
@@ -203,9 +204,9 @@ class _WorkplacePickerSheetState extends State<_WorkplacePickerSheet> {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text(
-                  'تأكيد',
-                  style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 15),
+                child: Text(
+                  context.l10n.confirm,
+                  style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 15),
                 ),
               ),
             ),

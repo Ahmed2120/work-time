@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 import '../../../core/utils/global_methods.dart';
 import '../../../view_models/attendance_view_model.dart';
@@ -22,7 +23,7 @@ AppBar customAppBar(BuildContext context) {
             IconButton(
               onPressed: () => userViewModel.changeClickSearch(),
               icon: const Icon(Icons.search_rounded, size: 22),
-              tooltip: 'بحث في العمال',
+              tooltip: context.l10n.searchWorkers,
             ),
             const SizedBox(width: 4),
           ],
@@ -55,7 +56,7 @@ AppBar customAppBar(BuildContext context) {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  '${GlobalMethods.getDayName(attendanceViewModel.dateTimeAttendance)}، '
+                  '${GlobalMethods.getDayName(attendanceViewModel.dateTimeAttendance, Localizations.localeOf(context).languageCode)}${context.isArabic ? '، ' : ', '}'
                   '${GlobalMethods.getDateFormat(attendanceViewModel.dateTimeAttendance)}',
                   style: TextStyle(
                     fontSize: 16,
@@ -81,7 +82,7 @@ AppBar customAppBar(BuildContext context) {
           ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_rounded),
-            tooltip: 'إغلاق البحث',
+            tooltip: context.l10n.closeSearch,
             onPressed: () => userViewModel.changeClickSearch(),
           ),
           title: TextField(
@@ -90,7 +91,7 @@ AppBar customAppBar(BuildContext context) {
               userViewModel.setSearchQuery(txt);
             },
             decoration: InputDecoration(
-              hintText: 'بحث في جميع العمال (بالاسم أو الوظيفة)...',
+              hintText: context.l10n.searchWorkersHint,
               hintStyle: TextStyle(
                 color: isDark ? AppColors.textSecondaryDark : const Color(0xFF94A3B8),
                 fontSize: 13,
@@ -107,7 +108,7 @@ AppBar customAppBar(BuildContext context) {
                         userViewModel.clearSearch();
                       },
                       icon: const Icon(Icons.close_rounded, size: 18),
-                      tooltip: 'مسح',
+                      tooltip: context.l10n.clear,
                     )
                   : null,
               filled: true,

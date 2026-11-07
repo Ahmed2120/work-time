@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 
 class JobFilterDropdown extends StatelessWidget {
@@ -57,7 +58,7 @@ class JobFilterDropdown extends StatelessWidget {
                 return DropdownMenuItem<String>(
                   value: item,
                   child: Text(
-                    item == 'الكل' ? 'كل المهن' : item,
+                    item == 'الكل' ? context.l10n.allJobs : item,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/services/rate_service.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/data/models/attendance.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
@@ -31,9 +32,9 @@ class WeekStatus extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           icon: const Icon(Icons.check_circle_outline_rounded, size: 18),
-          label: const Text(
-            'تصفية الحساب',
-            style: TextStyle(
+          label: Text(
+            context.l10n.settleWeek,
+            style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
               fontFamily: 'Cairo',
@@ -45,7 +46,9 @@ class WeekStatus extends StatelessWidget {
               if (context.mounted) {
                 showFlushBar(
                   context,
-                  customMessage: 'انتهت صلاحية الاستخدام. يرجى تجديد الاشتراك لتصفية الحسابات.',
+                  customMessage: context.isArabic
+                      ? 'انتهت صلاحية الاستخدام. يرجى تجديد الاشتراك لتصفية الحسابات.'
+                      : 'Usage period expired. Please renew subscription to settle accounts.',
                 );
               }
               return;
@@ -83,14 +86,14 @@ class WeekStatus extends StatelessWidget {
         color: AppColors.successBgLight,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.verified_rounded, size: 18, color: AppColors.successText),
-          SizedBox(width: 8),
+          const Icon(Icons.verified_rounded, size: 18, color: AppColors.successText),
+          const SizedBox(width: 8),
           Text(
-            'تم تصفية الحساب',
-            style: TextStyle(
+            context.l10n.accountSettled,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
               color: AppColors.successText,

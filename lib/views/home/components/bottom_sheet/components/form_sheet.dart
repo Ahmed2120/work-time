@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/views/components/app_button.dart';
 
 import 'package:work_time/core/utils/secure_storage_helper.dart';
@@ -55,7 +56,7 @@ class _FormSheetState extends State<FormSheet> {
           children: [
             // ─── Field 1: الاسم ──────────────────────────────────────────────
             Text(
-              'الاسم',
+              context.l10n.name,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -66,15 +67,15 @@ class _FormSheetState extends State<FormSheet> {
             const SizedBox(height: 6),
             CustomTextField(
               controller: _nameController,
-              label: 'أدخل اسم العامل',
-              hint: 'أدخل اسم العامل...',
+              label: context.l10n.enterWorkerName,
+              hint: context.l10n.enterWorkerName,
             ),
 
             const SizedBox(height: 16),
 
             // ─── Field 2: الوظيفة ────────────────────────────────────────────
             Text(
-              'الوظيفة',
+              context.l10n.job,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -85,15 +86,15 @@ class _FormSheetState extends State<FormSheet> {
             const SizedBox(height: 6),
             CustomTextField(
               controller: _jobController,
-              label: 'أدخل الوظيفة',
-              hint: 'أدخل الوظيفة (مثال: مهندس، فني...)...',
+              label: context.l10n.enterJob,
+              hint: context.l10n.enterJob,
             ),
 
             const SizedBox(height: 16),
 
             // ─── Field 3: الفئة ──────────────────────────────────────────────
             Text(
-              'الفئة / الراتب اليومي',
+              context.l10n.dailyWageCategory,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -104,8 +105,8 @@ class _FormSheetState extends State<FormSheet> {
             const SizedBox(height: 6),
             CustomTextField(
               controller: _salaryController,
-              label: 'أدخل الفئة',
-              hint: 'أدخل المبلغ أو الراتب اليومي...',
+              label: context.l10n.enterCategory,
+              hint: context.l10n.enterCategory,
               keyboardType: TextInputType.number,
             ),
 
@@ -113,7 +114,7 @@ class _FormSheetState extends State<FormSheet> {
 
             // ─── Primary Button ──────────────────────────────────────────────
             AppButton(
-              label: widget.user == null ? '+ إضافة عامل' : 'حفظ التعديلات',
+              label: widget.user == null ? context.l10n.addWorker : context.l10n.saveChanges,
               icon: widget.user == null ? Icons.person_add_alt_1_rounded : Icons.edit_rounded,
               onPressed: () async {
                 final provider = Provider.of<UserViewModel>(context, listen: false);
@@ -136,8 +137,10 @@ class _FormSheetState extends State<FormSheet> {
                     salary: _salaryController.text,
                   );
                   provider.addUser(userModel);
-                  showToast(context, 'تم إضافة العامل بنجاح');
-                  pop(context);
+                  if (context.mounted) {
+                    showToast(context, context.l10n.workerAddedSuccess);
+                    pop(context);
+                  }
                 } else {
                   final userModel = User(
                     id: widget.user!.id,
@@ -148,8 +151,10 @@ class _FormSheetState extends State<FormSheet> {
                   );
                   provider.updateUser(userModel);
                   provider.setUser(userModel);
-                  showToast(context, 'تم تعديل البيانات بنجاح');
-                  pop(context);
+                  if (context.mounted) {
+                    showToast(context, context.l10n.workerUpdatedSuccess);
+                    pop(context);
+                  }
                 }
               },
             ),

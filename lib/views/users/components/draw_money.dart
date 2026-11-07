@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/data/models/user.dart';
 import 'package:work_time/views/components/app_button.dart';
@@ -23,7 +24,7 @@ class DrawFinance extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const HeaderSheet(title: 'سحب مبلغ'),
+          HeaderSheet(title: context.l10n.withdrawMoney),
           const SizedBox(height: 24),
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
@@ -31,12 +32,12 @@ class DrawFinance extends StatelessWidget {
               children: [
                 CustomTextField(
                   controller: _salaryController,
-                  label: 'المبلغ',
+                  label: context.l10n.amount,
                   keyboardType: TextInputType.number,
                 ),
                 const SizedBox(height: 24),
                 AppButton(
-                  label: 'تأكيد السحب',
+                  label: context.l10n.confirmWithdrawal,
                   icon: Icons.payments_rounded,
                   onPressed: () async {
                     final isExpired = await SecureStorageHelper.isTrialExpired();
@@ -44,7 +45,7 @@ class DrawFinance extends StatelessWidget {
                       if (context.mounted) {
                         showFlushBar(
                           context,
-                          customMessage: 'انتهت صلاحية الاستخدام. يرجى تجديد الاشتراك لتسجيل المسحوبات.',
+                          customMessage: context.l10n.withdrawalExpiredMessage,
                         );
                       }
                       return;
@@ -66,7 +67,7 @@ class DrawFinance extends StatelessWidget {
                     );
                     attendanceViewModel.updateAttendance(attendance: attendance);
                     attendanceViewModel.getAttendanceUserToDay(userId: user.id!);
-                    showToast(context, 'تم سحب ${_salaryController.text} جنيه');
+                    showToast(context, '${context.l10n.withdrawn} ${_salaryController.text} ${context.l10n.currency}');
                     pop(context);
                   },
                 ),

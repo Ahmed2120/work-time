@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/project.dart';
 import 'package:work_time/data/models/project_stats.dart';
 import 'package:work_time/view_models/project_view_model.dart';
@@ -105,17 +106,19 @@ class ProjectCard extends StatelessWidget {
                         }
                       },
                       itemBuilder: (_) => [
-                        const PopupMenuItem(value: 'edit', child: Text('تعديل', style: TextStyle(fontFamily: 'Cairo'))),
+                        PopupMenuItem(value: 'edit', child: Text(context.l10n.edit, style: const TextStyle(fontFamily: 'Cairo'))),
                         PopupMenuItem(
                           value: 'toggle',
                           child: Text(
-                            isActive ? 'إنهاء المشروع' : 'إعادة تفعيل',
+                            isActive
+                                ? (context.isArabic ? 'إنهاء المشروع' : 'End Project')
+                                : (context.isArabic ? 'إعادة تفعيل' : 'Reactivate'),
                             style: const TextStyle(fontFamily: 'Cairo'),
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
-                          child: Text('حذف', style: TextStyle(fontFamily: 'Cairo', color: AppColors.danger)),
+                          child: Text(context.l10n.delete, style: const TextStyle(fontFamily: 'Cairo', color: AppColors.danger)),
                         ),
                       ],
                     ),
@@ -133,25 +136,25 @@ class ProjectCard extends StatelessWidget {
                         Row(
                           children: [
                             _StatItem(
-                              label: 'اليوميات',
+                              label: context.l10n.wages,
                               value: stats != null
-                                  ? '${stats.totalWages.toStringAsFixed(0)} ج'
+                                  ? '${stats.totalWages.toStringAsFixed(0)} ${context.l10n.currency}'
                                   : '...',
                               icon: Icons.payments_outlined,
                               color: AppColors.success,
                             ),
                             const SizedBox(width: 8),
                             _StatItem(
-                              label: 'السلف',
+                              label: context.l10n.advances,
                               value: stats != null
-                                  ? '${stats.totalAdvances.toStringAsFixed(0)} ج'
+                                  ? '${stats.totalAdvances.toStringAsFixed(0)} ${context.l10n.currency}'
                                   : '...',
                               icon: Icons.account_balance_wallet_outlined,
                               color: AppColors.warning,
                             ),
                             const SizedBox(width: 8),
                             _StatItem(
-                              label: 'أيام العمل',
+                              label: context.l10n.workDays,
                               value: stats != null ? '${stats.totalDays}' : '...',
                               icon: Icons.calendar_today_outlined,
                               color: AppColors.primaryAmber,
@@ -194,7 +197,9 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        isActive ? 'نشط' : 'مكتمل',
+        isActive
+            ? (context.isArabic ? 'نشط' : 'Active')
+            : (context.isArabic ? 'مكتمل' : 'Completed'),
         style: TextStyle(
           fontSize: 11,
           fontFamily: 'Cairo',

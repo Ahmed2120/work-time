@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/attendance.dart';
 import 'package:work_time/core/utils/global_methods.dart';
 
@@ -86,7 +87,7 @@ class WeekData extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'الأسبوع $weekNumber',
+                      '${context.l10n.weekPrefix} $weekNumber',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -130,14 +131,14 @@ class WeekData extends StatelessWidget {
               child: Column(
                 children: [
                   _FinancialRow(
-                    label: 'المبلغ الكلي',
-                    value: '$totalSalary ريال',
+                    label: context.l10n.totalAmount,
+                    value: '$totalSalary ${context.l10n.currency}',
                     isDark: isDark,
                   ),
                   const SizedBox(height: 8),
                   _FinancialRow(
-                    label: 'المبلغ المدفوع',
-                    value: '$sumReceived ريال',
+                    label: context.l10n.paidAmount,
+                    value: '$sumReceived ${context.l10n.currency}',
                     isDark: isDark,
                   ),
                   Padding(
@@ -150,7 +151,7 @@ class WeekData extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'المبلغ المتبقي',
+                        context.l10n.remainingAmount,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -161,7 +162,7 @@ class WeekData extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '$remaining ريال',
+                        '$remaining ${context.l10n.currency}',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

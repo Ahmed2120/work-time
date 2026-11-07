@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/views/components/app_card.dart';
 
 import '../../../core/utils/global_methods.dart';
@@ -55,7 +56,7 @@ class ItemNote extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  '${GlobalMethods.getDayName(DateTime.parse(note.dateCreated))}، '
+                  '${GlobalMethods.getDayName(DateTime.parse(note.dateCreated), Localizations.localeOf(context).languageCode)}، '
                   '${GlobalMethods.getDateFormat(DateTime.parse(note.dateCreated))}',
                   style: TextStyle(
                     fontSize: 12,
@@ -75,6 +76,7 @@ class ItemNote extends StatelessWidget {
               color: AppColors.dangerText,
               size: 20,
             ),
+            tooltip: context.l10n.delete,
             onPressed: () {
               Provider.of<NoteViewModel>(context, listen: false).deleteNote(note);
             },

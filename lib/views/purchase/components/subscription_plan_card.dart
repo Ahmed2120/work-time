@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 class SubscriptionPlanCard extends StatelessWidget {
   final SubscriptionTier tier;
@@ -133,7 +134,7 @@ class SubscriptionPlanCard extends StatelessWidget {
                     const SizedBox(height: 2),
 
                     Text(
-                      'المدة: ${tier.durationText}',
+                      '${context.l10n.durationLabel}: ${tier.durationText}',
                       style: TextStyle(
                         fontSize: durationFontSize,
                         color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -167,7 +168,9 @@ class SubscriptionPlanCard extends StatelessWidget {
                   ),
                   if (tier.discountPercent != null)
                     Text(
-                      'خصم ${tier.discountPercent}%',
+                      context.isArabic
+                          ? 'خصم ${tier.discountPercent}%'
+                          : '${tier.discountPercent}% ${context.l10n.discountLabel}',
                       style: const TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,

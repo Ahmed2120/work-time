@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/data/models/user.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
@@ -22,38 +23,59 @@ class BulkAttendanceView extends StatefulWidget {
 class _BulkAttendanceViewState extends State<BulkAttendanceView> {
   int _selectedStatus = 1; // 1 = حاضر, 0 = غائب
   Set<int> _selectedIds = {};
+  /// IDs of employees already attended individually today — excluded from bulk.
+  Set<int> _alreadyAttendedIds = {};
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    // Pre-select all employees by default
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final attendanceVM = context.read<AttendanceViewModel>();
       final users = context.read<UserViewModel>().allUsers;
+      final userIds = users.where((u) => u.id != null).map((u) => u.id!).toList();
+
+      // Load today's attendance map to detect individually-attended employees.
+      await attendanceVM.preloadTodayAttendance(userIds);
+
+      final attended = <int>{};
+      for (final id in userIds) {
+        final record = attendanceVM.getAttendanceFromCache(id);
+        if (record != null) attended.add(id);
+      }
+
       setState(() {
-        _selectedIds = users.where((u) => u.id != null).map((u) => u.id!).toSet();
+        _alreadyAttendedIds = attended;
+        // Pre-select only employees NOT yet attended today.
+        _selectedIds = userIds.where((id) => !attended.contains(id)).toSet();
       });
     });
   }
 
+  /// Eligible = not individually attended today.
+  List<User> _eligible(List<User> users) =>
+      users.where((u) => u.id != null && !_alreadyAttendedIds.contains(u.id)).toList();
+
   bool get _allSelected {
     final users = context.read<UserViewModel>().allUsers;
-    return users.isNotEmpty && users.every((u) => u.id != null && _selectedIds.contains(u.id));
+    final eligible = _eligible(users);
+    return eligible.isNotEmpty && eligible.every((u) => _selectedIds.contains(u.id));
   }
 
   void _toggleAll(List<User> users) {
+    final eligible = _eligible(users);
     setState(() {
       if (_allSelected) {
         _selectedIds.clear();
       } else {
-        _selectedIds = users.where((u) => u.id != null).map((u) => u.id!).toSet();
+        _selectedIds = eligible.map((u) => u.id!).toSet();
       }
     });
   }
 
   Future<void> _submit() async {
     if (_selectedIds.isEmpty) {
-      _showSnack('اختر موظفاً واحداً على الأقل', AppColors.warning);
+      _showSnack(context.l10n.selectAtLeastOneWorker, AppColors.warning);
       return;
     }
 
@@ -89,9 +111,11 @@ class _BulkAttendanceViewState extends State<BulkAttendanceView> {
     if (!mounted) return;
     setState(() => _isLoading = false);
 
-    final statusLabel = _selectedStatus == 1 ? 'حاضر' : 'غائب';
+    final statusLabel = _selectedStatus == 1 ? context.l10n.present : context.l10n.absent;
     _showSnack(
-      'تم تسجيل ${selectedUsers.length} عامل كـ $statusLabel بنجاح ✅',
+      context.isArabic
+          ? 'تم تسجيل ${selectedUsers.length} عامل كـ $statusLabel بنجاح ✅'
+          : '${selectedUsers.length} worker(s) recorded as $statusLabel successfully ✅',
       _selectedStatus == 1 ? AppColors.success : AppColors.danger,
     );
 
@@ -118,9 +142,9 @@ class _BulkAttendanceViewState extends State<BulkAttendanceView> {
     return Scaffold(
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightBackground,
       appBar: AppBar(
-        title: const Text(
-          'تسجيل تمام جماعي',
-          style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
+        title: Text(
+          context.l10n.bulkAttendance,
+          style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
@@ -136,7 +160,7 @@ class _BulkAttendanceViewState extends State<BulkAttendanceView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'اختر الحالة لتطبيقها على المحددين',
+                  context.l10n.selectStatusToApply,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -159,7 +183,7 @@ class _BulkAttendanceViewState extends State<BulkAttendanceView> {
             child: Row(
               children: [
                 Text(
-                  'العمال المحددين (${_selectedIds.length} من أصل ${users.length})',
+                  '${context.l10n.selectedWorkersCount} (${_selectedIds.length} ${context.l10n.ofLabel} ${users.length - _alreadyAttendedIds.length})',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -182,7 +206,7 @@ class _BulkAttendanceViewState extends State<BulkAttendanceView> {
                       ),
                     ),
                     child: Text(
-                      _allSelected ? 'إلغاء تحديد الكل' : 'تحديد الكل',
+                      _allSelected ? context.l10n.deselectAll : context.l10n.selectAll,
                       style: TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 13,
@@ -204,19 +228,23 @@ class _BulkAttendanceViewState extends State<BulkAttendanceView> {
               itemCount: users.length,
               itemBuilder: (context, index) {
                 final user = users[index];
-                final isChecked = user.id != null && _selectedIds.contains(user.id);
+                final alreadyAttended = user.id != null && _alreadyAttendedIds.contains(user.id);
+                final isChecked = !alreadyAttended && user.id != null && _selectedIds.contains(user.id);
                 return EmployeeCheckTile(
                   user: user,
                   isChecked: isChecked,
-                  onChanged: (val) {
-                    setState(() {
-                      if (val) {
-                        _selectedIds.add(user.id!);
-                      } else {
-                        _selectedIds.remove(user.id);
-                      }
-                    });
-                  },
+                  alreadyAttended: alreadyAttended,
+                  onChanged: alreadyAttended
+                      ? null // locked — ignore taps
+                      : (val) {
+                          setState(() {
+                            if (val) {
+                              _selectedIds.add(user.id!);
+                            } else {
+                              _selectedIds.remove(user.id);
+                            }
+                          });
+                        },
                 );
               },
             ),
@@ -245,8 +273,8 @@ class _BulkAttendanceViewState extends State<BulkAttendanceView> {
                     ),
               label: Text(
                 _isLoading
-                    ? 'جارٍ الحفظ...'
-                    : (_selectedStatus == 1 ? 'اختيار مكان العمل وتأكيد الحضور' : 'تأكيد تسجيل الغياب'),
+                    ? context.l10n.saving
+                    : (_selectedStatus == 1 ? context.l10n.chooseWorkplaceAndConfirm : context.l10n.confirmAbsence),
                 style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 15),
               ),
               style: ElevatedButton.styleFrom(

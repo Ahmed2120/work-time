@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 
 import '../../../../components/constant.dart';
@@ -27,25 +28,25 @@ class PurchaseDrawer extends StatelessWidget {
         final bool isExpired = data['isExpired'] as bool;
         final bool wasSubscribed = data['wasSubscribed'] as bool? ?? false;
 
-        String title = AppConfig.isPlayStore ? 'الترقية والاشتراك' : 'تفعيل ترخيص التطبيق';
+        String title = AppConfig.isPlayStore ? context.l10n.upgradeAndSubscription : context.l10n.activateLicenseDrawer;
         String? badgeText;
         Color badgeBg = AppColors.lightAmber;
         Color badgeFg = AppColors.primaryAmber;
 
         if (AppConfig.isPlayStore) {
           if (isSubscribed) {
-            title = 'النسخة غير المحدودة';
-            badgeText = 'نشط ⭐';
+            title = context.l10n.unlimitedVersion;
+            badgeText = context.l10n.activeSubscriptionBadge;
             badgeBg = AppColors.successBgLight;
             badgeFg = AppColors.successText;
           } else if (isExpired) {
-            title = wasSubscribed ? 'تجديد الاشتراك' : 'ترقية الحساب';
-            badgeText = wasSubscribed ? 'انتهى الاشتراك 🔒' : 'انتهت التجربة 🔒';
+            title = wasSubscribed ? context.l10n.renewSubscriptionDrawer : context.l10n.upgradeAccountDrawer;
+            badgeText = wasSubscribed ? context.l10n.subscriptionEndedBadge : context.l10n.trialEndedBadge;
             badgeBg = AppColors.dangerBgLight;
             badgeFg = AppColors.dangerText;
           } else {
-            title = 'الترقية والاشتراك';
-            badgeText = 'متبقي $remainingDays يوم';
+            title = context.l10n.upgradeAndSubscription;
+            badgeText = '${context.l10n.remainingDays} $remainingDays ${context.l10n.dayUnit}';
             badgeBg = AppColors.lightAmber;
             badgeFg = AppColors.primaryAmber;
           }

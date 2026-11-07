@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 /// Modern status pill for attendance states.
 /// - حاضر → soft green
@@ -16,16 +17,20 @@ class StatusChip extends StatelessWidget {
 
     final Color bgColor;
     final Color textColor;
+    final String displayTitle;
 
     if (title == 'حاضر') {
       bgColor = isDark ? AppColors.successBgDark : AppColors.successBgLight;
       textColor = isDark ? const Color(0xFF6EE7B7) : AppColors.successText;
+      displayTitle = context.l10n.present;
     } else if (title == 'غائب') {
       bgColor = isDark ? AppColors.dangerBgDark : AppColors.dangerBgLight;
       textColor = isDark ? const Color(0xFFFCA5A5) : AppColors.dangerText;
+      displayTitle = context.l10n.absent;
     } else {
       bgColor = isDark ? AppColors.warningBgDark : AppColors.warningBgLight;
       textColor = isDark ? const Color(0xFFFDE68A) : AppColors.warningText;
+      displayTitle = context.l10n.notRecorded;
     }
 
     return Container(
@@ -47,7 +52,7 @@ class StatusChip extends StatelessWidget {
           ),
           const SizedBox(width: 5),
           Text(
-            title,
+            displayTitle,
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,

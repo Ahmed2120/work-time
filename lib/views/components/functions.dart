@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:iconly_plus/iconly_plus.dart';
 import 'package:toast/toast.dart';
 import 'package:work_time/core/config/app_config.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/views/components/constant.dart';
 
@@ -12,22 +13,22 @@ import '../purchase/purchase_app.dart';
 AlertDialog alert(
     {required BuildContext context,required String txt,required Color color,required VoidCallback onPressed}) {
   return AlertDialog(
-    title: const Row(
+    title: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Icon(
-            IconlyBold.danger,
+        const Icon(
+          IconlyBold.danger,
           color: Colors.amber,
           size: 40,
         ),
         Text(
-          'تعديل تمام',
-          style: TextStyle(fontSize: 20,fontWeight: FontWeight.w700),
+          context.l10n.changeAttendanceConfirm,
+          style: const TextStyle(fontSize: 20,fontWeight: FontWeight.w700),
         ),
       ],
     ),
     content:
-    Text.rich(TextSpan(text: 'سوف تقوم بتعديل التمام وجعله ', children: <InlineSpan>[
+    Text.rich(TextSpan(text: context.l10n.changeAttendanceMsg, children: <InlineSpan>[
       TextSpan(
         text: txt,
         style: TextStyle(fontWeight: FontWeight.bold,color: color),
@@ -38,12 +39,12 @@ AlertDialog alert(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Cancel')),
+          child: Text(context.l10n.cancel)),
       TextButton(
         onPressed: onPressed,
-        child: const Text(
-          'Ok',
-          style: TextStyle(color: Color(0xFFE94560)),
+        child: Text(
+          context.l10n.ok,
+          style: const TextStyle(color: Color(0xFFE94560)),
         ),
       ),
     ],
@@ -63,21 +64,21 @@ Future<void> showFlushBar(BuildContext context, {String? customMessage}) async {
   final bool wasSubscribed = await SecureStorageHelper.wasSubscribedBefore();
 
   final String title = customMessage != null
-      ? (AppConfig.isPlayStore ? 'تنبيه' : 'النسخة التجريبية')
+      ? (AppConfig.isPlayStore ? context.l10n.dialogAlert : context.l10n.trialVersion)
       : (AppConfig.isPlayStore
-          ? (wasSubscribed ? 'انتهت فترة الاشتراك' : 'انتهت الفترة التجريبية')
-          : 'النسخة التجريبية');
+          ? (wasSubscribed ? context.l10n.subscriptionExpired : context.l10n.trialExpired)
+          : context.l10n.trialVersion);
 
   final String message = customMessage ??
       (AppConfig.isPlayStore
           ? (wasSubscribed
-              ? 'انتهت فترة اشتراكك في التطبيق. يرجى تجديد الاشتراك لمتابعة إضافة العمال وتسجيل الحضور.'
-              : 'انتهت فترة التجربة المجانية (14 يوماً). يرجى الاشتراك لمتابعة إضافة العمال وتسجيل الحضور.')
-          : 'هذه نسخة تجريبية محدودة الاستخدام. قم بتفعيل الترخيص للاستخدام الكامل.');
+              ? context.l10n.flushbarSubExpiredMsg
+              : context.l10n.flushbarTrialExpiredMsg)
+          : context.l10n.flushbarLimitedTrialMsg);
 
   final String buttonText = AppConfig.isPlayStore
-      ? (wasSubscribed ? 'تجديد الاشتراك' : 'ترقية الحساب')
-      : 'تفعيل الترخيص';
+      ? (wasSubscribed ? context.l10n.renewSubscription : context.l10n.upgradeAccount)
+      : context.l10n.activateLicense;
 
   if (!context.mounted) return;
 

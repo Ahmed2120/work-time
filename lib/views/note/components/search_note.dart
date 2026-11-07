@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/view_models/note_view_model.dart';
 
 class SearchNote extends StatelessWidget {
@@ -39,7 +40,7 @@ class SearchNote extends StatelessWidget {
             size: 20,
             color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
           ),
-          hintText: 'بحث في الملاحظات...',
+          hintText: context.l10n.searchInNotes,
           hintStyle: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,

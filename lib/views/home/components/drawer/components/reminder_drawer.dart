@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/services/daily_reminder_service.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/views/components/functions.dart';
 
 class ReminderDrawer extends StatefulWidget {
@@ -35,16 +36,16 @@ class _ReminderDrawerState extends State<ReminderDrawer> {
     if (value) {
       final granted = await DailyReminderService.requestPermission();
       if (!granted && mounted) {
-        showToast(context, 'يرجى تفعيل إذن الإشعارات من إعدادات الهاتف', color: AppColors.warning);
+        showToast(context, context.l10n.reminderPermissionError, color: AppColors.warning);
       }
       await DailyReminderService.scheduleDailyReminder(_reminderTime);
       if (mounted) {
-        showToast(context, 'تم تفعيل التنبيه اليومي الساعة ${_formatTime(_reminderTime)} ⏰');
+        showToast(context, '${context.l10n.reminderEnabled} ${_formatTime(_reminderTime, context)} ⏰');
       }
     } else {
       await DailyReminderService.cancelReminder();
       if (mounted) {
-        showToast(context, 'تم إيقاف التنبيه اليومي');
+        showToast(context, context.l10n.reminderDisabled);
       }
     }
 
@@ -57,9 +58,9 @@ class _ReminderDrawerState extends State<ReminderDrawer> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: _reminderTime,
-      helpText: 'اختر وقت التنبيه اليومي للتمام',
-      cancelText: 'إلغاء',
-      confirmText: 'حفظ',
+      helpText: context.l10n.reminderPickerHelp,
+      cancelText: context.l10n.cancel,
+      confirmText: context.l10n.save,
     );
 
     if (picked != null && picked != _reminderTime) {
@@ -70,7 +71,7 @@ class _ReminderDrawerState extends State<ReminderDrawer> {
       if (_isReminderEnabled) {
         await DailyReminderService.scheduleDailyReminder(picked);
         if (mounted) {
-          showToast(context, 'تم تغيير موعد التنبيه إلى ${_formatTime(picked)} ⏰');
+          showToast(context, '${context.l10n.reminderChanged} ${_formatTime(picked, context)} ⏰');
         }
       }
     }
@@ -110,7 +111,7 @@ class _ReminderDrawerState extends State<ReminderDrawer> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'تنبيه التمام اليومي',
+                        context.l10n.dailyReminder,
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -122,7 +123,7 @@ class _ReminderDrawerState extends State<ReminderDrawer> {
                         InkWell(
                           onTap: _pickTime,
                           child: Text(
-                            'الموعد: ${_formatTime(_reminderTime)} (اضغط للتغيير)',
+                            '${context.l10n.reminderTimeLabel}: ${_formatTime(_reminderTime, context)} (${context.l10n.reminderTimeTapToChange})',
                             style: const TextStyle(
                               fontSize: 11,
                               color: AppColors.primaryAmber,
@@ -150,10 +151,10 @@ class _ReminderDrawerState extends State<ReminderDrawer> {
     );
   }
 
-  String _formatTime(TimeOfDay time) {
+  String _formatTime(TimeOfDay time, BuildContext context) {
     final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
     final minute = time.minute < 10 ? '0${time.minute}' : '${time.minute}';
-    final period = time.period == DayPeriod.am ? 'صباحاً' : 'مساءً';
+    final period = time.period == DayPeriod.am ? context.l10n.am : context.l10n.pm;
     return '$hour:$minute $period';
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/user.dart';
 import 'package:work_time/views/components/app_card.dart';
 
@@ -74,9 +75,9 @@ class UserData extends StatelessWidget {
           const SizedBox(height: 14),
           Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
           const SizedBox(height: 10),
-          TextRow(title: 'الاسم الكامل', txt: user.name),
-          TextRow(title: 'الوظيفة', txt: user.job.isNotEmpty ? user.job : 'غير محدد'),
-          TextRow(title: 'الفئة / اليومية', txt: '${user.salary} ريال'),
+          TextRow(title: context.l10n.workerName, txt: user.name),
+          TextRow(title: context.l10n.jobTitle, txt: user.job.isNotEmpty ? user.job : context.l10n.notSpecified),
+          TextRow(title: context.l10n.dailyWage, txt: '${user.salary} ${context.l10n.currency}'),
         ],
       ),
     );

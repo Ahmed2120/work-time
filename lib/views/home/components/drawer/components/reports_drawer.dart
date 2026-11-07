@@ -42,7 +42,7 @@ class ReportsDrawer extends StatelessWidget {
                 const SizedBox(width: 14),
                 Expanded(
                   child: Text(
-                    'التقارير الشهرية وتصدير PDF',
+                    context.l10n.monthlyReports,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,

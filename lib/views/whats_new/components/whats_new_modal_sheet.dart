@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/whats_new_item.dart';
 import 'package:work_time/view_models/whats_new_view_model.dart';
 
@@ -64,7 +65,7 @@ class _WhatsNewSheetContent extends StatelessWidget {
           const SizedBox(height: 12),
 
           Text(
-            'ما الجديد في هذا التحديث؟ ✨',
+            context.l10n.whatsNewInThisUpdate,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -140,9 +141,9 @@ class _WhatsNewSheetContent extends StatelessWidget {
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text(
-                'رائع، ابدأ الاستخدام',
-                style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 15),
+              child: Text(
+                context.l10n.greatStartUsing,
+                style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold, fontSize: 15),
               ),
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 class TitleDrawer extends StatelessWidget {
   const TitleDrawer({super.key});
@@ -42,9 +43,9 @@ class TitleDrawer extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Text(
-                'عُمَّالي',
-                style: TextStyle(
+              Text(
+                context.l10n.appTitle,
+                style: const TextStyle(
                   fontSize: 22,
                   fontFamily: 'Cairo',
                   fontWeight: FontWeight.bold,
@@ -55,7 +56,7 @@ class TitleDrawer extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'رفيق صاحب العمل لإدارة العمال',
+            context.l10n.appSlogan,
             style: TextStyle(
               fontSize: 12,
               fontFamily: 'Cairo',

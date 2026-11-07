@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/data/services/api_service.dart';
 import 'package:work_time/views/bottom_nav_view.dart';
@@ -63,7 +64,7 @@ class _PurchaseDataState extends State<PurchaseData> {
 
           // ─── Header Titles ──────────────────────────────────────────
           Text(
-            'تفعيل ترخيص التطبيق',
+            context.l10n.activateLicense,
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -74,7 +75,7 @@ class _PurchaseDataState extends State<PurchaseData> {
           ),
           const SizedBox(height: 6),
           Text(
-            'أدخل بريدك الإلكتروني المسجل لدينا للتحقق من شراء التطبيق وتفعيله',
+            context.l10n.activateLicenseSubtitle,
             style: TextStyle(
               fontSize: 13,
               color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -95,15 +96,15 @@ class _PurchaseDataState extends State<PurchaseData> {
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'يرجى إدخال البريد الإلكتروني';
+                return context.l10n.pleaseEnterEmail;
               }
               if (!value.contains('@') || !value.contains('.')) {
-                return 'يرجى إدخال بريد إلكتروني صالح';
+                return context.l10n.pleaseEnterValidEmail;
               }
               return null;
             },
             decoration: InputDecoration(
-              labelText: 'البريد الإلكتروني',
+              labelText: context.l10n.emailLabel,
               hintText: 'user@example.com',
               prefixIcon: const Icon(
                 Icons.email_outlined,
@@ -156,7 +157,7 @@ class _PurchaseDataState extends State<PurchaseData> {
                         const Icon(Icons.verified_user_outlined, size: 20, color: Colors.white),
                         const SizedBox(width: 10),
                         Text(
-                          trial ? 'تفعيل الشراء' : 'التحقق وتسجيل الدخول',
+                          trial ? context.l10n.activatePurchase : context.l10n.verifyAndLogin,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -187,13 +188,13 @@ class _PurchaseDataState extends State<PurchaseData> {
         await SecureStorageHelper.setTrial(false);
         if (!mounted) return;
         pushReplacement(context: context, screen: const BottomNavView());
-        showToast(context, 'تم تفعيل الترخيص بنجاح');
+        showToast(context, context.l10n.licenseActivatedSuccess);
       } else {
-        _showMessageDialog(context, 'هذا البريد غير مسجل كمشترك، يرجى شراء التطبيق أولاً.');
+        _showMessageDialog(context, context.l10n.emailNotRegistered);
       }
     } catch (e) {
       final error = e.toString().replaceAll(RegExp(r"[Exception:]"), "").trim();
-      _showMessageDialog(context, error.isNotEmpty ? error : 'تعذر الاتصال بالخادم');
+      _showMessageDialog(context, error.isNotEmpty ? error : context.l10n.connectionError);
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -206,11 +207,11 @@ class _PurchaseDataState extends State<PurchaseData> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.error_outline_rounded, color: AppColors.error),
-            SizedBox(width: 8),
-            Text('تنبيه', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+            const Icon(Icons.error_outline_rounded, color: AppColors.error),
+            const SizedBox(width: 8),
+            Text(context.l10n.dialogAlert, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
           ],
         ),
         content: Text(
@@ -224,7 +225,7 @@ class _PurchaseDataState extends State<PurchaseData> {
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('حسناً', style: TextStyle(fontFamily: 'Cairo')),
+            child: Text(context.l10n.dialogOk, style: const TextStyle(fontFamily: 'Cairo')),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],

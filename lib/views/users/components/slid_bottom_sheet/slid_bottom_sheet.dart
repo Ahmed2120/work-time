@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 
 import 'components/week_data.dart';
@@ -65,7 +66,7 @@ class AttendanceWeeksBottomSheet extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'سجل أسابيع الحضور',
+                      context.l10n.weeklyRecord,
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
@@ -129,7 +130,7 @@ class AttendanceWeeksBottomSheet extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  'لا يوجد سجل حضور مسجل',
+                                  context.l10n.noData,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -139,7 +140,7 @@ class AttendanceWeeksBottomSheet extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  'لم يتم تسجيل أي أيام حضور لهذا العامل حتى الآن.\nقم بتسجيل التمام اليومي أولاً لتظهر الأسابيع هنا.',
+                                  context.l10n.notRecordedToday,
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,

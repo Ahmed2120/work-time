@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/config/app_config.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/views/start_view.dart';
 
@@ -69,9 +70,9 @@ class _SplashViewState extends State<SplashView> {
               height: 160,
             ),
             const SizedBox(height: 24),
-            const Text(
-              'عُمَّالي',
-              style: TextStyle(
+            Text(
+              context.l10n.appTitle,
+              style: const TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -80,9 +81,9 @@ class _SplashViewState extends State<SplashView> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'رفيق صاحب العمل لإدارة العمال',
-              style: TextStyle(
+            Text(
+              context.l10n.appSlogan,
+              style: const TextStyle(
                 fontSize: 13,
                 color: Color(0xFFEA580C),
                 fontFamily: 'Cairo',

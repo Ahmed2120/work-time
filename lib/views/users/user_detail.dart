@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/user.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
@@ -47,7 +48,7 @@ class UserDetail extends StatelessWidget {
 
                 // ─── Attendance Recording Section ───────────────────────────
                 Text(
-                  'التمام اليومي',
+                  context.l10n.dailyAttendance,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -67,10 +68,14 @@ class UserDetail extends StatelessWidget {
                   Column(
                     children: [
                       TextRow(
-                        title: 'حالة التمام',
+                        title: context.l10n.attendanceStatus,
                         txt: model.isEmpty
-                            ? 'لم يتم تسجيل التمام اليوم'
-                            : attendanceViewModel.attendanceText,
+                            ? context.l10n.notRecordedToday
+                            : (attendanceViewModel.attendanceText == 'حاضر'
+                                ? context.l10n.present
+                                : (attendanceViewModel.attendanceText == 'غائب'
+                                    ? context.l10n.absent
+                                    : context.l10n.notRecorded)),
                       ),
                       if (model.isNotEmpty && model.last.status == 1)
                         const AttendanceDetail(),
@@ -89,7 +94,7 @@ class UserDetail extends StatelessWidget {
                 // Action: Withdraw Amount (Primary Purple #4338B8 Button)
                 if (model.isNotEmpty && model.last.status == 1) ...[
                   AppButton(
-                    label: 'سحب مبلغ مالي',
+                    label: context.l10n.withdrawMoney,
                     icon: Icons.payments_rounded,
                     style: AppButtonStyle.primary,
                     onPressed: () {
@@ -106,7 +111,7 @@ class UserDetail extends StatelessWidget {
 
                 // Action: Attendance Days Sheet (Secondary Outlined Style)
                 AppButton(
-                  label: 'عرض سجل أيام الحضور',
+                  label: context.l10n.weeklyRecord,
                   icon: Icons.calendar_month_rounded,
                   style: AppButtonStyle.secondary,
                   onPressed: () async {

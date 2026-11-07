@@ -42,7 +42,7 @@ class RateDrawer extends StatelessWidget {
                 const SizedBox(width: 14),
                 Expanded(
                   child: Text(
-                    'قيّم التطبيق',
+                    context.l10n.rateApp,
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,

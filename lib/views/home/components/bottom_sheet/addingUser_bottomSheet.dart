@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/user.dart';
 
 import 'components/form_sheet.dart';
@@ -39,7 +40,7 @@ class AddingUserBottomSheet extends StatelessWidget {
               const SizedBox(height: 8),
 
               // ─── Header ───────────────────────────────────────────────────
-              HeaderSheet(title: user != null ? 'تعديل البيانات' : 'إضافة عامل'),
+              HeaderSheet(title: user != null ? context.l10n.editData : context.l10n.addWorker),
 
               const SizedBox(height: 16),
 

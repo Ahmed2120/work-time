@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconly_plus/iconly_plus.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 /// مساحة توجيهية هادئة وغير مهيمنة بصرياً لحث المستخدم على تسجيل وإضافة العمال
 class ProjectEmptyWorkersHint extends StatelessWidget {
@@ -47,9 +48,9 @@ class ProjectEmptyWorkersHint extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           if (isZeroWorkers) ...[
-            const Text(
-              'لا يوجد عمال مسجلين في هذا الموقع حتى الآن',
-              style: TextStyle(
+            Text(
+              context.l10n.noWorkersOnSiteYet,
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Cairo',
@@ -58,10 +59,10 @@ class ProjectEmptyWorkersHint extends StatelessWidget {
             ),
             const SizedBox(height: 4),
           ],
-          const Text(
-            'أضف عمالك وابدأ في متابعة الحضور والحسابات بسهولة',
+          Text(
+            context.l10n.addWorkersHint,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w400,
               fontFamily: 'Cairo',

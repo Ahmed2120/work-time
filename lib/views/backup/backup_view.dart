@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/global_methods.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/view_models/backup_view_model.dart';
@@ -38,7 +39,7 @@ class _BackupViewState extends State<BackupView> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('النسخ الاحتياطي السحابي'),
+            title: Text(context.l10n.backupTitle),
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(1),
               child: Divider(height: 1, color: borderColor),
@@ -78,7 +79,7 @@ class _BackupViewState extends State<BackupView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'النسخ السحابي تلقائي وآمن',
+                                context.l10n.backupSubtitle,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
@@ -90,7 +91,9 @@ class _BackupViewState extends State<BackupView> {
                               ),
                               const SizedBox(height: 3),
                               Text(
-                                'ربط حسابك بـ Google Drive لحفظ واستعادة بيانات العمال والتمام والملاحظات بسهولة (مثل WhatsApp)',
+                                context.isArabic
+                                    ? 'ربط حسابك بـ Google Drive لحفظ واستعادة بيانات العمال والتمام والملاحظات بسهولة (مثل WhatsApp)'
+                                    : 'Connect your account to Google Drive to easily backup and restore workers, attendance, and notes (like WhatsApp)',
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w400,
@@ -111,7 +114,7 @@ class _BackupViewState extends State<BackupView> {
 
                   // ─── Connected Google Account Card ──────────────────────────────
                   Text(
-                    'حساب Google',
+                    context.isArabic ? 'حساب Google' : 'Google Account',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -152,7 +155,7 @@ class _BackupViewState extends State<BackupView> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      currentUser.displayName ?? 'مستخدم Google',
+                                      currentUser.displayName ?? (context.isArabic ? 'مستخدم Google' : 'Google User'),
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w600,
@@ -181,14 +184,14 @@ class _BackupViewState extends State<BackupView> {
                                   color: AppColors.successBgLight,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.check_circle_rounded, size: 12, color: AppColors.successText),
-                                    SizedBox(width: 4),
+                                    const Icon(Icons.check_circle_rounded, size: 12, color: AppColors.successText),
+                                    const SizedBox(width: 4),
                                     Text(
-                                      'متصل',
-                                      style: TextStyle(
+                                      context.isArabic ? 'متصل' : 'Connected',
+                                      style: const TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
                                         color: AppColors.successText,
@@ -208,9 +211,9 @@ class _BackupViewState extends State<BackupView> {
                             child: TextButton.icon(
                               onPressed: () => backupVM.signOutGoogle(),
                               icon: const Icon(Icons.logout_rounded, size: 18, color: AppColors.dangerText),
-                              label: const Text(
-                                'تسجيل الخروج من الحساب',
-                                style: TextStyle(
+                              label: Text(
+                                context.isArabic ? 'تسجيل الخروج من الحساب' : 'Sign out',
+                                style: const TextStyle(
                                   fontSize: 13,
                                   color: AppColors.dangerText,
                                   fontWeight: FontWeight.w600,
@@ -229,7 +232,7 @@ class _BackupViewState extends State<BackupView> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'غير متصل بحساب Google',
+                                      context.isArabic ? 'غير متصل بحساب Google' : 'Not connected to Google account',
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w600,
@@ -240,7 +243,9 @@ class _BackupViewState extends State<BackupView> {
                                       ),
                                     ),
                                     Text(
-                                      'سجل الدخول لحفظ نسخة احتياطية على سحابة Google',
+                                      context.isArabic
+                                          ? 'سجل الدخول لحفظ نسخة احتياطية على سحابة Google'
+                                          : 'Sign in to save backup to Google cloud',
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: isDark
@@ -256,7 +261,7 @@ class _BackupViewState extends State<BackupView> {
                           ),
                           const SizedBox(height: 14),
                           AppButton(
-                            label: 'تسجيل الدخول بـ Google',
+                            label: context.isArabic ? 'تسجيل الدخول بـ Google' : 'Sign in with Google',
                             icon: Icons.g_mobiledata_rounded,
                             style: AppButtonStyle.secondary,
                             onPressed: () => backupVM.signInGoogle(),
@@ -284,7 +289,7 @@ class _BackupViewState extends State<BackupView> {
 
                   // ─── Cloud Backup Details Card ───────────────────────────────────
                   Text(
-                    'حالة النسخة الاحتياطية',
+                    context.isArabic ? 'حالة النسخة الاحتياطية' : 'Backup Status',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -308,7 +313,7 @@ class _BackupViewState extends State<BackupView> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'آخر نسخة سحابية:',
+                              '${context.l10n.lastBackup}:',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: isDark
@@ -320,8 +325,8 @@ class _BackupViewState extends State<BackupView> {
                             const Spacer(),
                             Text(
                               metadata != null
-                                  ? '${GlobalMethods.getDayName(metadata.modifiedTime)}، ${GlobalMethods.getDateFormat(metadata.modifiedTime)}'
-                                  : 'لا توجد نسخة سحابية',
+                                  ? '${GlobalMethods.getDayName(metadata.modifiedTime, Localizations.localeOf(context).languageCode)}، ${GlobalMethods.getDateFormat(metadata.modifiedTime)}'
+                                  : context.l10n.neverBackedUp,
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
@@ -344,7 +349,7 @@ class _BackupViewState extends State<BackupView> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'حجم البيانات:',
+                                context.isArabic ? 'حجم البيانات:' : 'Data Size:',
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: isDark
@@ -397,7 +402,7 @@ class _BackupViewState extends State<BackupView> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'المزامنة الأسبوعية التلقائية',
+                                    context.isArabic ? 'المزامنة الأسبوعية التلقائية' : 'Weekly Auto Sync',
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
@@ -409,8 +414,12 @@ class _BackupViewState extends State<BackupView> {
                                   ),
                                   Text(
                                     backupVM.lastAutoSyncTime != null
-                                        ? 'آخر مزامنة: ${GlobalMethods.getDateFormat(backupVM.lastAutoSyncTime!)}'
-                                        : 'مزامنة صامتة في الخلفية كل 7 أيام',
+                                        ? (context.isArabic
+                                            ? 'آخر مزامنة: ${GlobalMethods.getDateFormat(backupVM.lastAutoSyncTime!)}'
+                                            : 'Last synced: ${GlobalMethods.getDateFormat(backupVM.lastAutoSyncTime!)}')
+                                        : (context.isArabic
+                                            ? 'مزامنة صامتة في الخلفية كل 7 أيام'
+                                            : 'Silent background sync every 7 days'),
                                     style: TextStyle(
                                       fontSize: 11,
                                       color: isDark
@@ -435,7 +444,9 @@ class _BackupViewState extends State<BackupView> {
                                     if (context.mounted) {
                                       showFlushBar(
                                         context,
-                                        customMessage: 'المزامنة التلقائية السحابية ميزة للمشتركين. يرجى الاشتراك للتفعيل.',
+                                        customMessage: context.isArabic
+                                            ? 'المزامنة التلقائية السحابية ميزة للمشتركين. يرجى الاشتراك للتفعيل.'
+                                            : 'Automatic cloud sync is a subscriber feature. Please subscribe to enable.',
                                       );
                                     }
                                     return;
@@ -454,16 +465,18 @@ class _BackupViewState extends State<BackupView> {
 
                   // ─── Backup Action ──────────────────────────────────────────────
                   if (backupVM.isUploading)
-                    const Center(
+                    Center(
                       child: Padding(
-                        padding: EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
-                            CircularProgressIndicator(color: AppColors.primary),
-                            SizedBox(height: 12),
+                            const CircularProgressIndicator(color: AppColors.primary),
+                            const SizedBox(height: 12),
                             Text(
-                              'جاري رفع النسخة الاحتياطية إلى Google Drive...',
-                              style: TextStyle(fontSize: 14, fontFamily: 'Cairo'),
+                              context.isArabic
+                                  ? 'جاري رفع النسخة الاحتياطية إلى Google Drive...'
+                                  : 'Uploading backup to Google Drive...',
+                              style: const TextStyle(fontSize: 14, fontFamily: 'Cairo'),
                             ),
                           ],
                         ),
@@ -471,7 +484,7 @@ class _BackupViewState extends State<BackupView> {
                     )
                   else
                     AppButton(
-                      label: 'نسخ إحتياطي الآن (Google Drive)',
+                      label: '${context.l10n.backupNow} (Google Drive)',
                       icon: Icons.cloud_upload_rounded,
                       style: AppButtonStyle.primary,
                       onPressed: () async {
@@ -480,7 +493,9 @@ class _BackupViewState extends State<BackupView> {
                           if (context.mounted) {
                             showFlushBar(
                               context,
-                              customMessage: 'النسخ الاحتياطي السحابي ميزة للمشتركين. يرجى الاشتراك لحفظ نسخة جديدة.',
+                              customMessage: context.isArabic
+                                  ? 'النسخ الاحتياطي السحابي ميزة للمشتركين. يرجى الاشتراك لحفظ نسخة جديدة.'
+                                  : 'Cloud backup is a subscriber feature. Please subscribe to save a new backup.',
                             );
                           }
                           return;
@@ -495,16 +510,18 @@ class _BackupViewState extends State<BackupView> {
 
                   // ─── Restore Action ──────────────────────────────────────────────
                   if (backupVM.isRestoring)
-                    const Center(
+                    Center(
                       child: Padding(
-                        padding: EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
-                            CircularProgressIndicator(color: AppColors.primary),
-                            SizedBox(height: 12),
+                            const CircularProgressIndicator(color: AppColors.primary),
+                            const SizedBox(height: 12),
                             Text(
-                              'جاري استعادة البيانات من Google Drive...',
-                              style: TextStyle(fontSize: 14, fontFamily: 'Cairo'),
+                              context.isArabic
+                                  ? 'جاري استعادة البيانات من Google Drive...'
+                                  : 'Restoring data from Google Drive...',
+                              style: const TextStyle(fontSize: 14, fontFamily: 'Cairo'),
                             ),
                           ],
                         ),
@@ -512,7 +529,7 @@ class _BackupViewState extends State<BackupView> {
                     )
                   else
                     AppButton(
-                      label: 'استعادة النسخة الاحتياطية',
+                      label: context.l10n.restoreBackup,
                       icon: Icons.cloud_download_rounded,
                       style: AppButtonStyle.secondary,
                       onPressed: () => _confirmRestoreDialog(context, backupVM),
@@ -533,24 +550,26 @@ class _BackupViewState extends State<BackupView> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: AppColors.warningText, size: 28),
-            SizedBox(width: 8),
+            const Icon(Icons.warning_amber_rounded, color: AppColors.warningText, size: 28),
+            const SizedBox(width: 8),
             Text(
-              'تأكيد استعادة البيانات',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+              context.isArabic ? 'تأكيد استعادة البيانات' : 'Confirm Data Restore',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
             ),
           ],
         ),
-        content: const Text(
-          'سيتم استبدال البيانات الحالية بالنسخة المخزنة على Google Drive. هل تريد الاستمرار؟',
-          style: TextStyle(fontSize: 14, fontFamily: 'Cairo'),
+        content: Text(
+          context.isArabic
+              ? 'سيتم استبدال البيانات الحالية بالنسخة المخزنة على Google Drive. هل تريد الاستمرار؟'
+              : 'Current data will be replaced by the backup stored on Google Drive. Do you want to continue?',
+          style: const TextStyle(fontSize: 14, fontFamily: 'Cairo'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('إلغاء', style: TextStyle(fontFamily: 'Cairo')),
+            child: Text(context.l10n.cancel, style: const TextStyle(fontFamily: 'Cairo')),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -568,7 +587,10 @@ class _BackupViewState extends State<BackupView> {
                 },
               );
             },
-            child: const Text('استعادة الآن', style: TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+            child: Text(
+              context.l10n.restoreBackup,
+              style: const TextStyle(color: Colors.white, fontFamily: 'Cairo'),
+            ),
           ),
         ],
       ),

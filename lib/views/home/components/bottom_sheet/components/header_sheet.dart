@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
+import 'package:work_time/core/utils/extensions/context_extension.dart';
 
 class HeaderSheet extends StatelessWidget {
   const HeaderSheet({required this.title, super.key});
@@ -32,7 +33,7 @@ class HeaderSheet extends StatelessWidget {
             ),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
-            tooltip: 'إغلاق',
+            tooltip: context.l10n.close,
           ),
         ],
       ),

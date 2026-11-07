@@ -1,5 +1,3 @@
-import 'package:work_time/view_models/attendance_view_model.dart';
-
 class Attendance {
    final int? id;
   final int userId;

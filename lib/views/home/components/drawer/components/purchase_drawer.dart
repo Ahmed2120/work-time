@@ -53,68 +53,81 @@ class PurchaseDrawer extends StatelessWidget {
         }
 
         return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8),
-          child: ListTile(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            leading: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isDark
-                    ? AppColors.primaryAmber.withValues(alpha: 0.2)
-                    : AppColors.lightAmber,
-              ),
-              child: const Icon(
-                Icons.workspace_premium_rounded,
-                size: 20,
-                color: AppColors.primaryAmber,
-              ),
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (badgeText != null) ...[
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: isDark ? badgeBg.withValues(alpha: 0.2) : badgeBg,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: badgeFg.withValues(alpha: 0.3),
+          padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 12),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () {
+                push(screen: const PurchaseApp(), context: context);
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: isDark ? AppColors.darkSurface : AppColors.primaryLight,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.workspace_premium_rounded,
+                        size: 20,
+                        color: AppColors.primary,
                       ),
                     ),
-                    child: Text(
-                      badgeText,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: badgeFg,
-                        fontFamily: 'Cairo',
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                              fontFamily: 'Cairo',
+                            ),
+                          ),
+                          if (badgeText != null) ...[
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: isDark ? badgeBg.withValues(alpha: 0.2) : badgeBg,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: badgeFg.withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Text(
+                                badgeText,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: badgeFg,
+                                  fontFamily: 'Cairo',
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                          ],
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 6),
-                ],
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 14,
-                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      size: 20,
+                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            title: Text(
-              title,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-                fontFamily: 'Cairo',
               ),
             ),
-            onTap: () {
-              push(screen: const PurchaseApp(), context: context);
-            },
           ),
         );
       },

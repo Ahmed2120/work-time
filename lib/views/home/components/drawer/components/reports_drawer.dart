@@ -51,13 +51,10 @@ class ReportsDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
-                Transform.flip(
-                  flipX: context.isArabic,
-                  child: Icon(
-                    Icons.arrow_back_ios_new_outlined,
-                    size: 20,
-                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                  ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 20,
+                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                 ),
               ],
             ),

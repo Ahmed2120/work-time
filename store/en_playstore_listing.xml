@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="title">Ommali - Attendance &amp; Payroll</string>
+  <string name="short_description">Track attendance, calculate wages &amp; advances, and export PDF reports in one tap.</string>
+  <string name="full_description">
+🔨 Ommali — Manage Workers, Attendance &amp; Payroll with Ease
+
+Ommali helps workshop owners, contractors, and project managers organize their workers, track attendance, and calculate dues — all in one place, replacing paper logs and manual calculations.
+
+📋 Attendance Tracking
+• Record daily attendance and absence for each worker.
+• Keep a full history of previous attendance records.
+• View attendance status for all registered workers each day.
+
+💰 Wages, Advances &amp; Dues
+• Calculate each worker's dues based on days present.
+• Record advances and withdrawals and track the remaining balance.
+• Support for overtime calculation with flexible multipliers or a custom amount.
+
+📊 Clear Reports
+• Generate monthly PDF attendance and payroll reports.
+• Easily share reports with your partner or accountant.
+
+🔍 Search &amp; Organize Workers
+• Search for workers by name or profession.
+• Filter workers by attendance status.
+• Categorize workers by trade — craftsman, assistant, blacksmith, and more.
+
+📍 Job Site Management
+• Log each worker's daily work location.
+• Save previously used sites for quick reuse.
+• Perfect for managing workers across multiple sites.
+
+☁️ Cloud Backup
+• Back up your data securely to Google Drive.
+• Restore your data anytime or when switching phones.
+
+🔔 Attendance Reminder
+Enable a daily reminder to help you record your workers' attendance on time.
+
+🎯 Built for Workshop &amp; Site Owners
+Ommali is designed for carpentry, metalwork, plumbing, and electrical workshop owners, construction and finishing contractors, and any employer managing a team of workers.
+
+🆓 Start Free
+Enjoy all Ommali features free for 14 days — no feature restrictions. During the trial, you can manage workers, record attendance, track dues and advances, generate reports, and try all the app's tools.
+
+After the trial period, you can subscribe to continue using the app.
+
+🔒 Your Privacy Matters
+Your data is stored securely, and you can create your own personal backup on Google Drive. We do not sell or share user data with third parties for advertising purposes.
+
+Ommali — Organize your workers, track their attendance, and calculate their dues with ease.
+  </string>
+</resources>
+

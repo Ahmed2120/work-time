@@ -111,7 +111,7 @@ class UsersStatusListview extends StatelessWidget {
             return ListView.builder(
               physics: const BouncingScrollPhysics(),
               itemCount: filteredList.length,
-              padding: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.only(bottom: kBottomNavigationBarHeight),
               itemBuilder: (context, index) {
                 return _buildUserCard(
                   context: context,

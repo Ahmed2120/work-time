@@ -56,6 +56,7 @@ class CustomCardTrash extends StatelessWidget {
                     job: user.job,
                     salary: user.salary,
                     isDeleted: 0,
+                    defaultDayRatio: user.defaultDayRatio,
                   );
                   userViewModel.updateUser(userModel);
                 },

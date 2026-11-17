@@ -18,9 +18,9 @@ class DatabaseHandler {
       onCreate: (database, version) async {
         Batch batch = database.batch();
         batch.execute(
-            "CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, job TEXT, salary TEXT, isDeleted INTEGER)");
+            "CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, job TEXT, salary TEXT, isDeleted INTEGER, defaultDayRatio REAL DEFAULT 1.0)");
         batch.execute(
-            "CREATE TABLE attendance(id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, todayDate TEXT, weekId INTEGER, status INTEGER, weekStatus INTEGER,overTimeStatus INTEGER, salaryReceived TEXT,salary TEXT,workPlace TEXT,weekEnd TEXT)");
+            "CREATE TABLE attendance(id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER, todayDate TEXT, weekId INTEGER, status INTEGER, weekStatus INTEGER,overTimeStatus INTEGER, salaryReceived TEXT,salary TEXT,workPlace TEXT,weekEnd TEXT, dayRatio REAL DEFAULT 1.0)");
         batch.execute(
             "CREATE TABLE notes(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, description TEXT, dateCreated TEXT, color INTEGER)");
         batch.execute(
@@ -42,8 +42,24 @@ class DatabaseHandler {
             "CREATE TABLE IF NOT EXISTS work_places(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE)",
           );
         }
+        if (oldVersion < 4) {
+          // Migration v3 → v4: add dayRatio column to attendance table
+          try {
+            await database.execute(
+              "ALTER TABLE attendance ADD COLUMN dayRatio REAL DEFAULT 1.0",
+            );
+          } catch (_) {}
+        }
+        if (oldVersion < 5) {
+          // Migration v4 → v5: add defaultDayRatio column to users table
+          try {
+            await database.execute(
+              "ALTER TABLE users ADD COLUMN defaultDayRatio REAL DEFAULT 1.0",
+            );
+          } catch (_) {}
+        }
       },
-      version: 3,
+      version: 5,
     );
     return _database!;
   }

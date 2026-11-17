@@ -20,6 +20,18 @@
     "whats_new": {
       ".read": true,
       ".write": true
+    },
+    "user_alerts": {
+      ".read": true,
+      ".write": true
+    },
+    "broadcast_alert": {
+      ".read": true,
+      ".write": true
+    },
+    "broadcast_reads": {
+      ".read": true,
+      ".write": true
     }
   }
 }

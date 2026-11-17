@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupExportActions();
   setupWhatsNewActions();
   setupUserModalActions();
+  setupInAppAlertModalActions();
 
   // 7. Setup Auth & Demo Mode
   setupAuthHandlers();
@@ -626,6 +627,24 @@ function renderFeedbacksTab() {
       }
     }
 
+    const uuid = (fb.uuid || '').trim();
+    let inAppReplyBtn = '';
+    if (uuid) {
+      const safeModel = (fb.deviceModel || '').replace(/'/g, "\\'");
+      const safeContact = contact.replace(/'/g, "\\'");
+      const safeMsg = (fb.message || '').replace(/'/g, "\\'").replace(/\n/g, ' ');
+      inAppReplyBtn = `
+        <button class="btn btn-sm btn-primary" onclick="window.openInAppAlertModal('${uuid}', '${safeModel}', '${safeContact}', '${safeMsg}')">
+          🔔 رد داخل التطبيق
+        </button>`;
+    }
+
+    const actionsHtml = (inAppReplyBtn || contactAction) ? `
+      <div class="feedback-actions">
+        ${inAppReplyBtn}
+        ${contactAction}
+      </div>` : '';
+
     return `
       <div class="feedback-card">
         <div class="feedback-card-header">
@@ -642,7 +661,7 @@ function renderFeedbacksTab() {
           <div>📞 <strong>التواصل:</strong> ${contact ? `<span style="color:var(--text-primary); font-weight:600;">${contact}</span>` : '<span style="color:var(--text-muted);">غير متوفر</span>'}</div>
         </div>
 
-        ${contactAction ? `<div class="feedback-actions">${contactAction}</div>` : ''}
+        ${actionsHtml}
       </div>
     `;
   }).join('');
@@ -834,6 +853,118 @@ function openEditUserModal(userKey) {
   modal.classList.add('show');
 }
 window.openEditUserModal = openEditUserModal;
+
+// ─── IN-APP ALERTS MODAL ACTIONS ───────────────────────────────────────────
+
+function setupInAppAlertModalActions() {
+  const modal = document.getElementById('in-app-alert-modal');
+  const closeXBtn = document.getElementById('close-alert-x-btn');
+  const closeBtn = document.getElementById('close-alert-modal-btn');
+  const openBroadcastBtn = document.getElementById('open-broadcast-modal-btn');
+  const form = document.getElementById('in-app-alert-form');
+
+  if (openBroadcastBtn) {
+    openBroadcastBtn.addEventListener('click', () => {
+      openBroadcastAlertModal();
+    });
+  }
+
+  const closeModal = () => {
+    if (modal) modal.classList.remove('show');
+  };
+
+  if (closeXBtn) closeXBtn.addEventListener('click', closeModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('show')) {
+      closeModal();
+    }
+  });
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('alert-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'جارٍ الإرسال... ⏳';
+
+      try {
+        const uuid = document.getElementById('alert-target-uuid').value;
+        const isBroadcast = document.getElementById('alert-is-broadcast').value === 'true';
+        const title = (document.getElementById('alert-title-input').value || '').trim();
+        const message = (document.getElementById('alert-message-input').value || '').trim();
+
+        await window.firebaseService.sendInAppAlert({
+          uuid,
+          isBroadcast,
+          title,
+          message,
+          type: 'feature',
+          actionText: 'حسناً'
+        });
+
+        closeModal();
+        showToast(isBroadcast ? 'تم إرسال الإعلان العام لجميع المستخدمين بنجاح! 📢' : 'تم إرسال التنبيه للمستخدم بنجاح! 🚀');
+        form.reset();
+      } catch (err) {
+        console.error('Error sending in-app alert:', err);
+        alert('تعذر إرسال التنبيه: ' + (err.message || err));
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'إرسال 🚀';
+      }
+    });
+  }
+}
+
+function openInAppAlertModal(uuid, deviceModel, contact, feedbackMsg) {
+  const modal = document.getElementById('in-app-alert-modal');
+  if (!modal) return;
+
+  const titleEl = document.getElementById('alert-modal-title');
+  const subtitleEl = document.getElementById('alert-modal-subtitle');
+  if (titleEl) titleEl.textContent = 'رد على المستخدم 💬';
+
+  const details = [deviceModel, contact].filter(Boolean).join(' • ');
+  if (subtitleEl) subtitleEl.textContent = details ? `📱 ${details}` : '';
+
+  document.getElementById('alert-target-uuid').value = uuid || '';
+  document.getElementById('alert-is-broadcast').value = 'false';
+
+  document.getElementById('alert-title-input').value = 'رد على اقتراحك 💡';
+  document.getElementById('alert-message-input').value = feedbackMsg
+    ? `أهلاً بك، بخصوص اقتراحك (${feedbackMsg}): تم توفيره بنجاح في التحديث الأخير للتطبيق!`
+    : 'أهلاً بك، تم العمل على ملاحظتك وتوفير الميزة بنجاح في التحديث الأخير للتطبيق!';
+
+  modal.classList.add('show');
+}
+window.openInAppAlertModal = openInAppAlertModal;
+
+function openBroadcastAlertModal() {
+  const modal = document.getElementById('in-app-alert-modal');
+  if (!modal) return;
+
+  const titleEl = document.getElementById('alert-modal-title');
+  const subtitleEl = document.getElementById('alert-modal-subtitle');
+  if (titleEl) titleEl.textContent = 'إعلان عام لجميع المستخدمين 📢';
+  if (subtitleEl) subtitleEl.textContent = 'سيصل لجميع المستخدمين عند فتح التطبيق';
+
+  document.getElementById('alert-target-uuid').value = '';
+  document.getElementById('alert-is-broadcast').value = 'true';
+
+  document.getElementById('alert-title-input').value = 'تحديث جديد متوفر في عُمَّالي 🚀';
+  document.getElementById('alert-message-input').value = 'تم إضافة ميزات جديدة وتحسينات هامة. حدّث التطبيق الآن للاستمتاع بأحدث الأدوات!';
+
+  modal.classList.add('show');
+}
+window.openBroadcastAlertModal = openBroadcastAlertModal;
 
 // ─── DELETE HANDLERS ─────────────────────────────────────────────────────────
 

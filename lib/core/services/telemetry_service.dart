@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'in_app_message_service.dart';
 import 'package:work_time/core/utils/cache_helper.dart';
 import 'package:work_time/core/utils/secure_storage_helper.dart';
 import 'package:work_time/data/repositories/database_handler.dart';
@@ -141,6 +142,7 @@ class TelemetryService {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         debugPrint('Telemetry synced successfully: $payload');
         await CacheHelper.saveData(key: _keyLastSync, value: now.toIso8601String());
+        await InAppMessageService.syncPendingAcks();
       } else {
         debugPrint('Telemetry sync failed with code: ${response.statusCode}');
       }

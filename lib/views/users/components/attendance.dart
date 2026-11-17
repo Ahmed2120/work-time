@@ -15,6 +15,7 @@ import '../../../view_models/work_place_view_model.dart';
 import '../../components/constant.dart';
 import '../../components/custom_textField.dart';
 import '../../components/functions.dart';
+import 'day_ratio_selector.dart';
 
 class AttendanceWidget extends StatefulWidget {
   const AttendanceWidget({required this.user, super.key});
@@ -107,6 +108,10 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                     }
                     if (_formKey.currentState!.validate()) {
                       final placeText = _workPlaceController.text.trim();
+                      final defaultRatio = widget.user.defaultDayRatio;
+                      final earnedSalary = Attendance.calculateSalaryForRatio(
+                          widget.user.salary, defaultRatio);
+
                       if (attendanceViewModel.attendanceModel.isEmpty) {
                         final Attendance attendance = Attendance(
                           userId: widget.user.id!,
@@ -116,9 +121,10 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                           weekId: await attendanceViewModel.setWeekId(userId: widget.user.id!),
                           weekStatus: 0,
                           overTimeStatus: 0,
-                          salary: widget.user.salary,
+                          salary: earnedSalary,
                           status: 1,
                           salaryReceived: '0',
+                          dayRatio: defaultRatio,
                         );
                         attendanceViewModel.addAttendance(attendance);
                         if (placeText.isNotEmpty && placeText != context.l10n.defaultWorkplace) {
@@ -146,8 +152,9 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
                                   weekStatus: attendanceViewModel.attendanceModel.last.weekStatus,
                                   status: 1,
                                   overTimeStatus: 0,
-                                  salary: widget.user.salary,
+                                  salary: earnedSalary,
                                   salaryReceived: '0',
+                                  dayRatio: defaultRatio,
                                 );
 
                                 attendanceViewModel.updateAttendance(attendance: attendance);
@@ -300,6 +307,23 @@ class _AttendanceWidgetState extends State<AttendanceWidget> {
             ],
           ),
         ),
+
+        // ─── Shift / Day Ratio Selector (Full-day, Half-day, Custom) ─────────
+        if (isPresent)
+          DayRatioSelector(
+            currentRatio: attendanceViewModel.attendanceModel.last.dayRatio,
+            baseSalary: widget.user.salary,
+            onRatioChanged: (newRatio) async {
+              await attendanceViewModel.updateDayRatio(
+                attendance: attendanceViewModel.attendanceModel.last,
+                dayRatio: newRatio,
+                baseSalary: widget.user.salary,
+              );
+              if (context.mounted) {
+                showToast(context, '${context.l10n.saveEdit} ✅');
+              }
+            },
+          ),
 
         const SizedBox(height: 14),
 

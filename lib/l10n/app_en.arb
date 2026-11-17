@@ -332,5 +332,19 @@
   "registeredWorkplaces": "Registered Workplaces",
   "noWorkplacesAdded": "No workplaces added",
   "addWorkplacesHintDesc": "Add workplaces here to show up in suggestions and be easily edited or deleted",
-  "bulkAttendanceSuccess": "Attendance recorded successfully ✅"
+  "bulkAttendanceSuccess": "Attendance recorded successfully ✅",
+  "workShift": "Shift / Work Type",
+  "fullDay": "Full Day (1.0)",
+  "halfDay": "Half Day (0.5)",
+  "quarterDay": "Quarter Day (0.25)",
+  "customShift": "Custom",
+  "fullDayShort": "Full Day",
+  "halfDayShort": "Half Day",
+  "quarterDayShort": "Quarter Day",
+  "earnedToday": "Today's Wage",
+  "customShiftTitle": "Custom Shift Ratio",
+  "customShiftHint": "Enter ratio (e.g. 0.75 or 1.5)",
+  "ratioInvalid": "Please enter a valid number greater than 0",
+  "defaultWorkShift": "Default Shift Type",
+  "defaultWorkShiftHint": "Default shift automatically applied when recording attendance"
 }

@@ -239,7 +239,7 @@ class _ReportsViewState extends State<ReportsView> {
             Expanded(
               child: _kpiTile(
                 title: context.l10n.totalDaysPresent,
-                value: '${summary.totalDaysPresent} ${context.l10n.day}',
+                value: '${summary.totalDaysPresent % 1 == 0 ? summary.totalDaysPresent.toInt() : summary.totalDaysPresent} ${context.l10n.day}',
                 icon: Icons.check_circle_outline_rounded,
                 iconColor: AppColors.primaryPurple,
                 bgColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
@@ -376,7 +376,7 @@ class _ReportsViewState extends State<ReportsView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _statChip(context.l10n.present, '${w.daysPresent} ${context.l10n.day}', AppColors.success),
+              _statChip(context.l10n.present, '${w.daysPresent % 1 == 0 ? w.daysPresent.toInt() : w.daysPresent} ${context.l10n.day}', AppColors.success),
               _statChip(context.l10n.absent, '${w.daysAbsent} ${context.l10n.day}', AppColors.error),
               _statChip(context.l10n.overtimeCol, '${w.overtimeDays}', AppColors.warning),
               _statChip(context.l10n.drawnCol, '${w.totalReceived} ${context.l10n.currency}', AppColors.textSecondaryLight),

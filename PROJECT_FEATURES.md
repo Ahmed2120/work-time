@@ -1,3 +1,54 @@
+## [2026-11-16] Remote In-App Alerts & Offline-First Two-Phase ACK Messaging System
+- **Scope & Objective**: Implemented an enterprise-grade In-App messaging and pop-up announcement system allowing admins to reply directly to individual feedback submitters via device UUID or broadcast global announcements. Features Offline-First with Two-Phase Acknowledgment (ACK) and automatic batching/cleaning to ensure zero client storage overhead.
+- **Architecture & Two-Phase ACK Mechanism**:
+  - **Single Source of Truth**: Server (`Firebase Realtime Database`) controls delivery status via `isRead: true`. The client device stores NO permanent message history or IDs, keeping local storage completely clean.
+  - **Phase 1 (Immediate Local ACK)**: When an alert is displayed and read/dismissed, the pop-up closes instantaneously (0ms lag) and enqueues an acknowledgment item into a lightweight temporary queue (`pending_in_app_acks`).
+  - **Phase 2 (Remote Server Confirmation & Automatic Cleanup)**:
+    - Automatically triggered when the pending queue reaches **5 items** (batch threshold), OR upon app launch / resume (`AppLifecycleState.resumed`), OR alongside silent telemetry sync.
+    - Sends `PATCH` to Firebase (`/user_alerts/$uuid/$alertId.json` or `/broadcast_reads/$alertId/$uuid.json`) updating `isRead: true` and `readAt: timestamp`.
+    - Once confirmed with `200 OK`, the local pending queue is flushed completely, resulting in 0 bytes of residual storage.
+- **Files Added & Modified**:
+  - `lib/data/models/in_app_alert.dart`: Model for targeted and broadcast alerts with type classification (`feature`, `success`, `warning`, `info`) and optional external action links.
+  - `lib/core/services/in_app_message_service.dart`: High-performance background service handling prioritized alert fetching, Phase 1 enqueuing, and Phase 2 batch sync with timeout protection.
+  - `lib/views/components/in_app_message_dialog.dart`: Decoupled modal dialog with contextual iconography, Cairo typography, responsive scrolling, and external link handling via `url_launcher`.
+  - `lib/views/home/home_view.dart`: Integrated `WidgetsBindingObserver` to check alerts and trigger pending ACK sync seamlessly on post-frame initialization and lifecycle resume.
+  - `lib/core/services/telemetry_service.dart`: Hooked pending ACK sync into silent telemetry cycles.
+  - `database.rules.json`: Configured Firebase Realtime Database security rules with read/write access for `user_alerts`, `broadcast_alert`, and `broadcast_reads`, and deployed them to Firebase production.
+  - `docs/index.html`, `docs/js/app.js`, `docs/js/firebase-config.js`, `docs/css/components.css`: Integrated 1-click **"🔔 رد داخل التطبيق"** on every feedback card, plus **"📢 إعلان عام"** in the Admin Dashboard. Streamlined and simplified the modal:
+    - Highly intuitive UI with just **عنوان التنبيه** and **نص الرسالة**.
+    - Fully accessible dismissals: Top-left `✕` close button, `إلغاء` button, backdrop click dismissal, and `Escape` key support.
+    - Responsive height constraints (`max-height: 90vh; overflow-y: auto;`) preventing any screen overflow or hidden action buttons.
+    - Theme-compliant button colors cleanly adhering to `--accent-primary` across Light and Dark themes.
+
+## [2026-11-16] Worker Default Shift Type (Per-Worker Attendance Preference)
+- **Scope & Objective**: Allow the user to set a default shift type (يوم كامل / نصف يوم / ربع يوم) **per worker** when adding or editing a worker, so it's applied automatically on every attendance record without manual selection each time.
+- **Database & Architecture**:
+  - `DatabaseHandler`: Bumped SQLite version to `5`. Added `defaultDayRatio REAL DEFAULT 1.0` to `users` table in `onCreate` and `onUpgrade` (v4 → v5 migration with `ALTER TABLE users ADD COLUMN defaultDayRatio REAL DEFAULT 1.0`).
+  - `User` model: Added `defaultDayRatio` field (default 1.0) with full backward-compatible serialization (`fromMap` reads `?? 1.0`, `toMap` writes the value).
+- **UI**:
+  - `form_sheet.dart` (Add/Edit Worker): Added a 3-chip shift selector (يوم كامل / نصف يوم / ربع يوم) below the salary field. Pre-fills with the existing worker's `defaultDayRatio` when editing. Saves the selected ratio alongside the user record.
+  - `user_data.dart` (Worker Detail Card): Added a `defaultWorkShift` info row displaying the worker's default shift label (يوم كامل, نصف يوم, ربع يوم, or custom ratio).
+- **Behavior**:
+  - `attendance.dart`: When recording attendance as "حاضر", the `defaultDayRatio` from the worker is now used automatically to set `dayRatio` and calculate the proportional `salary` using `Attendance.calculateSalaryForRatio`.
+  - `AttendanceViewModel.bulkAddAttendance`: Updated to use each worker's `defaultDayRatio` to calculate the correct proportional wage during bulk attendance, respecting per-worker defaults.
+  - `appbar.dart` & `card_trash.dart`: Updated `User` construction to preserve `defaultDayRatio` when archiving or restoring workers.
+- **Localization**: Added 2 new keys (`defaultWorkShift`, `defaultWorkShiftHint`) in both Arabic and English.
+
+## [2026-11-15] Flexible Work Shift & Attendance Day Ratio (Full-Day, Half-Day, Quarter-Day, Custom)
+- **Scope & Objective**: Added full support for partial shifts and day ratios (دوام كامل أم جزئي / نصف يومية / ربع يومية / نسبة مخصصة) so contractors and workshop owners can record exact attendance and fractional wages for workers.
+- **Database & Architecture**:
+  - `DatabaseHandler`: Bumped SQLite database version to `4`. Added `dayRatio REAL DEFAULT 1.0` to `attendance` table in both `onCreate` and auto-migrating `onUpgrade` (v3 -> v4).
+  - `Attendance` model: Added `dayRatio` field (default 1.0) with backward-compatible SQLite serialization (`fromMap` / `toMap`). Added static helper `calculateSalaryForRatio` to reliably calculate wages based on ratio without trailing zeroes.
+  - `AttendanceViewModel`: Added `updateDayRatio` to dynamically recalculate earned wage and update both SQLite and UI reactivity; enhanced `attendanceText` to display "نصف يوم", "ربع يوم", or custom ratio when applicable.
+  - `WorkerMonthlyReport` & `MonthlyReportSummary`: Updated `daysPresent` and `totalDaysPresent` to `double` so monthly aggregations accurately sum partial attendance days (e.g. 10.5 days).
+- **UI Components & Modular Design**:
+  - `lib/views/users/components/day_ratio_selector.dart`: Decoupled, modular shift selector widget complying with Single Responsibility and user rule against large files. Features quick interactive chips for Full Day (1.0), Half Day (0.5), Quarter Day (0.25), and Custom Shift (with validation dialog), displaying real-time daily earned wage (`أجر اليوم`).
+  - `lib/views/users/components/attendance.dart`: Integrated `DayRatioSelector` directly below attendance status toggle when worker is present, allowing seamless 1-tap shift switching.
+  - `lib/views/users/components/slid_bottom_sheet/table/table.dart`: Updated attendance table to display precise shift label (نصف يوم / ربع يوم / حاضر) and exact proportional wage.
+  - `lib/views/reports/reports_view.dart` & `lib/core/services/pdf_report_service.dart`: Updated monthly report screens and PDF export to cleanly format whole/fractional work days (e.g. 10 or 10.5).
+- **Localization**:
+  - Added 12 bilingual keys (`workShift`, `fullDay`, `halfDay`, `quarterDay`, `customShift`, `fullDayShort`, `halfDayShort`, `quarterDayShort`, `earnedToday`, `customShiftTitle`, `customShiftHint`, `ratioInvalid`) across `app_ar.arb`, `app_en.arb`, `app_localizations.dart`, `app_localizations_ar.dart`, and `app_localizations_en.dart`.
+
 ## [2026-11-07] Flutter Analyze & Code Quality Cleanup (0 Errors, 0 Warnings)
 - **Scope**: Executed full project analysis via `flutter analyze` and resolved all compilation errors, syntax inconsistencies, and warnings across the codebase.
 - **Key Issues Resolved**:

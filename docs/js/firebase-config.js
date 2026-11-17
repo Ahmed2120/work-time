@@ -290,6 +290,82 @@ class FirebaseService {
     });
     return ref;
   }
+
+  // ─── IN-APP ALERTS & MESSAGING (تنبيهات ورسائل داخل التطبيق) ─────────────────
+  async sendInAppAlert(alertData) {
+    const isBroadcast = alertData.isBroadcast === true;
+    const alertId = alertData.id || ('alert_' + Date.now());
+    const payload = {
+      title: (alertData.title || '').trim(),
+      message: (alertData.message || '').trim(),
+      type: alertData.type || 'info',
+      actionText: (alertData.actionText || 'حسناً').trim(),
+      actionUrl: (alertData.actionUrl || '').trim(),
+      isRead: false,
+      createdAt: new Date().toISOString()
+    };
+
+    if (isBroadcast) {
+      payload.active = true;
+      payload.id = alertId;
+      try {
+        if (this.database) {
+          await this.database.ref('broadcast_alert').set(payload);
+          return payload;
+        }
+      } catch (e) {
+        console.warn("Database SDK broadcast alert failed, falling back to REST:", e);
+      }
+      const token = this.auth && this.auth.currentUser ? await this.auth.currentUser.getIdToken() : '';
+      const url = 'https://worktime-33fa5-default-rtdb.firebaseio.com/broadcast_alert.json' + (token ? `?auth=${token}` : '');
+      const res = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Failed to send broadcast alert: HTTP ' + res.status);
+      return payload;
+    } else {
+      const uuid = (alertData.uuid || '').trim();
+      if (!uuid) throw new Error('Target user UUID is required');
+      try {
+        if (this.database) {
+          await this.database.ref(`user_alerts/${uuid}/${alertId}`).set(payload);
+          return payload;
+        }
+      } catch (e) {
+        console.warn("Database SDK targeted alert failed, falling back to REST:", e);
+      }
+      const token = this.auth && this.auth.currentUser ? await this.auth.currentUser.getIdToken() : '';
+      const url = `https://worktime-33fa5-default-rtdb.firebaseio.com/user_alerts/${encodeURIComponent(uuid)}/${encodeURIComponent(alertId)}.json` + (token ? `?auth=${token}` : '');
+      const res = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Failed to send targeted alert: HTTP ' + res.status);
+      return payload;
+    }
+  }
+
+  async fetchUserAlerts(uuid) {
+    if (!uuid) return {};
+    try {
+      if (this.database) {
+        const snapshot = await this.database.ref(`user_alerts/${uuid}`).once('value');
+        return snapshot.val() || {};
+      }
+    } catch (e) {
+      console.warn("Database SDK fetch alerts failed, falling back to REST:", e);
+    }
+    try {
+      const token = this.auth && this.auth.currentUser ? await this.auth.currentUser.getIdToken() : '';
+      const url = `https://worktime-33fa5-default-rtdb.firebaseio.com/user_alerts/${encodeURIComponent(uuid)}.json` + (token ? `?auth=${token}` : '');
+      const res = await fetch(url);
+      if (res.ok) return (await res.json()) || {};
+    } catch (_) {}
+    return {};
+  }
 }
 
 window.firebaseService = new FirebaseService();

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/core/utils/global_methods.dart';
+import 'package:work_time/core/services/in_app_message_service.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 import 'package:work_time/view_models/whats_new_view_model.dart';
@@ -25,16 +26,33 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   final keyScaffold = GlobalKey<ScaffoldState>();
   bool _checkedWhatsNew = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkUnseenWhatsNew();
+      InAppMessageService.checkAndShowAlert(context);
+      InAppMessageService.syncPendingAcks(force: true);
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      InAppMessageService.syncPendingAcks(force: true);
+      InAppMessageService.checkAndShowAlert(context);
+    }
   }
 
   void _checkUnseenWhatsNew() {

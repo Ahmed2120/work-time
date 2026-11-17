@@ -10,6 +10,7 @@ class Attendance {
   final int overTimeStatus;
   final String salary;
   final String weekEnd;
+  final double dayRatio;
 
   Attendance({
     this.id,
@@ -22,25 +23,49 @@ class Attendance {
     required this.workPlace,
     this.overTimeStatus = 0,
     required this.salary,
-    required this.weekEnd
+    required this.weekEnd,
+    this.dayRatio = 1.0,
   });
 
   Attendance.fromMap(Map<String, dynamic> res)
       : id = res["id"],
         userId = res["userId"],
         todayDate = res["todayDate"],
-        weekId=res['weekId'],
-  weekStatus=res['weekStatus'],
+        weekId = res['weekId'],
+        weekStatus = res['weekStatus'],
         status = res["status"],
         salaryReceived = res["salaryReceived"],
-  overTimeStatus=res['overTimeStatus'],
-        salary=res['salary'],
-  weekEnd=res['weekEnd'],
-   workPlace=res['workPlace'];
-
+        overTimeStatus = res['overTimeStatus'],
+        salary = res['salary'],
+        weekEnd = res['weekEnd'],
+        workPlace = res['workPlace'],
+        dayRatio = (res['dayRatio'] as num?)?.toDouble() ?? 1.0;
 
   Map<String, Object?> toMap() {
-    return {'id': id, 'userId': userId,'overTimeStatus':overTimeStatus,'salary':salary, 'todayDate': todayDate,'weekId':weekId,'weekStatus':weekStatus, 'status': status, 'salaryReceived': salaryReceived,'workPlace':workPlace,'weekEnd':weekEnd};
+    return {
+      'id': id,
+      'userId': userId,
+      'overTimeStatus': overTimeStatus,
+      'salary': salary,
+      'todayDate': todayDate,
+      'weekId': weekId,
+      'weekStatus': weekStatus,
+      'status': status,
+      'salaryReceived': salaryReceived,
+      'workPlace': workPlace,
+      'weekEnd': weekEnd,
+      'dayRatio': dayRatio,
+    };
+  }
+
+  /// Calculates proportional salary based on worker's base rate and shift ratio.
+  static String calculateSalaryForRatio(String baseSalary, double ratio) {
+    final base = double.tryParse(baseSalary) ?? 0.0;
+    final earned = base * ratio;
+    if (earned % 1 == 0) {
+      return earned.toInt().toString();
+    }
+    return earned.toStringAsFixed(2).replaceAll(RegExp(r'\.?0+$'), '');
   }
 }
 

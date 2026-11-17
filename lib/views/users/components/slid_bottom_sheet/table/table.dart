@@ -66,12 +66,26 @@ class TableData extends StatelessWidget {
               );
               final dateStr = GlobalMethods.getDateFormat(parsedDate);
 
+              String statusLabel = context.l10n.absent;
+              if (item.status == 1) {
+                final ratio = item.dayRatio;
+                if (ratio == 0.5) {
+                  statusLabel = context.l10n.halfDayShort;
+                } else if (ratio == 0.25) {
+                  statusLabel = context.l10n.quarterDayShort;
+                } else if (ratio != 1.0) {
+                  statusLabel = '${ratio % 1 == 0 ? ratio.toInt() : ratio} ${context.l10n.day}';
+                } else {
+                  statusLabel = context.l10n.present;
+                }
+              }
+
               return TableRow(
                 children: [
                   TableRows(dayName, 2),
                   TableRows(dateStr, 2),
                   TableRows(
-                    item.status == 1 ? context.l10n.present : context.l10n.absent,
+                    statusLabel,
                     1,
                     statusType: item.status == 1 ? 1 : 2,
                   ),

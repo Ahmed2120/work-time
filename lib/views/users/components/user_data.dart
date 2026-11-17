@@ -78,8 +78,19 @@ class UserData extends StatelessWidget {
           TextRow(title: context.l10n.workerName, txt: user.name),
           TextRow(title: context.l10n.jobTitle, txt: user.job.isNotEmpty ? user.job : context.l10n.notSpecified),
           TextRow(title: context.l10n.dailyWage, txt: '${user.salary} ${context.l10n.currency}'),
+          TextRow(
+            title: context.l10n.defaultWorkShift,
+            txt: _shiftLabel(context, user.defaultDayRatio),
+          ),
         ],
       ),
     );
+  }
+
+  String _shiftLabel(BuildContext context, double ratio) {
+    if (ratio == 1.0) return context.l10n.fullDayShort;
+    if (ratio == 0.5) return context.l10n.halfDayShort;
+    if (ratio == 0.25) return context.l10n.quarterDayShort;
+    return '${ratio % 1 == 0 ? ratio.toInt() : ratio} ${context.l10n.day}';
   }
 }

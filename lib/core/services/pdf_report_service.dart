@@ -175,7 +175,7 @@ class PdfReportService {
         w.userName,
         w.userJob.isNotEmpty ? w.userJob : '—',
         '${w.dailyRate}',
-        '${w.daysPresent}',
+        '${w.daysPresent % 1 == 0 ? w.daysPresent.toInt() : w.daysPresent}',
         '${w.daysAbsent}',
         '${w.overtimeDays}',
         '${w.totalEarned}',

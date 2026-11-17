@@ -65,7 +65,7 @@ AppBar appBar(UserViewModel userViewModel, BuildContext context, User user, Glob
         ),
         onSelected: (x) {
           if (x == 'remove') {
-            final userModel = User(id: user.id, name: user.name, job: user.job, salary: user.salary, isDeleted: 1);
+            final userModel = User(id: user.id, name: user.name, job: user.job, salary: user.salary, isDeleted: 1, defaultDayRatio: user.defaultDayRatio);
             userViewModel.updateUser(userModel);
             Navigator.pop(context);
             showToast(context, context.l10n.workerMovedToOutOfWork, color: AppColors.error);

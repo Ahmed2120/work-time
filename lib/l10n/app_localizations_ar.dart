@@ -977,4 +977,47 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get bulkAttendanceSuccess => 'تم تسجيل الحضور بنجاح ✅';
+
+  @override
+  String get workShift => 'نوع الدوام';
+
+  @override
+  String get fullDay => 'دوام كامل (1.0)';
+
+  @override
+  String get halfDay => 'نصف دوام (0.5)';
+
+  @override
+  String get quarterDay => 'ربع دوام (0.25)';
+
+  @override
+  String get customShift => 'مخصص';
+
+  @override
+  String get fullDayShort => 'يوم كامل';
+
+  @override
+  String get halfDayShort => 'نصف يوم';
+
+  @override
+  String get quarterDayShort => 'ربع يوم';
+
+  @override
+  String get earnedToday => 'أجر اليوم';
+
+  @override
+  String get customShiftTitle => 'تحديد نسبة الدوام المخصصة';
+
+  @override
+  String get customShiftHint => 'أدخل النسبة (مثال: 0.75 أو 1.5)';
+
+  @override
+  String get ratioInvalid => 'يرجى إدخال قيمة صحيحة أكبر من 0';
+
+  @override
+  String get defaultWorkShift => 'نوع الدوام الافتراضي';
+
+  @override
+  String get defaultWorkShiftHint =>
+      'يُحدد نوع الدوام الذي سيتم تسجيل حضور العامل به تلقائياً';
 }

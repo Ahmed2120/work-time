@@ -36,7 +36,16 @@ class AttendanceViewModel with ChangeNotifier {
       date = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
       time = GlobalMethods.getTimeFormat(DateTime.parse(attendanceModel.last.todayDate));
       if (attendanceModel.last.status == 1) {
-        attendanceText = 'حاضر';
+        final ratio = attendanceModel.last.dayRatio;
+        if (ratio == 0.5) {
+          attendanceText = 'نصف يوم';
+        } else if (ratio == 0.25) {
+          attendanceText = 'ربع يوم';
+        } else if (ratio < 1.0) {
+          attendanceText = 'دوام جزئي ($ratio)';
+        } else {
+          attendanceText = 'حاضر';
+        }
       } else {
         attendanceText = 'غائب';
       }
@@ -274,7 +283,10 @@ class AttendanceViewModel with ChangeNotifier {
     for (final user in users) {
       if (user.id == null) continue;
       final userId = user.id!;
-      final salary = (status == 1) ? user.salary : '0';
+      final ratio = (status == 1) ? user.defaultDayRatio : 1.0;
+      final salary = (status == 1)
+          ? Attendance.calculateSalaryForRatio(user.salary, ratio)
+          : '0';
 
       final existing = await attendanceRepository
           .retrieveByUserIdDateTime(userId, dateTimeAttendance);
@@ -293,6 +305,7 @@ class AttendanceViewModel with ChangeNotifier {
           overTimeStatus: last.overTimeStatus,
           salary: salary,
           weekEnd: last.weekEnd,
+          dayRatio: ratio,
         );
         await attendanceRepository.update(attendance: updated);
       } else {
@@ -309,11 +322,38 @@ class AttendanceViewModel with ChangeNotifier {
           workPlace: workPlace.isNotEmpty ? workPlace : 'الورشة / الموقع',
           salary: salary,
           weekEnd: '$weekEnd',
+          dayRatio: ratio,
         );
         await attendanceRepository.insert(attendance);
       }
     }
     invalidateTodayCache();
     notifyListeners();
+  }
+
+  /// Updates worker's shift ratio (full-time / part-time) and recalculates proportional salary
+  Future<void> updateDayRatio({
+    required Attendance attendance,
+    required double dayRatio,
+    required String baseSalary,
+  }) async {
+    final newSalary = Attendance.calculateSalaryForRatio(baseSalary, dayRatio);
+    final updated = Attendance(
+      id: attendance.id,
+      userId: attendance.userId,
+      todayDate: attendance.todayDate,
+      weekId: attendance.weekId,
+      weekStatus: attendance.weekStatus,
+      status: attendance.status,
+      salaryReceived: attendance.salaryReceived,
+      workPlace: attendance.workPlace,
+      overTimeStatus: attendance.overTimeStatus,
+      salary: newSalary,
+      weekEnd: attendance.weekEnd,
+      dayRatio: dayRatio,
+    );
+    await updateAttendance(attendance: updated);
+    await getAttendanceUserToDay(userId: attendance.userId);
+    await getWeeks(attendance.userId);
   }
 }

@@ -62,6 +62,7 @@ class _SplashViewState extends State<SplashView> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Logo with dark background fills nicely on dark splash
             Image.asset(
@@ -89,6 +90,7 @@ class _SplashViewState extends State<SplashView> {
                 fontFamily: 'Cairo',
                 letterSpacing: 0.5,
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),

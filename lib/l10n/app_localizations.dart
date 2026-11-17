@@ -1993,6 +1993,90 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'تم تسجيل الحضور بنجاح ✅'**
   String get bulkAttendanceSuccess;
+
+  /// No description provided for @workShift.
+  ///
+  /// In ar, this message translates to:
+  /// **'نوع الدوام'**
+  String get workShift;
+
+  /// No description provided for @fullDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'دوام كامل (1.0)'**
+  String get fullDay;
+
+  /// No description provided for @halfDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'نصف دوام (0.5)'**
+  String get halfDay;
+
+  /// No description provided for @quarterDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'ربع دوام (0.25)'**
+  String get quarterDay;
+
+  /// No description provided for @customShift.
+  ///
+  /// In ar, this message translates to:
+  /// **'مخصص'**
+  String get customShift;
+
+  /// No description provided for @fullDayShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'يوم كامل'**
+  String get fullDayShort;
+
+  /// No description provided for @halfDayShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'نصف يوم'**
+  String get halfDayShort;
+
+  /// No description provided for @quarterDayShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'ربع يوم'**
+  String get quarterDayShort;
+
+  /// No description provided for @earnedToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'أجر اليوم'**
+  String get earnedToday;
+
+  /// No description provided for @customShiftTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تحديد نسبة الدوام المخصصة'**
+  String get customShiftTitle;
+
+  /// No description provided for @customShiftHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'أدخل النسبة (مثال: 0.75 أو 1.5)'**
+  String get customShiftHint;
+
+  /// No description provided for @ratioInvalid.
+  ///
+  /// In ar, this message translates to:
+  /// **'يرجى إدخال قيمة صحيحة أكبر من 0'**
+  String get ratioInvalid;
+
+  /// No description provided for @defaultWorkShift.
+  ///
+  /// In ar, this message translates to:
+  /// **'نوع الدوام الافتراضي'**
+  String get defaultWorkShift;
+
+  /// No description provided for @defaultWorkShiftHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'يُحدد نوع الدوام الذي سيتم تسجيل حضور العامل به تلقائياً'**
+  String get defaultWorkShiftHint;
 }
 
 class _AppLocalizationsDelegate

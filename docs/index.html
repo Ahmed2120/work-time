@@ -349,8 +349,12 @@
                 🔄 مسح الفلاتر
               </button>
 
-              <button id="export-feedbacks-csv" class="btn btn-primary btn-sm">
+              <button id="export-feedbacks-csv" class="btn btn-secondary btn-sm">
                 📥 تصدير CSV
+              </button>
+
+              <button id="open-broadcast-modal-btn" class="btn btn-secondary btn-sm">
+                📢 إعلان عام
               </button>
             </div>
           </div>
@@ -670,6 +674,44 @@
           </button>
           <button type="button" id="close-user-modal-btn" class="btn btn-secondary btn-sm" style="margin-top:0.5rem;">
             إلغاء
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- In-App Alert Modal -->
+  <div id="in-app-alert-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <button type="button" class="modal-close-icon" id="close-alert-x-btn" title="إغلاق">✕</button>
+
+      <div class="modal-header" style="margin-bottom:1.15rem; text-align:right; padding-left:1.5rem;">
+        <h2 id="alert-modal-title" style="font-size:1.15rem; margin-bottom:0.25rem;">رد على المستخدم 💬</h2>
+        <div id="alert-modal-subtitle" style="font-size:0.8rem; color:var(--text-muted);">
+          <!-- e.g. "samsung SM-G986U • 770464440" -->
+        </div>
+      </div>
+
+      <form id="in-app-alert-form">
+        <input type="hidden" id="alert-target-uuid">
+        <input type="hidden" id="alert-is-broadcast" value="false">
+
+        <div class="form-group" style="margin-bottom:0.85rem;">
+          <label class="form-label" for="alert-title-input">عنوان التنبيه</label>
+          <input type="text" id="alert-title-input" class="form-input" placeholder="رد على اقتراحك 💡" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom:1.25rem;">
+          <label class="form-label" for="alert-message-input">نص الرسالة</label>
+          <textarea id="alert-message-input" class="form-input" rows="4" placeholder="اكتب رسالتك للمستخدم هنا..." required style="resize:vertical; line-height:1.6;"></textarea>
+        </div>
+
+        <div style="display:flex; gap:0.65rem; justify-content:flex-end;">
+          <button type="button" id="close-alert-modal-btn" class="btn btn-secondary" style="flex:1;">
+            إلغاء
+          </button>
+          <button type="submit" id="alert-submit-btn" class="btn btn-primary" style="flex:2;">
+            إرسال 🚀
           </button>
         </div>
       </form>

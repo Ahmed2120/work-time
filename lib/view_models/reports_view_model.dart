@@ -10,7 +10,7 @@ class WorkerMonthlyReport {
   final String userName;
   final String userJob;
   final double dailyRate;
-  final int daysPresent;
+  final double daysPresent;
   final int daysAbsent;
   final int overtimeDays;
   final double totalEarned;
@@ -35,7 +35,7 @@ class MonthlyReportSummary {
   final int year;
   final int month;
   final int totalWorkers;
-  final int totalDaysPresent;
+  final double totalDaysPresent;
   final int totalDaysAbsent;
   final int totalOvertimeDays;
   final double totalSalaryEarned;
@@ -104,7 +104,7 @@ class ReportsViewModel with ChangeNotifier {
 
       final List<WorkerMonthlyReport> workerReports = [];
 
-      int grandPresent = 0;
+      double grandPresent = 0;
       int grandAbsent = 0;
       int grandOvertime = 0;
       double grandEarned = 0;
@@ -116,7 +116,7 @@ class ReportsViewModel with ChangeNotifier {
           return a.userId == user.id && a.todayDate.contains(monthFilter);
         }).toList();
 
-        int presentCount = 0;
+        double presentCount = 0;
         int absentCount = 0;
         int overtimeCount = 0;
         double userEarned = 0;
@@ -124,7 +124,7 @@ class ReportsViewModel with ChangeNotifier {
 
         for (var att in userMonthAttendance) {
           if (att.status == 1) {
-            presentCount++;
+            presentCount += att.dayRatio;
             userEarned += double.tryParse(att.salary) ?? (double.tryParse(user.salary) ?? 0);
           } else {
             absentCount++;

@@ -335,5 +335,19 @@
   "registeredWorkplaces": "أماكن العمل المسجلة",
   "noWorkplacesAdded": "لا توجد أماكن عمل مضافة",
   "addWorkplacesHintDesc": "أضف أماكن العمل هنا لتظهر في الاقتراحات وإمكانية تعديلها أو حذفها بسهولة",
-  "bulkAttendanceSuccess": "تم تسجيل الحضور بنجاح ✅"
+  "bulkAttendanceSuccess": "تم تسجيل الحضور بنجاح ✅",
+  "workShift": "نوع الدوام",
+  "fullDay": "دوام كامل (1.0)",
+  "halfDay": "نصف دوام (0.5)",
+  "quarterDay": "ربع دوام (0.25)",
+  "customShift": "مخصص",
+  "fullDayShort": "يوم كامل",
+  "halfDayShort": "نصف يوم",
+  "quarterDayShort": "ربع يوم",
+  "earnedToday": "أجر اليوم",
+  "customShiftTitle": "تحديد نسبة الدوام المخصصة",
+  "customShiftHint": "أدخل النسبة (مثال: 0.75 أو 1.5)",
+  "ratioInvalid": "يرجى إدخال قيمة صحيحة أكبر من 0",
+  "defaultWorkShift": "نوع الدوام الافتراضي",
+  "defaultWorkShiftHint": "يُحدد نوع الدوام الذي سيتم تسجيل حضور العامل به تلقائياً"
 }

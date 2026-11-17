@@ -983,4 +983,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bulkAttendanceSuccess => 'Attendance recorded successfully ✅';
+
+  @override
+  String get workShift => 'Shift / Work Type';
+
+  @override
+  String get fullDay => 'Full Day (1.0)';
+
+  @override
+  String get halfDay => 'Half Day (0.5)';
+
+  @override
+  String get quarterDay => 'Quarter Day (0.25)';
+
+  @override
+  String get customShift => 'Custom';
+
+  @override
+  String get fullDayShort => 'Full Day';
+
+  @override
+  String get halfDayShort => 'Half Day';
+
+  @override
+  String get quarterDayShort => 'Quarter Day';
+
+  @override
+  String get earnedToday => 'Today\'s Wage';
+
+  @override
+  String get customShiftTitle => 'Custom Shift Ratio';
+
+  @override
+  String get customShiftHint => 'Enter ratio (e.g. 0.75 or 1.5)';
+
+  @override
+  String get ratioInvalid => 'Please enter a valid number greater than 0';
+
+  @override
+  String get defaultWorkShift => 'Default Shift Type';
+
+  @override
+  String get defaultWorkShiftHint =>
+      'Default shift automatically applied when recording attendance';
 }

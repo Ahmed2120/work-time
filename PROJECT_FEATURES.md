@@ -11,7 +11,8 @@
   - `lib/data/models/in_app_alert.dart`: Model for targeted and broadcast alerts with type classification (`feature`, `success`, `warning`, `info`) and optional external action links.
   - `lib/core/services/in_app_message_service.dart`: High-performance background service handling prioritized alert fetching, Phase 1 enqueuing, and Phase 2 batch sync with timeout protection.
   - `lib/views/components/in_app_message_dialog.dart`: Decoupled modal dialog with contextual iconography, Cairo typography, responsive scrolling, and external link handling via `url_launcher`.
-  - `lib/views/home/home_view.dart`: Integrated `WidgetsBindingObserver` to check alerts and trigger pending ACK sync seamlessly on post-frame initialization and lifecycle resume.
+  - `lib/views/home/home_view.dart`: Removed `WidgetsBindingObserver` to eliminate lifecycle race conditions. Cleanly sequences pending ACK sync followed by alert display on startup.
+  - `lib/core/services/in_app_message_service.dart`: Added `_isShowingDialog` mutex guard preventing concurrent/stacked dialogs, filtered out locally acknowledged alerts in `fetchNextUnreadAlert`, and enabled immediate server synchronization upon dismissal.
   - `lib/core/services/telemetry_service.dart`: Hooked pending ACK sync into silent telemetry cycles.
   - `database.rules.json`: Configured Firebase Realtime Database security rules with read/write access for `user_alerts`, `broadcast_alert`, and `broadcast_reads`, and deployed them to Firebase production.
   - `docs/index.html`, `docs/js/app.js`, `docs/js/firebase-config.js`, `docs/css/components.css`: Integrated 1-click **"🔔 رد داخل التطبيق"** on every feedback card, plus **"📢 إعلان عام"** in the Admin Dashboard. Streamlined and simplified the modal:

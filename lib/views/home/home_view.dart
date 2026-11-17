@@ -26,33 +26,20 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
+class _HomeViewState extends State<HomeView> {
   final keyScaffold = GlobalKey<ScaffoldState>();
   bool _checkedWhatsNew = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       _checkUnseenWhatsNew();
-      InAppMessageService.checkAndShowAlert(context);
-      InAppMessageService.syncPendingAcks(force: true);
+      await InAppMessageService.syncPendingAcks(force: true);
+      if (mounted) {
+        await InAppMessageService.checkAndShowAlert(context);
+      }
     });
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      InAppMessageService.syncPendingAcks(force: true);
-      InAppMessageService.checkAndShowAlert(context);
-    }
   }
 
   void _checkUnseenWhatsNew() {

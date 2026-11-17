@@ -15,24 +15,32 @@ class InAppMessageService {
   static const String _firebaseDbUrl = 'https://worktime-33fa5-default-rtdb.firebaseio.com';
   static const String _keyPendingAcks = 'pending_in_app_acks';
   static const int _batchThreshold = 5;
+  static bool _isShowingDialog = false;
 
   /// Checks for any unread alerts (targeted user alert first, then broadcast alert)
   /// and displays the pop-up modal seamlessly if found.
+  /// Guarded by [_isShowingDialog] to prevent duplicate/stacked popups.
   static Future<void> checkAndShowAlert(BuildContext context) async {
+    if (_isShowingDialog) return;
+    _isShowingDialog = true;
     try {
       final alert = await fetchNextUnreadAlert();
       if (alert != null && context.mounted) {
-        InAppMessageDialog.show(context, alert);
+        await InAppMessageDialog.show(context, alert);
       }
     } catch (e) {
       debugPrint('InAppMessageService: checkAndShowAlert error: $e');
+    } finally {
+      _isShowingDialog = false;
     }
   }
 
   /// Fetches the highest priority unread alert from Firebase Realtime Database.
+  /// Excludes any alert already acknowledged locally in pending queue.
   /// Returns null if all messages have been read or none exist.
   static Future<InAppAlert?> fetchNextUnreadAlert() async {
     final uuid = TelemetryService.getOrCreateUuid();
+    final pendingIds = _getPendingAcks().map((item) => item['id']?.toString()).toSet();
 
     // ─── Priority 1: User-targeted alert (/user_alerts/$uuid.json) ─────────
     try {
@@ -43,11 +51,12 @@ class InAppMessageService {
         final decoded = json.decode(response.body);
         if (decoded is Map) {
           // If multiple alerts exist under user, find the first unread one
+          // that is NOT already acknowledged locally in pending acks
           for (final entry in decoded.entries) {
             if (entry.value is Map) {
               final alertMap = Map<dynamic, dynamic>.from(entry.value as Map);
               final alert = InAppAlert.fromMap(entry.key.toString(), alertMap, isBroadcast: false);
-              if (!alert.isRead) {
+              if (!alert.isRead && !pendingIds.contains(alert.id)) {
                 return alert;
               }
             }
@@ -68,15 +77,18 @@ class InAppMessageService {
         if (decoded is Map) {
           final alertMap = Map<dynamic, dynamic>.from(decoded);
           final alertId = alertMap['id']?.toString() ?? 'broadcast_active';
-          final alert = InAppAlert.fromMap(alertId, alertMap, isBroadcast: true);
 
-          // Verify if this user has already acknowledged this broadcast alert on the server
-          final readCheckUrl = Uri.parse('$_firebaseDbUrl/broadcast_reads/$alertId/$uuid.json');
-          final readRes = await http.get(readCheckUrl).timeout(const Duration(seconds: 3));
+          if (!pendingIds.contains(alertId)) {
+            final alert = InAppAlert.fromMap(alertId, alertMap, isBroadcast: true);
 
-          if (readRes.statusCode == 200 && (readRes.body == 'null' || readRes.body.isEmpty)) {
-            // User hasn't read this broadcast yet
-            return alert;
+            // Verify if this user has already acknowledged this broadcast alert on the server
+            final readCheckUrl = Uri.parse('$_firebaseDbUrl/broadcast_reads/$alertId/$uuid.json');
+            final readRes = await http.get(readCheckUrl).timeout(const Duration(seconds: 3));
+
+            if (readRes.statusCode == 200 && (readRes.body == 'null' || readRes.body.isEmpty)) {
+              // User hasn't read this broadcast yet
+              return alert;
+            }
           }
         }
       }
@@ -104,8 +116,8 @@ class InAppMessageService {
     queue.add(ackItem);
     await _savePendingAcks(queue);
 
-    // Try immediate Phase 2 sync; if it fails (offline), it stays in queue for batch/resume sync
-    await syncPendingAcks(force: queue.length >= _batchThreshold);
+    // Try immediate Phase 2 sync if online (forced for immediate server persistence)
+    await syncPendingAcks(force: true);
   }
 
   /// Phase 2: Synchronizes pending read confirmations with Firebase Realtime Database.

@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/view_models/reports_view_model.dart';
+import 'worker_balance_share_sheet.dart';
 
 /// Clean, modular tile displaying individual worker balance and remaining wage.
 class WorkerBalanceTile extends StatelessWidget {
   final WorkerMonthlyReport report;
   final String currency;
+  final String monthTitle;
 
   const WorkerBalanceTile({
     required this.report,
     required this.currency,
+    this.monthTitle = '',
     super.key,
   });
 
@@ -128,6 +131,27 @@ class WorkerBalanceTile extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(width: 4),
+              // Share / Copy Statement Button
+              IconButton(
+                icon: Icon(
+                  Icons.share_outlined,
+                  size: 18,
+                  color: isDark ? AppColors.amberAccent : AppColors.primaryAmber,
+                ),
+                tooltip: context.l10n.shareStatement,
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                onPressed: () {
+                  WorkerBalanceShareSheet.show(
+                    context,
+                    report: report,
+                    monthTitle: monthTitle,
+                    currency: currency,
+                  );
+                },
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -150,11 +174,19 @@ class WorkerBalanceTile extends StatelessWidget {
                 isDark: isDark,
                 valueColor: AppColors.dangerText,
               ),
-              _metricText(
-                label: context.l10n.wageCol,
-                value: '${_formatNum(report.dailyRate)} $currency',
-                isDark: isDark,
-              ),
+              if (report.totalPenalties > 0)
+                _metricText(
+                  label: context.l10n.penalties,
+                  value: '-${_formatNum(report.totalPenalties)} $currency',
+                  isDark: isDark,
+                  valueColor: AppColors.error,
+                )
+              else
+                _metricText(
+                  label: context.l10n.wageCol,
+                  value: '${_formatNum(report.dailyRate)} $currency',
+                  isDark: isDark,
+                ),
             ],
           ),
         ],

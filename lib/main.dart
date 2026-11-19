@@ -6,6 +6,7 @@ import 'package:work_time/core/services/daily_reminder_service.dart';
 import 'package:work_time/core/services/rate_service.dart';
 import 'package:work_time/core/services/service_locator.dart';
 import 'package:work_time/core/services/telemetry_service.dart';
+import 'package:work_time/view_models/penalty_view_model.dart';
 import 'package:work_time/view_models/reports_view_model.dart';
 import 'package:work_time/view_models/user_view_model.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
@@ -85,6 +86,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => sl<ReportsViewModel>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => sl<PenaltyViewModel>(),
         ),
         ChangeNotifierProvider(
           create: (context) => sl<PurchaseViewModel>(),

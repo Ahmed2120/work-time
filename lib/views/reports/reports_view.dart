@@ -9,6 +9,7 @@ import 'package:work_time/view_models/reports_view_model.dart';
 import 'package:work_time/views/components/app_button.dart';
 import 'package:work_time/views/components/app_card.dart';
 import 'package:work_time/views/components/functions.dart';
+import 'package:work_time/views/home/components/balance/worker_balance_share_sheet.dart';
 
 class ReportsView extends StatefulWidget {
   const ReportsView({super.key});
@@ -170,7 +171,7 @@ class _ReportsViewState extends State<ReportsView> {
                               const SizedBox(height: 10),
 
                               // ─── Workers Breakdown List ─────────────────────────
-                              ...summary.workerReports.map((w) => _buildWorkerCard(w, isDark)),
+                              ...summary.workerReports.map((w) => _buildWorkerCard(w, isDark, monthYearTitle)),
 
                               const SizedBox(height: 20),
 
@@ -305,7 +306,7 @@ class _ReportsViewState extends State<ReportsView> {
     );
   }
 
-  Widget _buildWorkerCard(WorkerMonthlyReport w, bool isDark) {
+  Widget _buildWorkerCard(WorkerMonthlyReport w, bool isDark, String monthTitle) {
     return AppCard(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -367,6 +368,23 @@ class _ReportsViewState extends State<ReportsView> {
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(width: 4),
+              // Share button
+              IconButton(
+                icon: const Icon(Icons.share_outlined, size: 18, color: AppColors.primaryPurple),
+                tooltip: context.l10n.shareStatement,
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                onPressed: () {
+                  WorkerBalanceShareSheet.show(
+                    context,
+                    report: w,
+                    monthTitle: monthTitle,
+                    currency: context.l10n.currency,
+                  );
+                },
               ),
             ],
           ),

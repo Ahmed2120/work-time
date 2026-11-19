@@ -1059,4 +1059,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get remainingBadge => 'Remaining';
+
+  @override
+  String get shareStatement => 'Share Statement';
+
+  @override
+  String get shareViaWhatsApp => 'Share via WhatsApp';
+
+  @override
+  String get copyStatement => 'Copy Statement';
+
+  @override
+  String get statementCopied => 'Worker statement copied 📋';
+
+  @override
+  String get statementPreview => 'Statement Preview';
+
+  @override
+  String get penalties => 'Penalties & Deductions';
+
+  @override
+  String get addPenalty => 'Add Penalty / Deduction';
+
+  @override
+  String get penaltyAmount => 'Penalty Amount';
+
+  @override
+  String get penaltyReason => 'Reason (optional)';
+
+  @override
+  String get penaltyReasonHint =>
+      'e.g. Late arrival, damaged tools, absent without notice';
+
+  @override
+  String get penaltyAddedSuccess => 'Penalty recorded successfully ✅';
+
+  @override
+  String get penaltyDeletedSuccess => 'Penalty deleted successfully';
+
+  @override
+  String get confirmDeletePenalty =>
+      'Are you sure you want to delete this penalty?';
+
+  @override
+  String get totalPenalties => 'Total Penalties';
+
+  @override
+  String get noPenalties => 'No penalties recorded for this worker';
+
+  @override
+  String get invalidAmount => 'Please enter a valid amount';
+
+  @override
+  String get showAllPenalties => 'Show all penalties';
+
+  @override
+  String get showLess => 'Show less';
 }

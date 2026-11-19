@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/extensions/context_extension.dart';
+import 'package:work_time/view_models/reports_view_model.dart';
+import 'package:work_time/views/home/components/balance/worker_balance_share_sheet.dart';
 
 import '../../../data/models/user.dart';
 import '../../../view_models/user_view_model.dart';
@@ -57,6 +59,36 @@ AppBar appBar(UserViewModel userViewModel, BuildContext context, User user, Glob
       onPressed: () => Navigator.of(context).pop(),
     ),
     actions: [
+      IconButton(
+        icon: Icon(
+          Icons.share_outlined,
+          color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+        ),
+        tooltip: context.l10n.shareStatement,
+        onPressed: () async {
+          final reportsVM = Provider.of<ReportsViewModel>(context, listen: false);
+          final report = await reportsVM.getWorkerReport(user: user);
+          if (!context.mounted) return;
+          final arabicMonths = [
+            'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+            'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+          ];
+          final englishMonths = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+          ];
+          final m = reportsVM.selectedMonth.month;
+          final monthName = context.isArabic ? arabicMonths[m - 1] : englishMonths[m - 1];
+          final monthTitle = '$monthName ${reportsVM.selectedMonth.year}';
+
+          WorkerBalanceShareSheet.show(
+            context,
+            report: report,
+            monthTitle: monthTitle,
+            currency: context.l10n.currency,
+          );
+        },
+      ),
       PopupMenuButton<String>(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         icon: Icon(

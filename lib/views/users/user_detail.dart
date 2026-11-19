@@ -13,6 +13,7 @@ import 'components/attendance_detail.dart';
 import 'components/build_card.dart';
 import 'components/draw_money.dart';
 import 'components/over_time.dart';
+import 'components/penalties_list_card.dart';
 import 'components/slid_bottom_sheet/slid_bottom_sheet.dart';
 import 'components/text_row.dart';
 import 'components/user_data.dart';
@@ -44,7 +45,12 @@ class UserDetail extends StatelessWidget {
                 // ─── Worker Profile Header Card ──────────────────────────────
                 UserData(user: user),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
+
+                // ─── Penalties & Deductions Section ──────────────────────────
+                PenaltiesListCard(user: user),
+
+                const SizedBox(height: 16),
 
                 // ─── Attendance Recording Section ───────────────────────────
                 Text(

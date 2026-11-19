@@ -1,3 +1,41 @@
+## [2026-11-19] Penalties & Deductions System (نظام الجزاءات والخصومات)
+- **Scope & Objective**: Added full support for recording worker penalties and deductions (الجزاءات والخصومات) for infractions, delays, damaged equipment, or unexcused absences, automatically deducted from workers' net remaining balances and reflected in all ledgers and statements.
+- **Database Architecture (SQLite v6)**:
+  - `DatabaseHandler`: Incremented database version to `6`. Added `penalties` table (`id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER NOT NULL, amount REAL NOT NULL, reason TEXT, date TEXT NOT NULL`) in `onCreate` and `onUpgrade` (v5 → v6 auto-migration).
+  - Model: Created `Penalty` (`lib/data/models/penalty.dart`) with `fromMap` and `toMap`.
+  - Repository: Created `IPenaltyRepository` & `PenaltyRepository` (`lib/data/repositories/`) handling CRUD operations on the `penalties` table.
+- **State Management & Calculation**:
+  - `PenaltyViewModel` (`lib/view_models/penalty_view_model.dart`): Added reactive state management for fetching, adding, and deleting worker penalties, and computing totals.
+  - `ReportsViewModel`: Injected `IPenaltyRepository`, updating net remaining calculations (`remaining = totalEarned - totalReceived - totalPenalties`) across monthly summaries and individual worker reports.
+- **UI Components & Modular Design**:
+  - `AddPenaltyBottomSheet` (`lib/views/users/components/add_penalty_bottom_sheet.dart`): Modal bottom sheet for entering penalty amount, optional reason, and date selection with validation.
+  - `PenaltiesListCard` (`lib/views/users/components/penalties_list_card.dart`): Modular card embedded in `UserDetail` showing total penalties badge, detailed breakdown per penalty, and delete action with confirmation dialog. Includes in-place expandable view with smooth vertical gradient opacity mask (`ShaderMask`) and down/up arrow toggle to prevent page stretching while allowing 1-tap full expansion.
+  - `WorkerBalanceShareSheet`: Automatically appends formatted penalties line (`⚠️ الجزاءات والخصومات: -X ج.م`) to WhatsApp share text and preview card when penalties exist.
+  - `WorkerBalanceTile`: Shows penalty deduction metric dynamically when worker has active penalties for the month.
+- **Localization**: Added 11 new localization keys across Arabic and English (`penalties`, `addPenalty`, `penaltyAmount`, `penaltyReason`, `penaltyReasonHint`, `penaltyAddedSuccess`, `penaltyDeletedSuccess`, `confirmDeletePenalty`, `totalPenalties`, `noPenalties`, `invalidAmount`).
+
+## [Roadmap / Planned Future Feature] Hourly Attendance & Overtime/Deduction Recording (حضور وانصراف بالساعات)
+- **Concept & User Request**: "تسجيل حضور وانصراف بالساعات مع خصم التأخيرات" — Allow users to set work shift start/end hours (e.g. 8:00 AM - 5:00 PM), record exact clock-in / clock-out times, calculate late arrival hours, and automatically deduct late hours from worker dues at the end of the week/month.
+- **Planned Architecture**:
+  - Add `clockInTime` and `clockOutTime` columns to `attendance` table.
+  - Add Shift Configuration in Settings (shift start time, grace period in minutes, hourly rate multiplier).
+  - Time Picker widget in daily attendance.
+  - Keep as an optional or premium mode so the app's signature 1-tap simplicity ("حاضر / غائب") remains untouched for standard users.
+
+## [2026-11-19] Per-Worker Account Statement Sharing & Copying (WhatsApp & Clipboard)
+- **Scope & Objective**: Implemented dedicated 1-click sharing and copying of individual worker account statements ("مشاركة كشف الحساب") in response to user requests, allowing contractors and workshop owners to send each worker their monthly breakdown (wage, days present, overtime, total earned, total paid, and net remaining balance) via WhatsApp or copy it to the clipboard.
+- **Architecture & Performance**:
+  - `WorkerBalanceShareSheet` (`lib/views/home/components/balance/worker_balance_share_sheet.dart`): Created a modular bottom sheet showing a live preview of the formatted statement and two clear action buttons: **🟢 مشاركة عبر واتساب** (launches WhatsApp with text pre-filled via `url_launcher`) and **📋 نسخ كشف الحساب** (copies formatted text to clipboard with confirmation toast).
+  - `ReportsViewModel` (`lib/view_models/reports_view_model.dart`): Added `getWorkerReport({required User user, DateTime? month})` method that returns cached data instantly or calculates it on-demand with zero redundant queries.
+  - Zero external package dependencies needed: leverages existing `url_launcher` and `Clipboard` APIs for maximum reliability and 100% compatibility.
+- **UI Integration across the App**:
+  - **1. Balance Ledger (`WorkerBalanceTile` & `WorkersBalanceBottomSheet`)**: Added a 1-tap `Icons.share_outlined` button directly beside the status badge on each worker tile, allowing instant sharing of that worker's statement.
+  - **2. Worker Details Screen (`UserDetail` / `UserData` / `appbar.dart`)**:
+    - Added a prominent `Icons.share_outlined` action button in the details `AppBar` next to the menu.
+    - Added an interactive "مشاركة كشف الحساب" row at the bottom of the `UserData` profile card.
+  - **3. Monthly Reports Screen (`ReportsView`)**: Added the share button to each worker card in the monthly reports list so owners can share statements directly while reviewing monthly reports.
+- **Localization**: Added 5 new localization keys (`shareStatement`, `shareViaWhatsApp`, `copyStatement`, `statementCopied`, `statementPreview`) in Arabic and English across ARB and generated localizations files.
+
 ## [2026-11-19] Fixed Header Home View & Dashboard Sent Messages / Feedback Deletion
 - **Home View Fixed Header & Independent Worker List Scroll**:
   - Restored the user-preferred layout: Top elements (Greeting, Date, 4 Summary Filter Cards, Section Title, Filter Dropdowns & Add Button) are completely **FIXED** and pinned at the top.

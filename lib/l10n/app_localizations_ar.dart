@@ -1034,7 +1034,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settledWorkersCount => 'خالصين';
 
   @override
-  String get dueWorkersCount => 'لهم متبقي';
+  String get dueWorkersCount => 'متبقي لهم';
 
   @override
   String get searchWorkerByName => 'بحث باسم العامل...';
@@ -1053,4 +1053,58 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get remainingBadge => 'باقي له';
+
+  @override
+  String get shareStatement => 'مشاركة كشف الحساب';
+
+  @override
+  String get shareViaWhatsApp => 'مشاركة عبر واتساب';
+
+  @override
+  String get copyStatement => 'نسخ كشف الحساب';
+
+  @override
+  String get statementCopied => 'تم نسخ كشف حساب العامل 📋';
+
+  @override
+  String get statementPreview => 'معاينة كشف الحساب';
+
+  @override
+  String get penalties => 'الجزاءات والخصومات';
+
+  @override
+  String get addPenalty => 'إضافة جزاء / خصم';
+
+  @override
+  String get penaltyAmount => 'مبلغ الجزاء';
+
+  @override
+  String get penaltyReason => 'السبب (اختياري)';
+
+  @override
+  String get penaltyReasonHint => 'مثال: تأخير، تلف أدوات، غياب بدون إذن';
+
+  @override
+  String get penaltyAddedSuccess => 'تم تسجيل الجزاء بنجاح ✅';
+
+  @override
+  String get penaltyDeletedSuccess => 'تم حذف الجزاء بنجاح';
+
+  @override
+  String get confirmDeletePenalty => 'هل تريد بالتأكيد حذف هذا الجزاء؟';
+
+  @override
+  String get totalPenalties => 'إجمالي الجزاءات';
+
+  @override
+  String get noPenalties => 'لا توجد جزاءات مسجلة لهذا العامل';
+
+  @override
+  String get invalidAmount => 'يرجى إدخال مبلغ صحيح';
+
+  @override
+  String get showAllPenalties => 'عرض باقي الجزاءات';
+
+  @override
+  String get showLess => 'طي القائمة';
 }

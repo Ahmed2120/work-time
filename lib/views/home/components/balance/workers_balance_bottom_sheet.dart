@@ -155,7 +155,7 @@ class _WorkersBalanceBottomSheetState extends State<WorkersBalanceBottomSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.chevron_right_rounded, size: 24),
+                    icon: const Icon(Icons.chevron_left_rounded, size: 24),
                     onPressed: () => reportsVM.previousMonth(),
                     tooltip: context.isArabic ? 'الشهر السابق' : 'Previous Month',
                   ),
@@ -169,7 +169,7 @@ class _WorkersBalanceBottomSheetState extends State<WorkersBalanceBottomSheet> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.chevron_left_rounded, size: 24),
+                    icon: const Icon(Icons.chevron_right_rounded, size: 24),
                     onPressed: () => reportsVM.nextMonth(),
                     tooltip: context.isArabic ? 'الشهر التالي' : 'Next Month',
                   ),
@@ -305,6 +305,7 @@ class _WorkersBalanceBottomSheetState extends State<WorkersBalanceBottomSheet> {
                         return WorkerBalanceTile(
                           report: filteredWorkers[idx],
                           currency: currency,
+                          monthTitle: monthTitle,
                         );
                       },
                     ),
@@ -366,7 +367,8 @@ class _WorkersBalanceBottomSheetState extends State<WorkersBalanceBottomSheet> {
               ? 'خالص ✅'
               : 'مستلم زيادة ${_formatNum(w.remaining.abs())} $currency';
 
-      buffer.writeln('• ${w.userName}: المستحق ${_formatNum(w.totalEarned)} | المدفوع ${_formatNum(w.totalReceived)} | $remText');
+      final penText = w.totalPenalties > 0 ? ' | جزاءات ${_formatNum(w.totalPenalties)}' : '';
+      buffer.writeln('• ${w.userName}: المستحق ${_formatNum(w.totalEarned)} | المدفوع ${_formatNum(w.totalReceived)}$penText | $remText');
     }
 
     buffer.writeln('────────────────────────────');

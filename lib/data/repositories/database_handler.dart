@@ -27,6 +27,8 @@ class DatabaseHandler {
             "CREATE TABLE projects(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, budgetAmount REAL, status TEXT NOT NULL DEFAULT 'active', createdAt TEXT NOT NULL)");
         batch.execute(
             "CREATE TABLE work_places(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE)");
+        batch.execute(
+            "CREATE TABLE penalties(id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER NOT NULL, amount REAL NOT NULL, reason TEXT, date TEXT NOT NULL)");
         await batch.commit();
       },
       onUpgrade: (database, oldVersion, newVersion) async {
@@ -58,8 +60,14 @@ class DatabaseHandler {
             );
           } catch (_) {}
         }
+        if (oldVersion < 6) {
+          // Migration v5 → v6: add penalties table for deductions & infractions
+          await database.execute(
+            "CREATE TABLE IF NOT EXISTS penalties(id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER NOT NULL, amount REAL NOT NULL, reason TEXT, date TEXT NOT NULL)",
+          );
+        }
       },
-      version: 5,
+      version: 6,
     );
     return _database!;
   }

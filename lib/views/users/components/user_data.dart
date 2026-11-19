@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:work_time/core/theme/app_colors.dart';
 import 'package:work_time/core/utils/extensions/context_extension.dart';
 import 'package:work_time/data/models/user.dart';
+import 'package:work_time/view_models/reports_view_model.dart';
 import 'package:work_time/views/components/app_card.dart';
+import 'package:work_time/views/home/components/balance/worker_balance_share_sheet.dart';
 
 import 'text_row.dart';
 
@@ -81,6 +84,58 @@ class UserData extends StatelessWidget {
           TextRow(
             title: context.l10n.defaultWorkShift,
             txt: _shiftLabel(context, user.defaultDayRatio),
+          ),
+          const SizedBox(height: 8),
+          Divider(height: 1, color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+          const SizedBox(height: 6),
+          InkWell(
+            borderRadius: BorderRadius.circular(10),
+            onTap: () async {
+              final reportsVM = Provider.of<ReportsViewModel>(context, listen: false);
+              final report = await reportsVM.getWorkerReport(user: user);
+              if (!context.mounted) return;
+              final arabicMonths = [
+                'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+              ];
+              final englishMonths = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+              ];
+              final m = reportsVM.selectedMonth.month;
+              final monthName = context.isArabic ? arabicMonths[m - 1] : englishMonths[m - 1];
+              final monthTitle = '$monthName ${reportsVM.selectedMonth.year}';
+
+              WorkerBalanceShareSheet.show(
+                context,
+                report: report,
+                monthTitle: monthTitle,
+                currency: context.l10n.currency,
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.share_outlined,
+                    size: 16,
+                    color: isDark ? AppColors.primaryPurple : AppColors.primaryPurple,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    context.l10n.shareStatement,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryPurple,
+                      fontFamily: 'Cairo',
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

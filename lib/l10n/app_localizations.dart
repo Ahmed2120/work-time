@@ -2105,7 +2105,7 @@ abstract class AppLocalizations {
   /// No description provided for @dueWorkersCount.
   ///
   /// In ar, this message translates to:
-  /// **'لهم متبقي'**
+  /// **'متبقي لهم'**
   String get dueWorkersCount;
 
   /// No description provided for @searchWorkerByName.
@@ -2143,6 +2143,114 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'باقي له'**
   String get remainingBadge;
+
+  /// No description provided for @shareStatement.
+  ///
+  /// In ar, this message translates to:
+  /// **'مشاركة كشف الحساب'**
+  String get shareStatement;
+
+  /// No description provided for @shareViaWhatsApp.
+  ///
+  /// In ar, this message translates to:
+  /// **'مشاركة عبر واتساب'**
+  String get shareViaWhatsApp;
+
+  /// No description provided for @copyStatement.
+  ///
+  /// In ar, this message translates to:
+  /// **'نسخ كشف الحساب'**
+  String get copyStatement;
+
+  /// No description provided for @statementCopied.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم نسخ كشف حساب العامل 📋'**
+  String get statementCopied;
+
+  /// No description provided for @statementPreview.
+  ///
+  /// In ar, this message translates to:
+  /// **'معاينة كشف الحساب'**
+  String get statementPreview;
+
+  /// No description provided for @penalties.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجزاءات والخصومات'**
+  String get penalties;
+
+  /// No description provided for @addPenalty.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة جزاء / خصم'**
+  String get addPenalty;
+
+  /// No description provided for @penaltyAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'مبلغ الجزاء'**
+  String get penaltyAmount;
+
+  /// No description provided for @penaltyReason.
+  ///
+  /// In ar, this message translates to:
+  /// **'السبب (اختياري)'**
+  String get penaltyReason;
+
+  /// No description provided for @penaltyReasonHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'مثال: تأخير، تلف أدوات، غياب بدون إذن'**
+  String get penaltyReasonHint;
+
+  /// No description provided for @penaltyAddedSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تسجيل الجزاء بنجاح ✅'**
+  String get penaltyAddedSuccess;
+
+  /// No description provided for @penaltyDeletedSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم حذف الجزاء بنجاح'**
+  String get penaltyDeletedSuccess;
+
+  /// No description provided for @confirmDeletePenalty.
+  ///
+  /// In ar, this message translates to:
+  /// **'هل تريد بالتأكيد حذف هذا الجزاء؟'**
+  String get confirmDeletePenalty;
+
+  /// No description provided for @totalPenalties.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجمالي الجزاءات'**
+  String get totalPenalties;
+
+  /// No description provided for @noPenalties.
+  ///
+  /// In ar, this message translates to:
+  /// **'لا توجد جزاءات مسجلة لهذا العامل'**
+  String get noPenalties;
+
+  /// No description provided for @invalidAmount.
+  ///
+  /// In ar, this message translates to:
+  /// **'يرجى إدخال مبلغ صحيح'**
+  String get invalidAmount;
+
+  /// No description provided for @showAllPenalties.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض باقي الجزاءات'**
+  String get showAllPenalties;
+
+  /// No description provided for @showLess.
+  ///
+  /// In ar, this message translates to:
+  /// **'طي القائمة'**
+  String get showLess;
 }
 
 class _AppLocalizationsDelegate

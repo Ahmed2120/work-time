@@ -47,6 +47,7 @@ dependencies:
   in_app_purchase: ^3.2.0
   upgrader: ^13.7.0
   in_app_review: ^2.0.12
+  material_ui: ^1.11.1
 
 dev_dependencies:
   flutter_test:

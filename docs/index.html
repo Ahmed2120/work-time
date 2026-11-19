@@ -360,14 +360,47 @@
           </div>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-          <h3 style="font-size:1.05rem; font-weight:700;">صندوق الآراء والاقتراحات الواردة</h3>
-          <span id="filtered-feedbacks-count" class="badge badge-purple">0 رسالة</span>
+        <!-- Feedback Sub-Navigation (الواردة / المرسلة) -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:10px;">
+          <div class="filter-chips" style="margin:0;">
+            <button id="subtab-incoming-btn" class="chip-btn active" onclick="window.switchFeedbackSubTab('incoming')">
+              📥 المقترحات والآراء الواردة (<span id="filtered-feedbacks-count">0</span>)
+            </button>
+            <button id="subtab-sent-btn" class="chip-btn" onclick="window.switchFeedbackSubTab('sent')">
+              📤 التنبيهات والرسائل المرسلة (<span id="sent-alerts-count">0</span>)
+            </button>
+          </div>
         </div>
 
-        <!-- Feedback Cards Grid -->
-        <div id="feedbacks-grid" class="feedback-grid">
-          <!-- Dynamically injected via app.js -->
+        <!-- Section 1: Incoming Feedback Cards Grid -->
+        <div id="incoming-feedbacks-container">
+          <div id="feedbacks-grid" class="feedback-grid">
+            <!-- Dynamically injected via app.js -->
+          </div>
+        </div>
+
+        <!-- Section 2: Sent Alerts List / Table -->
+        <div id="sent-alerts-container" style="display:none;">
+          <div class="table-wrapper">
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>النوع</th>
+                    <th>المستهدف</th>
+                    <th>عنوان التنبيه</th>
+                    <th>نص الرسالة</th>
+                    <th>تاريخ الإرسال</th>
+                    <th>الحالة</th>
+                    <th>إجراء</th>
+                  </tr>
+                </thead>
+                <tbody id="sent-alerts-tbody">
+                  <!-- Dynamically injected via app.js -->
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
 

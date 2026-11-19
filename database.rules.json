@@ -21,6 +21,10 @@
       ".read": true,
       ".write": true
     },
+    "sent_alerts": {
+      ".read": true,
+      ".write": true
+    },
     "user_alerts": {
       ".read": true,
       ".write": true

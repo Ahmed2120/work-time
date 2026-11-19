@@ -546,6 +546,7 @@ function renderDevicesTab() {
         </td>
         <td>
           <strong>${escapeHtml(dev.deviceModel || 'Unknown')}</strong>
+          ${dev.appVersion ? `<div style="margin-top:2px;"><span class="badge badge-purple" style="font-size:0.7rem; padding:1px 6px;">v${escapeHtml(dev.appVersion)}</span></div>` : ''}
         </td>
         <td>
           <span class="badge ${eng.badgeClass}">${eng.label}</span>
@@ -553,10 +554,12 @@ function renderDevicesTab() {
         </td>
         <td>
           <span class="badge badge-purple">${escapeHtml(dev.osVersion || 'Android')}</span>
+          ${dev.appLanguage ? `<div style="margin-top:2px;"><span class="badge" style="font-size:0.65rem; background:rgba(255,255,255,0.06);">${escapeHtml(dev.appLanguage.toUpperCase())}</span></div>` : ''}
         </td>
         <td>${subBadge}</td>
         <td>
           <strong style="color:${dev.employeeCount > 0 ? 'var(--color-success)' : 'var(--text-muted)'};">${dev.employeeCount || 0}</strong> عامل
+          ${dev.attendanceCount ? `<div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">${dev.attendanceCount} يومية</div>` : ''}
         </td>
         <td>
           <strong style="color:${dev.projectsCount > 0 ? 'var(--color-purple)' : 'var(--text-muted)'};">${dev.projectsCount || 0}</strong> مشروع
@@ -648,8 +651,13 @@ function renderFeedbacksTab() {
     return `
       <div class="feedback-card">
         <div class="feedback-card-header">
-          <span class="badge ${typeClass} feedback-type-badge">${fb.type || 'رأي'}</span>
-          <span style="font-size:0.75rem; color:var(--text-muted);">${formatRelativeTime(fb.createdAt)}</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="badge ${typeClass} feedback-type-badge">${fb.type || 'رأي'}</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">${formatRelativeTime(fb.createdAt)}</span>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="window.handleDeleteFeedback('${fb.id}')" style="color:var(--color-danger); border-color:rgba(239,68,68,0.25); padding:2px 8px; font-size:0.75rem;" title="حذف هذا الاقتراح">
+            🗑️
+          </button>
         </div>
 
         <div class="feedback-body">
@@ -913,6 +921,9 @@ function setupInAppAlertModalActions() {
         closeModal();
         showToast(isBroadcast ? 'تم إرسال الإعلان العام لجميع المستخدمين بنجاح! 📢' : 'تم إرسال التنبيه للمستخدم بنجاح! 🚀');
         form.reset();
+        if (currentFeedbackSubTab === 'sent') {
+          renderSentAlertsTab();
+        }
       } catch (err) {
         console.error('Error sending in-app alert:', err);
         alert('تعذر إرسال التنبيه: ' + (err.message || err));
@@ -995,6 +1006,115 @@ async function handleDeleteDevice(uuid) {
 }
 window.handleDeleteDevice = handleDeleteDevice;
 
+async function handleDeleteFeedback(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا الاقتراح/الملاحظة نهائياً من قاعدة البيانات؟')) return;
+  try {
+    await window.firebaseService.deleteFeedback(id);
+    showToast('تم حذف الاقتراح بنجاح 🗑️');
+    const newFbs = window.appState.feedbacks.filter(f => (f.id || f.key) !== id);
+    window.appState.setFeedbacks(newFbs.reduce((acc, cur) => { acc[cur.id || cur.key] = cur; return acc; }, {}));
+  } catch (err) {
+    alert('فشل حذف الاقتراح: ' + err.message);
+  }
+}
+window.handleDeleteFeedback = handleDeleteFeedback;
+
+// ─── SENT ALERTS MANAGEMENT (الرسائل والتنبيهات المرسلة) ─────────────────────
+
+let currentFeedbackSubTab = 'incoming';
+
+function switchFeedbackSubTab(subTab) {
+  currentFeedbackSubTab = subTab;
+  const inContainer = document.getElementById('incoming-feedbacks-container');
+  const sentContainer = document.getElementById('sent-alerts-container');
+  const inBtn = document.getElementById('subtab-incoming-btn');
+  const sentBtn = document.getElementById('subtab-sent-btn');
+
+  if (subTab === 'sent') {
+    if (inContainer) inContainer.style.display = 'none';
+    if (sentContainer) sentContainer.style.display = 'block';
+    if (inBtn) inBtn.classList.remove('active');
+    if (sentBtn) sentBtn.classList.add('active');
+    renderSentAlertsTab();
+  } else {
+    if (inContainer) inContainer.style.display = 'block';
+    if (sentContainer) sentContainer.style.display = 'none';
+    if (inBtn) inBtn.classList.add('active');
+    if (sentBtn) sentBtn.classList.remove('active');
+  }
+}
+window.switchFeedbackSubTab = switchFeedbackSubTab;
+
+async function renderSentAlertsTab() {
+  const tbody = document.getElementById('sent-alerts-tbody');
+  const countEl = document.getElementById('sent-alerts-count');
+  if (!tbody) return;
+
+  tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">جاري تحميل الرسائل والتنبيهات المرسلة... ⏳</td></tr>';
+
+  try {
+    const sentAlerts = await window.firebaseService.fetchSentAlerts();
+    if (countEl) countEl.textContent = sentAlerts.length;
+
+    if (sentAlerts.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">لا توجد أي رسائل أو تنبيهات مرسلة حتى الآن 📭</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = sentAlerts.map(alert => {
+      const isBroadcast = alert.isBroadcast === true || alert.targetUuid === 'all';
+      const typeBadge = isBroadcast
+        ? '<span class="badge badge-purple">📢 إعلان عام</span>'
+        : '<span class="badge badge-info">🔔 رد مخصص</span>';
+
+      const targetHtml = isBroadcast
+        ? '<span style="font-weight:600; color:var(--color-purple);">جميع المستخدمين</span>'
+        : `<button class="btn btn-secondary btn-sm" onclick="copyToClipboard('${alert.targetUuid}')" title="نسخ المعرف">
+            <code>${(alert.targetUuid || '').substring(0, 8)}...</code> 📋
+          </button>`;
+
+      const statusBadge = alert.isRead
+        ? '<span class="badge badge-success">🟢 تمت القراءة</span>'
+        : '<span class="badge badge-warning">⏳ بانتظار الفتح</span>';
+
+      const safeTitle = escapeHtml(alert.title || '');
+      const safeMsg = escapeHtml(alert.message || '');
+      const timeStr = formatRelativeTime(alert.createdAt);
+
+      return `
+        <tr>
+          <td>${typeBadge}</td>
+          <td>${targetHtml}</td>
+          <td><strong>${safeTitle}</strong></td>
+          <td style="max-width:320px; white-space:pre-wrap; font-size:0.85rem;">${safeMsg}</td>
+          <td><span title="${alert.createdAt || ''}">${timeStr}</span></td>
+          <td>${statusBadge}</td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="window.handleDeleteSentAlert('${alert.id}', '${alert.targetUuid}', ${isBroadcast})" style="color:var(--color-danger); border-color:rgba(239,68,68,0.25);" title="حذف وإلغاء التنبيه">
+              🗑️
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--color-danger);">فشل تحميل الرسائل: ${escapeHtml(err.message)}</td></tr>`;
+  }
+}
+window.renderSentAlertsTab = renderSentAlertsTab;
+
+async function handleDeleteSentAlert(id, targetUuid, isBroadcast) {
+  if (!confirm('هل أنت متأكد من حذف هذه الرسالة المرسلة؟ لن تظهر للمستخدم مرة أخرى.')) return;
+  try {
+    await window.firebaseService.deleteSentAlert(id, targetUuid, isBroadcast);
+    showToast('تم حذف الرسالة بنجاح 🗑️');
+    renderSentAlertsTab();
+  } catch (err) {
+    alert('فشل حذف الرسالة: ' + err.message);
+  }
+}
+window.handleDeleteSentAlert = handleDeleteSentAlert;
+
 // ─── EXPORT ACTIONS (CSV) ────────────────────────────────────────────────────
 
 function setupExportActions() {
@@ -1006,15 +1126,18 @@ function setupExportActions() {
         window.appState.deviceFilters
       );
       exportToCsv('devices_report.csv', [
-        ['UUID', 'Device Model', 'OS Version', 'Is Subscribed', 'Is Trial', 'Employees', 'Projects', 'First Seen', 'Last Seen'],
+        ['UUID', 'Device Model', 'App Version', 'Language', 'OS Version', 'Is Subscribed', 'Is Trial', 'Employees', 'Projects', 'Attendance Records', 'First Seen', 'Last Seen'],
         ...filtered.map(d => [
           d.uuid,
           d.deviceModel,
+          d.appVersion || 'Unknown',
+          d.appLanguage || 'ar',
           d.osVersion,
           d.isSubscribed ? 'Yes' : 'No',
           d.isTrial ? 'Yes' : 'No',
           d.employeeCount,
           d.projectsCount,
+          d.attendanceCount || 0,
           d.firstSeen,
           d.lastSeen
         ])

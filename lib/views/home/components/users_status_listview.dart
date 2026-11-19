@@ -14,7 +14,14 @@ import '../../users/user_detail.dart';
 import 'custom_status.dart';
 
 class UsersStatusListview extends StatelessWidget {
-  const UsersStatusListview({super.key});
+  final bool shrinkWrap;
+  final ScrollPhysics? physics;
+
+  const UsersStatusListview({
+    super.key,
+    this.shrinkWrap = false,
+    this.physics,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +82,8 @@ class UsersStatusListview extends StatelessWidget {
         final String statusFilter = userViewModel.statusFilter;
 
         if (allUsers.isEmpty) {
-          return SingleChildScrollView(
-            child: EmptyScreen(title: context.l10n.addWorkerToTrack),
-          );
+          final emptyWidget = EmptyScreen(title: context.l10n.addWorkerToTrack);
+          return shrinkWrap ? emptyWidget : SingleChildScrollView(child: emptyWidget);
         }
 
         return FutureBuilder<List<User>>(
@@ -101,17 +107,17 @@ class UsersStatusListview extends StatelessWidget {
                 displayStatus = context.l10n.notRecorded;
               }
 
-              return SingleChildScrollView(
-                child: EmptyScreen(
-                  title: '${context.l10n.noWorkersWithStatus} "$displayStatus" ${context.l10n.currently}',
-                ),
+              final emptyWidget = EmptyScreen(
+                title: '${context.l10n.noWorkersWithStatus} "$displayStatus" ${context.l10n.currently}',
               );
+              return shrinkWrap ? emptyWidget : SingleChildScrollView(child: emptyWidget);
             }
 
             return ListView.builder(
-              physics: const BouncingScrollPhysics(),
+              shrinkWrap: shrinkWrap,
+              physics: physics ?? const BouncingScrollPhysics(),
               itemCount: filteredList.length,
-              padding: const EdgeInsets.only(bottom: kBottomNavigationBarHeight),
+              padding: EdgeInsets.only(bottom: shrinkWrap ? 16 : kBottomNavigationBarHeight),
               itemBuilder: (context, index) {
                 return _buildUserCard(
                   context: context,

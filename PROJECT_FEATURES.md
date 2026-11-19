@@ -1,3 +1,45 @@
+## [2026-11-19] Fixed Header Home View & Dashboard Sent Messages / Feedback Deletion
+- **Home View Fixed Header & Independent Worker List Scroll**:
+  - Restored the user-preferred layout: Top elements (Greeting, Date, 4 Summary Filter Cards, Section Title, Filter Dropdowns & Add Button) are completely **FIXED** and pinned at the top.
+  - Wrapped `UsersStatusListview` directly in `Expanded`: only the workers list scrolls smoothly underneath the fixed cards and filters, eliminating any scroll of header items and preventing empty white space.
+- **Admin Dashboard Feedback Deletion (`docs/` & Firebase)**:
+  - Added 1-click delete button (`🗑️`) on every feedback/suggestion card in the Admin Dashboard.
+  - Added `deleteFeedback` API in `firebase-config.js` with instant UI removal and Firebase database sync.
+- **Sent In-App Messages Management (`docs/`)**:
+  - Added sub-navigation in the Feedback tab to toggle between **📥 المقترحات الواردة** and **📤 الرسائل والتنبيهات المرسلة**.
+  - Displays a detailed log of all sent messages (Broadcast announcements & Targeted user replies) showing Type, Target (Device UUID / All), Title, Message, Sent Date, and Read status.
+  - Added 1-click delete/cancel action (`🗑️`) for any sent alert from Firebase.
+  - Configured and deployed Firebase Realtime Database rules with full read/write for `sent_alerts`.
+
+## [2026-11-19] Settings View, Scroll Bounds Fix, and Enhanced Zero-Overhead Telemetry
+- **Home View Unnecessary Scroll Fix**:
+  - Identified the root cause of unnecessary scrolling on short worker lists (e.g. 2 workers): a legacy fixed `SizedBox(height: 0.55 * screenHeight)` that artificially inflated content height beyond viewport and created nested scrolling conflicts.
+  - Refactored `UsersStatusListview` to accept `shrinkWrap` and `physics` parameters.
+  - Replaced fixed SizedBox in `HomeView` with dynamic `shrinkWrap: true` and `NeverScrollableScrollPhysics()`, switching outer scroll to `ClampingScrollPhysics()`.
+  - When workers fit on screen (2 workers), the view is firmly locked with **0 scroll and 0 empty white space**. When workers exceed screen height, the entire screen scrolls naturally as one unified view.
+- **Dedicated Settings View (`SettingsView`)**:
+  - Created `lib/views/settings/settings_view.dart` to declutter `MainDrawer` while maintaining 100% Shorebird OTA patch compatibility.
+  - Consolidated: Theme Switcher (`ThemeDrawer`), Language Switcher (`LanguageDrawer`), Daily Attendance Reminder (`ReminderDrawer`), Cloud Backup (`BackupView`), and About App info into modular `AppCard` containers.
+  - Kept **إدارة أماكن العمل (Manage Workplaces)** in `MainDrawer` as explicitly instructed.
+  - Added clean "الإعدادات (Settings)" navigation item in `MainDrawer`.
+- **Enhanced Telemetry (0ms Overhead, Non-blocking)**:
+  - Added `appLanguage` (read from in-memory cache).
+  - Added `attendanceCount` (single SQLite indexed count, runs in background once every 24h).
+  - Added `lastBackupDate` (read from in-memory cache).
+  - Updated Admin Dashboard (`docs/js/app.js`) to display attendance count under workers and language under OS version, as well as including them in CSV export.
+
+## [2026-11-19] Workers Balance Ledger & Remaining Wages ("باقي كام لكل عامل")
+- **Scope & Objective**: Added an instant financial ledger ("كشف الأرصدة - باقي كام") requested directly by paying users, enabling business owners and contractors to immediately see total dues, payments made, and net remaining balances for all workers from the main screen.
+- **Architecture & Performance**:
+  - Leveraged existing `ReportsViewModel` calculation engine for zero database schema changes or redundant arithmetic.
+  - Zero performance overhead: loads asynchronously on startup and updates reactively with attendance and payments.
+- **UI & Modular Components**:
+  - `lib/views/home/components/balance/financial_balance_card.dart`: Interactive summary card placed prominently on the Home screen displaying Total Earned (المستحق), Total Received (المدفوع), and Highlighted Net Remaining Due (باقي عليك). Tapping opens the detailed breakdown.
+  - `lib/views/home/components/balance/workers_balance_bottom_sheet.dart`: Draggable modal sheet featuring month navigation, live search by worker name, quick counters (عمال لهم متبقي / عمال خالصين), and 1-tap clipboard copying formatted for WhatsApp sharing.
+  - `lib/views/home/components/balance/worker_balance_tile.dart`: Modular card for each worker showing presence days, overtime, wage rate, total earned, total received, and status badges (باقي له / خالص ✅ / مستلم زيادة).
+  - `lib/views/home/components/drawer/main_drawer.dart`: Added direct shortcut in the navigation drawer for instant access.
+- **Localization**: Added full Arabic and English localizations across `app_ar.arb`, `app_en.arb`, and generated localization classes.
+
 ## [2026-11-16] Remote In-App Alerts & Offline-First Two-Phase ACK Messaging System
 - **Scope & Objective**: Implemented an enterprise-grade In-App messaging and pop-up announcement system allowing admins to reply directly to individual feedback submitters via device UUID or broadcast global announcements. Features Offline-First with Two-Phase Acknowledgment (ACK) and automatic batching/cleaning to ensure zero client storage overhead.
 - **Architecture & Two-Phase ACK Mechanism**:

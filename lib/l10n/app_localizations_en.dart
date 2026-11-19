@@ -1026,4 +1026,37 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get defaultWorkShiftHint =>
       'Default shift automatically applied when recording attendance';
+
+  @override
+  String get balanceCardTitle => 'Remaining Balances';
+
+  @override
+  String get viewDetails => 'View Details';
+
+  @override
+  String get remainingForYou => 'Net Due to Workers';
+
+  @override
+  String get settledWorkersCount => 'Settled';
+
+  @override
+  String get dueWorkersCount => 'With Dues';
+
+  @override
+  String get searchWorkerByName => 'Search by worker name...';
+
+  @override
+  String get copyBalanceReport => 'Copy Balance Summary';
+
+  @override
+  String get reportCopied => 'Balance summary copied successfully 📋';
+
+  @override
+  String get settledFull => 'Fully Settled';
+
+  @override
+  String get overpaidBadge => 'Overpaid';
+
+  @override
+  String get remainingBadge => 'Remaining';
 }

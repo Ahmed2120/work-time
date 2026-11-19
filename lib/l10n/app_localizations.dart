@@ -2077,6 +2077,72 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'يُحدد نوع الدوام الذي سيتم تسجيل حضور العامل به تلقائياً'**
   String get defaultWorkShiftHint;
+
+  /// No description provided for @balanceCardTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'كشف الأرصدة (باقي كام)'**
+  String get balanceCardTitle;
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض التفاصيل'**
+  String get viewDetails;
+
+  /// No description provided for @remainingForYou.
+  ///
+  /// In ar, this message translates to:
+  /// **'باقي عليك للعمال'**
+  String get remainingForYou;
+
+  /// No description provided for @settledWorkersCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'خالصين'**
+  String get settledWorkersCount;
+
+  /// No description provided for @dueWorkersCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'لهم متبقي'**
+  String get dueWorkersCount;
+
+  /// No description provided for @searchWorkerByName.
+  ///
+  /// In ar, this message translates to:
+  /// **'بحث باسم العامل...'**
+  String get searchWorkerByName;
+
+  /// No description provided for @copyBalanceReport.
+  ///
+  /// In ar, this message translates to:
+  /// **'نسخ كشف الحساب'**
+  String get copyBalanceReport;
+
+  /// No description provided for @reportCopied.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم نسخ كشف الحساب بنجاح 📋'**
+  String get reportCopied;
+
+  /// No description provided for @settledFull.
+  ///
+  /// In ar, this message translates to:
+  /// **'خالص بالكامل'**
+  String get settledFull;
+
+  /// No description provided for @overpaidBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'مستلم زيادة'**
+  String get overpaidBadge;
+
+  /// No description provided for @remainingBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'باقي له'**
+  String get remainingBadge;
 }
 
 class _AppLocalizationsDelegate

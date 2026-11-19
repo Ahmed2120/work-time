@@ -199,6 +199,23 @@ class FirebaseService {
     return true;
   }
 
+  // Delete Feedback from /feedbacks
+  async deleteFeedback(id) {
+    try {
+      if (this.database) {
+        await this.database.ref('feedbacks/' + id).remove();
+        return true;
+      }
+    } catch (e) {
+      console.warn("Database SDK remove feedback failed, falling back to REST DELETE:", e);
+    }
+    const token = this.auth && this.auth.currentUser ? await this.auth.currentUser.getIdToken() : '';
+    const url = `https://worktime-33fa5-default-rtdb.firebaseio.com/feedbacks/${encodeURIComponent(id)}.json` + (token ? `?auth=${token}` : '');
+    const res = await fetch(url, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Failed to delete feedback: HTTP ' + res.status);
+    return true;
+  }
+
   // ─── WHAT'S NEW (تحديثات التطبيق وما الجديد) ─────────────────────────────────
   async fetchWhatsNew() {
     try {
@@ -344,7 +361,131 @@ class FirebaseService {
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error('Failed to send targeted alert: HTTP ' + res.status);
-      return payload;
+    }
+
+    // Save record to /sent_alerts for dashboard sent history
+    const sentRecord = {
+      ...payload,
+      id: alertId,
+      isBroadcast: isBroadcast,
+      targetUuid: isBroadcast ? 'all' : (alertData.uuid || '').trim()
+    };
+    try {
+      if (this.database) {
+        await this.database.ref(`sent_alerts/${alertId}`).set(sentRecord);
+      } else {
+        const token = this.auth && this.auth.currentUser ? await this.auth.currentUser.getIdToken() : '';
+        await fetch(`https://worktime-33fa5-default-rtdb.firebaseio.com/sent_alerts/${encodeURIComponent(alertId)}.json` + (token ? `?auth=${token}` : ''), {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(sentRecord)
+        });
+      }
+    } catch (_) {}
+
+    return payload;
+  }
+
+  // Fetch all sent alerts (combining sent_alerts, broadcast_alert, and user_alerts)
+  async fetchSentAlerts() {
+    const results = [];
+    try {
+      // 1. Fetch from sent_alerts
+      let sentRaw = {};
+      try {
+        if (this.database) {
+          const snap = await this.database.ref('sent_alerts').once('value');
+          sentRaw = snap.val() || {};
+        } else {
+          const res = await fetch('https://worktime-33fa5-default-rtdb.firebaseio.com/sent_alerts.json');
+          if (res.ok) sentRaw = (await res.json()) || {};
+        }
+      } catch (_) {}
+      Object.keys(sentRaw).forEach(id => {
+        results.push({ id, ...sentRaw[id] });
+      });
+
+      // 2. Fetch current broadcast_alert
+      try {
+        let bCast = null;
+        if (this.database) {
+          const snap = await this.database.ref('broadcast_alert').once('value');
+          bCast = snap.val();
+        } else {
+          const res = await fetch('https://worktime-33fa5-default-rtdb.firebaseio.com/broadcast_alert.json');
+          if (res.ok) bCast = await res.json();
+        }
+        if (bCast && bCast.title && !results.some(r => r.id === bCast.id)) {
+          results.push({
+            id: bCast.id || 'broadcast_current',
+            isBroadcast: true,
+            targetUuid: 'all',
+            title: bCast.title,
+            message: bCast.message,
+            createdAt: bCast.createdAt,
+            active: bCast.active
+          });
+        }
+      } catch (_) {}
+
+      // 3. Fetch from user_alerts
+      try {
+        let userAlertsRaw = {};
+        if (this.database) {
+          const snap = await this.database.ref('user_alerts').once('value');
+          userAlertsRaw = snap.val() || {};
+        } else {
+          const res = await fetch('https://worktime-33fa5-default-rtdb.firebaseio.com/user_alerts.json');
+          if (res.ok) userAlertsRaw = (await res.json()) || {};
+        }
+        Object.keys(userAlertsRaw).forEach(uuid => {
+          const userMap = userAlertsRaw[uuid] || {};
+          Object.keys(userMap).forEach(alertId => {
+            if (!results.some(r => r.id === alertId)) {
+              results.push({
+                id: alertId,
+                isBroadcast: false,
+                targetUuid: uuid,
+                ...userMap[alertId]
+              });
+            }
+          });
+        });
+      } catch (_) {}
+    } catch (e) {
+      console.warn("fetchSentAlerts error:", e);
+    }
+
+    results.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    return results;
+  }
+
+  // Delete a sent alert
+  async deleteSentAlert(alertId, targetUuid, isBroadcast) {
+    try {
+      if (this.database) {
+        await this.database.ref(`sent_alerts/${alertId}`).remove();
+      } else {
+        await fetch(`https://worktime-33fa5-default-rtdb.firebaseio.com/sent_alerts/${encodeURIComponent(alertId)}.json`, { method: 'DELETE' });
+      }
+
+      if (isBroadcast) {
+        if (this.database) {
+          await this.database.ref('broadcast_alert').remove();
+        } else {
+          await fetch('https://worktime-33fa5-default-rtdb.firebaseio.com/broadcast_alert.json', { method: 'DELETE' });
+        }
+      } else if (targetUuid && targetUuid !== 'all') {
+        if (this.database) {
+          await this.database.ref(`user_alerts/${targetUuid}/${alertId}`).remove();
+        } else {
+          await fetch(`https://worktime-33fa5-default-rtdb.firebaseio.com/user_alerts/${encodeURIComponent(targetUuid)}/${encodeURIComponent(alertId)}.json`, { method: 'DELETE' });
+        }
+      }
+      return true;
+    } catch (e) {
+      console.warn("deleteSentAlert error:", e);
+      throw e;
     }
   }
 

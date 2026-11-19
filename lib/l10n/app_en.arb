@@ -346,5 +346,16 @@
   "customShiftHint": "Enter ratio (e.g. 0.75 or 1.5)",
   "ratioInvalid": "Please enter a valid number greater than 0",
   "defaultWorkShift": "Default Shift Type",
-  "defaultWorkShiftHint": "Default shift automatically applied when recording attendance"
+  "defaultWorkShiftHint": "Default shift automatically applied when recording attendance",
+  "balanceCardTitle": "Remaining Balances",
+  "viewDetails": "View Details",
+  "remainingForYou": "Net Due to Workers",
+  "settledWorkersCount": "Settled",
+  "dueWorkersCount": "With Dues",
+  "searchWorkerByName": "Search by worker name...",
+  "copyBalanceReport": "Copy Balance Summary",
+  "reportCopied": "Balance summary copied successfully 📋",
+  "settledFull": "Fully Settled",
+  "overpaidBadge": "Overpaid",
+  "remainingBadge": "Remaining"
 }

@@ -1020,4 +1020,37 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get defaultWorkShiftHint =>
       'يُحدد نوع الدوام الذي سيتم تسجيل حضور العامل به تلقائياً';
+
+  @override
+  String get balanceCardTitle => 'كشف الأرصدة (باقي كام)';
+
+  @override
+  String get viewDetails => 'عرض التفاصيل';
+
+  @override
+  String get remainingForYou => 'باقي عليك للعمال';
+
+  @override
+  String get settledWorkersCount => 'خالصين';
+
+  @override
+  String get dueWorkersCount => 'لهم متبقي';
+
+  @override
+  String get searchWorkerByName => 'بحث باسم العامل...';
+
+  @override
+  String get copyBalanceReport => 'نسخ كشف الحساب';
+
+  @override
+  String get reportCopied => 'تم نسخ كشف الحساب بنجاح 📋';
+
+  @override
+  String get settledFull => 'خالص بالكامل';
+
+  @override
+  String get overpaidBadge => 'مستلم زيادة';
+
+  @override
+  String get remainingBadge => 'باقي له';
 }

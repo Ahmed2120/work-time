@@ -8,24 +8,22 @@ import 'package:work_time/view_models/whats_new_view_model.dart';
 
 import '../../../../core/services/rate_service.dart';
 import '../../../../core/utils/extensions/context_extension.dart';
-import '../../../backup/backup_view.dart';
 import '../../../components/constant.dart';
 import '../../../feedback/feedback_view.dart';
 import '../../../projects/projects_view.dart';
 import '../../../reports/reports_view.dart';
 import '../../../settings/manage_work_places_view.dart';
+import '../../../settings/settings_view.dart';
 import 'components/backup_drawer.dart';
 import 'components/feedback_drawer.dart';
 import 'components/projects_drawer.dart';
 import 'components/purchase_drawer.dart';
 import 'components/rate_drawer.dart';
-import 'components/reminder_drawer.dart';
 import 'components/reports_drawer.dart';
-import 'components/theme_drawer.dart';
-import 'components/language_drawer.dart';
 import 'components/title_drawer.dart';
 import 'components/whats_new_drawer.dart';
 import 'components/work_places_drawer.dart';
+import '../balance/workers_balance_bottom_sheet.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
@@ -48,6 +46,15 @@ class MainDrawer extends StatelessWidget {
               child: Column(
                 children: [
                   DrawerItemWidget(
+                    title: context.l10n.balanceCardTitle,
+                    icon: Icons.account_balance_wallet_outlined,
+                    onPress: () {
+                      Navigator.of(context).pop();
+                      WorkersBalanceBottomSheet.show(context);
+                    },
+                  ),
+                  _divider(isDark),
+                  DrawerItemWidget(
                     title: context.l10n.monthlyReports,
                     icon: Icons.assessment_outlined,
                     onPress: ()=> push(screen: const ReportsView(), context: context),
@@ -62,23 +69,20 @@ class MainDrawer extends StatelessWidget {
                   DrawerItemWidget(
                     title: context.l10n.manageWorkplaces,
                     icon: Icons.location_on_outlined,
-                      onPress: () {
-                        Navigator.of(context).pop(); // close drawer
-                        push(screen: const ManageWorkPlacesView(), context: context);
-                      }
+                    onPress: () {
+                      Navigator.of(context).pop(); // close drawer
+                      push(screen: const ManageWorkPlacesView(), context: context);
+                    },
                   ),
                   _divider(isDark),
-                  const ReminderDrawer(),
-                  _divider(isDark),
-                  if (AppConfig.enableBackupFeature) DrawerItemWidget(
-                    title: context.l10n.backup,
-                    icon: Icons.construction_rounded,
-                    onPress: ()=> push(screen: const BackupView(), context: context),
+                  DrawerItemWidget(
+                    title: context.l10n.settings,
+                    icon: Icons.settings_outlined,
+                    onPress: () {
+                      Navigator.of(context).pop(); // close drawer
+                      push(screen: const SettingsView(), context: context);
+                    },
                   ),
-                  if (AppConfig.enableBackupFeature) _divider(isDark),
-                  const ThemeDrawer(),
-                  _divider(isDark),
-                  const LanguageDrawer(),
                   _divider(isDark),
                   DrawerItemWidget(
                     title: context.l10n.rateApp,

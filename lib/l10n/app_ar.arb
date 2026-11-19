@@ -349,5 +349,16 @@
   "customShiftHint": "أدخل النسبة (مثال: 0.75 أو 1.5)",
   "ratioInvalid": "يرجى إدخال قيمة صحيحة أكبر من 0",
   "defaultWorkShift": "نوع الدوام الافتراضي",
-  "defaultWorkShiftHint": "يُحدد نوع الدوام الذي سيتم تسجيل حضور العامل به تلقائياً"
+  "defaultWorkShiftHint": "يُحدد نوع الدوام الذي سيتم تسجيل حضور العامل به تلقائياً",
+  "balanceCardTitle": "كشف الأرصدة (باقي كام)",
+  "viewDetails": "عرض التفاصيل",
+  "remainingForYou": "باقي عليك للعمال",
+  "settledWorkersCount": "خالصين",
+  "dueWorkersCount": "لهم متبقي",
+  "searchWorkerByName": "بحث باسم العامل...",
+  "copyBalanceReport": "نسخ كشف الحساب",
+  "reportCopied": "تم نسخ كشف الحساب بنجاح 📋",
+  "settledFull": "خالص بالكامل",
+  "overpaidBadge": "مستلم زيادة",
+  "remainingBadge": "باقي له"
 }

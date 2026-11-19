@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'in_app_message_service.dart';
@@ -57,10 +58,11 @@ class TelemetryService {
         await CacheHelper.saveData(key: _keyFirstSeen, value: firstSeen);
       }
 
-      // جلب عدد العمال والمشاريع من قاعدة البيانات المحلية SQLite
+      // جلب عدد العمال والمشاريع وسجلات الحضور من قاعدة البيانات المحلية SQLite
       final db = await DatabaseHandler().initializeDB();
       int employeeCount = 0;
       int projectsCount = 0;
+      int attendanceCount = 0;
 
       try {
         final empRes = await db.rawQuery('SELECT COUNT(*) as count FROM users WHERE isDeleted = 0');
@@ -76,9 +78,26 @@ class TelemetryService {
         }
       } catch (_) {}
 
-      // جلب معلومات الجهاز
+      try {
+        final attRes = await db.rawQuery('SELECT COUNT(*) as count FROM attendance');
+        if (attRes.isNotEmpty) {
+          attendanceCount = (attRes.first['count'] as int?) ?? 0;
+        }
+      } catch (_) {}
+
+      // لغة التطبيق وتاريخ آخر نسخة احتياطية من الكاش (0ms - instant)
+      final String appLanguage = (CacheHelper.getData(key: 'app_locale') as String?) ?? 'ar';
+      final String? lastBackupDate = CacheHelper.getData(key: 'last_auto_sync_time') as String?;
+
+      // جلب معلومات الجهاز وإصدار التطبيق
       String deviceModel = 'Unknown Device';
       String osVersion = 'Unknown';
+      String appVersion = 'Unknown';
+      try {
+        final packageInfo = await PackageInfo.fromPlatform();
+        appVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+      } catch (_) {}
+
       try {
         final deviceInfo = DeviceInfoPlugin();
         if (Platform.isAndroid) {
@@ -118,14 +137,18 @@ class TelemetryService {
       // تجهيز الحزمة الإحصائية
       final payload = {
         'uuid': uuid,
+        'appVersion': appVersion,
+        'appLanguage': appLanguage,
         'employeeCount': employeeCount,
         'projectsCount': projectsCount,
+        'attendanceCount': attendanceCount,
         'deviceModel': deviceModel,
         'osVersion': osVersion,
         'isSubscribed': isSubscribed,
         'isTrial': isTrial,
         'firstSeen': firstSeen,
         'lastSeen': now.toIso8601String(),
+        if (lastBackupDate != null) 'lastBackupDate': lastBackupDate,
         if (subscriptionDate != null) 'subscriptionDate': subscriptionDate,
         if (subscriptionExpiryDate != null) 'subscriptionExpiryDate': subscriptionExpiryDate,
         if (subscriptionPlan != null) 'subscriptionPlan': subscriptionPlan,

@@ -68,13 +68,11 @@ class _HomeViewState extends State<HomeView> {
         body: SafeArea(
           child: userViewModel.clickSearch
               ? const UsersStatusListview()
-              : SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const TrialExpiredBanner(),
-                      const SizedBox(height: 8),
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const TrialExpiredBanner(),
+                    const SizedBox(height: 8),
 
                       // ─── Header: Date & Greeting ───────────────────────────────────
                       Padding(
@@ -201,7 +199,7 @@ class _HomeViewState extends State<HomeView> {
                         },
                       ),
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
 
                       // ─── Section Title & Bulk Attendance Action ──────────────────
                       Padding(
@@ -249,14 +247,12 @@ class _HomeViewState extends State<HomeView> {
 
                       const SizedBox(height: 12),
 
-                      // ─── Employee List ─────────────────────────────────────────────
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.55,
-                        child: const UsersStatusListview(),
+                      // ─── Employee List (Only list scrolls!) ───────────────────────
+                      const Expanded(
+                        child: UsersStatusListview(),
                       ),
                     ],
                   ),
-                ),
         ),
       ),
     );

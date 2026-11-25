@@ -7,6 +7,8 @@ window.mockData = {
     "dev-001": {
       uuid: "550e8400-e29b-41d4-a716-446655440001",
       deviceModel: "Samsung Galaxy S22 Ultra",
+      countryCode: "EG",
+      currency: "EGP",
       osVersion: "Android 14",
       employeeCount: 24,
       projectsCount: 3,
@@ -20,11 +22,14 @@ window.mockData = {
     "dev-002": {
       uuid: "550e8400-e29b-41d4-a716-446655440002",
       deviceModel: "Xiaomi Redmi Note 12 Pro",
+      countryCode: "SA",
+      currency: "SAR",
       osVersion: "Android 13",
       employeeCount: 8,
       projectsCount: 1,
       isSubscribed: false,
       isTrial: true,
+      remainingTrialDays: 9,
       firstSeen: "2026-09-02T09:15:00.000Z",
       lastSeen: new Date(Date.now() - 1000 * 60 * 120).toISOString() // 2 hours ago
     },
@@ -44,11 +49,14 @@ window.mockData = {
     "dev-004": {
       uuid: "550e8400-e29b-41d4-a716-446655440004",
       deviceModel: "Samsung Galaxy A54",
+      countryCode: "AE",
+      currency: "AED",
       osVersion: "Android 14",
       employeeCount: 15,
       projectsCount: 2,
       isSubscribed: false,
       isTrial: true,
+      remainingTrialDays: 2,
       firstSeen: "2026-09-20T18:05:00.000Z",
       lastSeen: new Date(Date.now() - 1000 * 60 * 60 * 26).toISOString() // yesterday
     },

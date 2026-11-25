@@ -2,11 +2,23 @@ import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:work_time/core/utils/cache_helper.dart';
+import 'package:work_time/data/models/currency_item.dart';
 import 'package:work_time/view_models/reports_view_model.dart';
 
 class PdfReportService {
   /// Generate and open interactive print / share / preview sheet for monthly report
-  static Future<void> generateAndPreviewReport(MonthlyReportSummary report) async {
+  static Future<void> generateAndPreviewReport(
+    MonthlyReportSummary report, {
+    String currency = '',
+  }) async {
+    final currencyStr = currency.isNotEmpty
+        ? currency
+        : CurrencyItem.findByCode(
+            CacheHelper.getData(key: 'app_user_currency_code') as String? ??
+                'EGP',
+          ).symbolAr;
+
     final doc = pw.Document();
 
     // Load Cairo Arabic Font
@@ -35,7 +47,7 @@ class PdfReportService {
         footer: (context) => _buildPdfFooter(context, textMuted),
         build: (context) => [
           pw.SizedBox(height: 12),
-          _buildKpiSummary(report, primaryColor, lightBgColor, borderColor, textDark, textMuted),
+          _buildKpiSummary(report, currencyStr, primaryColor, lightBgColor, borderColor, textDark, textMuted),
           pw.SizedBox(height: 16),
           _buildDataTable(report, primaryColor, borderColor, textDark, textMuted),
           pw.SizedBox(height: 24),
@@ -98,6 +110,7 @@ class PdfReportService {
 
   static pw.Widget _buildKpiSummary(
     MonthlyReportSummary report,
+    String currency,
     PdfColor primaryColor,
     PdfColor lightBgColor,
     PdfColor borderColor,
@@ -110,11 +123,11 @@ class PdfReportService {
         pw.SizedBox(width: 10),
         _kpiCard('أيام الحضور', '${report.totalDaysPresent} يوم', primaryColor, lightBgColor, borderColor, textDark),
         pw.SizedBox(width: 10),
-        _kpiCard('إجمالي المستحق', '${report.totalSalaryEarned.toStringAsFixed(1)} ريال', primaryColor, lightBgColor, borderColor, textDark),
+        _kpiCard('إجمالي المستحق', '${report.totalSalaryEarned.toStringAsFixed(1)} $currency', primaryColor, lightBgColor, borderColor, textDark),
         pw.SizedBox(width: 10),
-        _kpiCard('المسحوب / المدفوع', '${report.totalSalaryReceived.toStringAsFixed(1)} ريال', const PdfColor.fromInt(0xFFEF476F), lightBgColor, borderColor, textDark),
+        _kpiCard('المسحوب / المدفوع', '${report.totalSalaryReceived.toStringAsFixed(1)} $currency', const PdfColor.fromInt(0xFFEF476F), lightBgColor, borderColor, textDark),
         pw.SizedBox(width: 10),
-        _kpiCard('صافي المتبقي', '${report.totalRemaining.toStringAsFixed(1)} ريال', const PdfColor.fromInt(0xFF10B981), lightBgColor, borderColor, textDark),
+        _kpiCard('صافي المتبقي', '${report.totalRemaining.toStringAsFixed(1)} $currency', const PdfColor.fromInt(0xFF10B981), lightBgColor, borderColor, textDark),
       ],
     );
   }

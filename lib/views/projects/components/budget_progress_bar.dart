@@ -49,7 +49,7 @@ class BudgetProgressBar extends StatelessWidget {
                     ),
                   ),
                   TextSpan(
-                    text: '/ ${budget.toStringAsFixed(0)} ${context.l10n.currency}',
+                    text: '/ ${budget.toStringAsFixed(0)} ${context.currency}',
                     style: TextStyle(
                       fontSize: 12,
                       fontFamily: 'Cairo',
@@ -74,7 +74,7 @@ class BudgetProgressBar extends StatelessWidget {
         if (isOverBudget) ...[
           const SizedBox(height: 4),
           Text(
-            '⚠️ ${context.l10n.budgetExceededBy} ${(spent - budget).toStringAsFixed(0)} ${context.l10n.currency}',
+            '⚠️ ${context.l10n.budgetExceededBy} ${(spent - budget).toStringAsFixed(0)} ${context.currency}',
             style: const TextStyle(
               fontSize: 11,
               fontFamily: 'Cairo',

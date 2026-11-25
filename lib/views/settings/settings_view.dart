@@ -9,6 +9,7 @@ import 'package:work_time/views/components/constant.dart';
 import 'package:work_time/views/home/components/drawer/components/language_drawer.dart';
 import 'package:work_time/views/home/components/drawer/components/reminder_drawer.dart';
 import 'package:work_time/views/home/components/drawer/components/theme_drawer.dart';
+import 'package:work_time/views/settings/components/currency_drawer.dart';
 
 /// الشاشة المخصصة لإعدادات التطبيق (المظهر، اللغة، التذكير، النسخ الاحتياطي)
 class SettingsView extends StatefulWidget {
@@ -64,9 +65,11 @@ class _SettingsViewState extends State<SettingsView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ─── 1. المظهر واللغة ──────────────────────────────────────────
+              // ─── 1. المظهر واللغة والعملة ────────────────────────────────
               _buildSectionTitle(
-                context.isArabic ? 'المظهر واللغة' : 'Appearance & Language',
+                context.isArabic
+                    ? 'المظهر واللغة والعملة'
+                    : 'Appearance, Language & Currency',
                 isDark,
               ),
               AppCard(
@@ -76,6 +79,8 @@ class _SettingsViewState extends State<SettingsView> {
                     const ThemeDrawer(),
                     _divider(isDark),
                     const LanguageDrawer(),
+                    _divider(isDark),
+                    const CurrencyDrawer(),
                   ],
                 ),
               ),

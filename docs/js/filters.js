@@ -68,7 +68,9 @@ const FilterEngine = {
           const matchUuid = (device.uuid || '').toLowerCase().includes(q);
           const matchModel = (device.deviceModel || '').toLowerCase().includes(q);
           const matchOs = (device.osVersion || '').toLowerCase().includes(q);
-          if (!matchUuid && !matchModel && !matchOs) return false;
+          const matchCountry = (device.countryCode || '').toLowerCase().includes(q);
+          const countryNameAr = (window.getCountryNameAr ? window.getCountryNameAr(device.countryCode) : '').toLowerCase();
+          if (!matchUuid && !matchModel && !matchOs && !matchCountry && !countryNameAr.includes(q)) return false;
         }
 
         // 2. Engagement Filter (Real active employers vs dormant)

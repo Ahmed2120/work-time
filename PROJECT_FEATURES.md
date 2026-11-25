@@ -1,3 +1,25 @@
+## [2026-11-25] Dashboard User Country & Remaining Trial Days Tracking (تتبع الدولة والأيام المتبقية في التجربة)
+- **Scope & Objective**: Extended silent telemetry and the Admin Dashboard (`docs/`) to display each user's country (with flag and Arabic name) and exact remaining days in their 14-day free trial.
+- **Telemetry (`TelemetryService`)**:
+  - Reads `countryCode` offline from `PlatformDispatcher.instance.locale.countryCode` (with fallback to `Platform.localeName`).
+  - Reads `remainingTrialDays` from `SecureStorageHelper.getRemainingTrialDays()` for non-subscribed users.
+- **Admin Dashboard (`docs/index.html`, `docs/js/app.js`, `docs/js/filters.js`, `docs/js/mock-data.js`)**:
+  - Added a **الدولة (Country)** column to the Devices table with dynamic flag emoji, Arabic country name, and active currency, plus search support in `FilterEngine`.
+  - Displayed remaining free trial days (`⏳ متبقي X يوم`) under the Subscription Status column (with approximate fallback from `firstSeen` for older app versions), and added both fields to CSV export.
+
+## [2026-11-25] Multi-Currency Support & Auto-Detection (دعم العملات العربية والأجنبية والتعرف التلقائي)
+- **Scope & Objective**: Replaced the hardcoded Egyptian currency across the entire app with a dynamic, reactive multi-currency system covering 18 Arab countries and 18 major international/foreign currencies, with zero-latency offline auto-detection on first launch and manual override in Settings.
+- **Auto-Detection & Persistence (`CurrencyItem` & `CurrencyViewModel`)**:
+  - `CurrencyItem` (`lib/data/models/currency_item.dart`): Defined 36 currencies (EGP, SAR, AED, KWD, QAR, OMR, BHD, IQD, JOD, LYD, DZD, MAD, TND, SDG, YER, LBP, SYP, ILS, USD, EUR, GBP, TRY, CAD, AUD, CHF, RUB, CNY, JPY, INR, PKR, BDT, PHP, MYR, IDR, BRL, ZAR) with Arabic/English symbols, localized names, country flags, and ISO country code mappings.
+  - `CurrencyViewModel` (`lib/view_models/currency_view_model.dart`): On first launch, reads `PlatformDispatcher.instance.locale.countryCode` offline with 0ms overhead to auto-select the user's local currency (falling back to EGP for Arabic or USD for other languages) and persists the choice in `CacheHelper` (`app_user_currency_code`).
+- **Reactive App-Wide Integration**:
+  - Added `context.currency` (listening) and `context.currencyRead` (non-listening for callbacks) in `context_extension.dart`.
+  - Replaced all `context.l10n.currency` occurrences across Home, Balance Ledger, Worker Details, Projects, Reports, and Penalty screens.
+  - Updated `PdfReportService` to dynamically format exported PDFs using the user's active currency instead of hardcoded text.
+  - Added `currency` field to silent `TelemetryService` payload.
+- **Settings UI (`SettingsView`)**:
+  - Added `CurrencyDrawer` (`lib/views/settings/components/currency_drawer.dart`) and `CurrencySelectionSheet` (`lib/views/settings/components/currency_selection_sheet.dart`) featuring live search by currency name, country, or ISO code.
+
 ## [2026-11-19] Penalties & Deductions System (نظام الجزاءات والخصومات)
 - **Scope & Objective**: Added full support for recording worker penalties and deductions (الجزاءات والخصومات) for infractions, delays, damaged equipment, or unexcused absences, automatically deducted from workers' net remaining balances and reflected in all ledgers and statements.
 - **Database Architecture (SQLite v6)**:

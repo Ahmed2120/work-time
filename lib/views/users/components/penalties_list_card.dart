@@ -39,7 +39,7 @@ class _PenaltiesListCardState extends State<PenaltiesListCard> {
     final penaltyVM = Provider.of<PenaltyViewModel>(context);
     final penalties = penaltyVM.penalties;
     final totalPenalties = penaltyVM.getTotalPenalties();
-    final currency = context.l10n.currency;
+    final currency = context.currency;
 
     final hasMultiple = penalties.length > 1;
 

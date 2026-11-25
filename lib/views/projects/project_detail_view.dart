@@ -357,7 +357,7 @@ class _ProjectDetailViewState extends State<ProjectDetailView> {
                                 ),
                               ),
                               Text(
-                                '${context.l10n.budget}: ${currentProject.budgetAmount!.toStringAsFixed(0)} ${context.l10n.currency}',
+                                '${context.l10n.budget}: ${currentProject.budgetAmount!.toStringAsFixed(0)} ${context.currency}',
                                 style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,

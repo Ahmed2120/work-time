@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:ui' show PlatformDispatcher;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -114,6 +115,7 @@ class TelemetryService {
       // التحقق من حالة الاشتراك والتجربة وتاريخ الاشتراك
       bool isSubscribed = false;
       bool isTrial = true;
+      int remainingTrialDays = 0;
       String? subscriptionDate;
       String? subscriptionExpiryDate;
       String? subscriptionPlan;
@@ -131,14 +133,31 @@ class TelemetryService {
             subscriptionExpiryDate = expiryDate.toIso8601String();
           }
           subscriptionPlan = await SecureStorageHelper.getActiveSubscriptionId();
+        } else {
+          remainingTrialDays = await SecureStorageHelper.getRemainingTrialDays();
         }
       } catch (_) {}
+
+      final userCurrency =
+          CacheHelper.getData(key: 'app_user_currency_code') ?? 'EGP';
+
+      // استخراج رمز الدولة من لغة النظام (بدون أي صلاحيات أو إنترنت)
+      String? countryCode =
+          PlatformDispatcher.instance.locale.countryCode?.toUpperCase();
+      if (countryCode == null || countryCode.isEmpty) {
+        final parts = Platform.localeName.split(RegExp(r'[_-]'));
+        if (parts.length > 1 && parts[1].length == 2) {
+          countryCode = parts[1].toUpperCase();
+        }
+      }
 
       // تجهيز الحزمة الإحصائية
       final payload = {
         'uuid': uuid,
         'appVersion': appVersion,
         'appLanguage': appLanguage,
+        'currency': userCurrency,
+        if (countryCode != null && countryCode.isNotEmpty) 'countryCode': countryCode,
         'employeeCount': employeeCount,
         'projectsCount': projectsCount,
         'attendanceCount': attendanceCount,
@@ -146,6 +165,7 @@ class TelemetryService {
         'osVersion': osVersion,
         'isSubscribed': isSubscribed,
         'isTrial': isTrial,
+        if (!isSubscribed) 'remainingTrialDays': remainingTrialDays,
         'firstSeen': firstSeen,
         'lastSeen': now.toIso8601String(),
         if (lastBackupDate != null) 'lastBackupDate': lastBackupDate,

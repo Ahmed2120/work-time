@@ -25,6 +25,7 @@ import 'package:work_time/view_models/user_view_model.dart';
 import 'package:work_time/view_models/attendance_view_model.dart';
 import 'package:work_time/view_models/note_view_model.dart';
 import 'package:work_time/view_models/theme_view_model.dart';
+import 'package:work_time/view_models/currency_view_model.dart';
 import 'package:work_time/view_models/locale_view_model.dart';
 
 final GetIt sl = GetIt.instance;
@@ -61,6 +62,9 @@ Future<void> setupServiceLocator() async {
   );
   sl.registerLazySingleton<LocaleViewModel>(
     () => LocaleViewModel(),
+  );
+  sl.registerLazySingleton<CurrencyViewModel>(
+    () => CurrencyViewModel(),
   );
 
   sl.registerFactory<BackupViewModel>(

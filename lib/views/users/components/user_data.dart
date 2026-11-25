@@ -80,7 +80,7 @@ class UserData extends StatelessWidget {
           const SizedBox(height: 10),
           TextRow(title: context.l10n.workerName, txt: user.name),
           TextRow(title: context.l10n.jobTitle, txt: user.job.isNotEmpty ? user.job : context.l10n.notSpecified),
-          TextRow(title: context.l10n.dailyWage, txt: '${user.salary} ${context.l10n.currency}'),
+          TextRow(title: context.l10n.dailyWage, txt: '${user.salary} ${context.currency}'),
           TextRow(
             title: context.l10n.defaultWorkShift,
             txt: _shiftLabel(context, user.defaultDayRatio),
@@ -110,7 +110,7 @@ class UserData extends StatelessWidget {
                 context,
                 report: report,
                 monthTitle: monthTitle,
-                currency: context.l10n.currency,
+                currency: context.currencyRead,
               );
             },
             child: Padding(

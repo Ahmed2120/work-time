@@ -67,7 +67,7 @@ class DayRatioSelector extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '${context.l10n.earnedToday}: $earned ${context.l10n.currency}',
+                  '${context.l10n.earnedToday}: $earned ${context.currency}',
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,

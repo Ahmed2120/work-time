@@ -57,7 +57,7 @@ class _ReportsViewState extends State<ReportsView> {
                   }
                   return;
                 }
-                PdfReportService.generateAndPreviewReport(summary);
+                PdfReportService.generateAndPreviewReport(summary, currency: context.currencyRead);
               },
             ),
         ],
@@ -180,7 +180,7 @@ class _ReportsViewState extends State<ReportsView> {
                                 label: context.l10n.exportAndSharePdf,
                                 icon: Icons.picture_as_pdf_rounded,
                                 style: AppButtonStyle.primary,
-                                onPressed: () => PdfReportService.generateAndPreviewReport(summary),
+                                onPressed: () => PdfReportService.generateAndPreviewReport(summary, currency: context.currencyRead),
                               ),
 
                               const SizedBox(height: 16),
@@ -202,7 +202,7 @@ class _ReportsViewState extends State<ReportsView> {
             Expanded(
               child: _kpiTile(
                 title: context.l10n.totalEarned,
-                value: '${summary.totalSalaryEarned.toStringAsFixed(1)} ${context.l10n.currency}',
+                value: '${summary.totalSalaryEarned.toStringAsFixed(1)} ${context.currency}',
                 icon: Icons.account_balance_wallet_rounded,
                 iconColor: AppColors.primaryPurple,
                 bgColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
@@ -213,7 +213,7 @@ class _ReportsViewState extends State<ReportsView> {
             Expanded(
               child: _kpiTile(
                 title: context.l10n.withdrawnPaid,
-                value: '${summary.totalSalaryReceived.toStringAsFixed(1)} ${context.l10n.currency}',
+                value: '${summary.totalSalaryReceived.toStringAsFixed(1)} ${context.currency}',
                 icon: Icons.payments_outlined,
                 iconColor: AppColors.error,
                 bgColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
@@ -228,7 +228,7 @@ class _ReportsViewState extends State<ReportsView> {
             Expanded(
               child: _kpiTile(
                 title: context.l10n.netRemaining,
-                value: '${summary.totalRemaining.toStringAsFixed(1)} ${context.l10n.currency}',
+                value: '${summary.totalRemaining.toStringAsFixed(1)} ${context.currency}',
                 icon: Icons.savings_outlined,
                 iconColor: AppColors.success,
                 bgColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
@@ -338,8 +338,8 @@ class _ReportsViewState extends State<ReportsView> {
                     ),
                     Text(
                       w.userJob.isNotEmpty
-                          ? '${w.userJob} • ${context.l10n.wageCol}: ${w.dailyRate} ${context.l10n.currency}'
-                          : '${context.l10n.wageCol}: ${w.dailyRate} ${context.l10n.currency}',
+                          ? '${w.userJob} • ${context.l10n.wageCol}: ${w.dailyRate} ${context.currency}'
+                          : '${context.l10n.wageCol}: ${w.dailyRate} ${context.currency}',
                       style: TextStyle(
                         fontSize: 12,
                         color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -363,7 +363,7 @@ class _ReportsViewState extends State<ReportsView> {
                   children: [
                     Text(context.l10n.remainingAmount, style: const TextStyle(fontSize: 10, color: AppColors.primaryPurple)),
                     Text(
-                      '${w.remaining.toStringAsFixed(1)} ${context.l10n.currency}',
+                      '${w.remaining.toStringAsFixed(1)} ${context.currency}',
                       style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.primaryPurple),
                     ),
                   ],
@@ -382,7 +382,7 @@ class _ReportsViewState extends State<ReportsView> {
                     context,
                     report: w,
                     monthTitle: monthTitle,
-                    currency: context.l10n.currency,
+                    currency: context.currencyRead,
                   );
                 },
               ),
@@ -397,7 +397,7 @@ class _ReportsViewState extends State<ReportsView> {
               _statChip(context.l10n.present, '${w.daysPresent % 1 == 0 ? w.daysPresent.toInt() : w.daysPresent} ${context.l10n.day}', AppColors.success),
               _statChip(context.l10n.absent, '${w.daysAbsent} ${context.l10n.day}', AppColors.error),
               _statChip(context.l10n.overtimeCol, '${w.overtimeDays}', AppColors.warning),
-              _statChip(context.l10n.drawnCol, '${w.totalReceived} ${context.l10n.currency}', AppColors.textSecondaryLight),
+              _statChip(context.l10n.drawnCol, '${w.totalReceived} ${context.currency}', AppColors.textSecondaryLight),
             ],
           ),
         ],

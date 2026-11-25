@@ -510,7 +510,7 @@ function renderDevicesTab() {
   if (filtered.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+        <td colspan="10" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
           🔍 لا توجد أجهزة تطابق معايير الفلترة المحددة
         </td>
       </tr>`;
@@ -528,7 +528,18 @@ function renderDevicesTab() {
         ${expDateStr ? `<div style="font-size:0.72rem; color:var(--text-muted);">⏳ انتهاء: ${expDateStr}</div>` : ''}
       `;
     } else if (dev.isTrial) {
-      subBadge = '<span class="badge badge-warning"><span class="badge-dot"></span> فترة تجريبية</span>';
+      let trialDaysHtml = '';
+      if (dev.remainingTrialDays !== undefined && dev.remainingTrialDays !== null) {
+        const days = Number(dev.remainingTrialDays);
+        const daysColor = days <= 3 ? 'var(--color-danger)' : 'var(--color-warning)';
+        const daysText = days <= 0 ? 'انتهت اليوم' : `متبقي <strong>${days}</strong> يوم`;
+        trialDaysHtml = `<div style="font-size:0.72rem; color:${daysColor}; margin-top:3px;">⏳ ${daysText}</div>`;
+      } else if (dev.firstSeen) {
+        const diffDays = Math.floor((Date.now() - new Date(dev.firstSeen)) / (1000 * 60 * 60 * 24));
+        const approxDays = Math.max(0, 14 - diffDays);
+        trialDaysHtml = `<div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">⏳ متبقي ~${approxDays} يوم (تقديري)</div>`;
+      }
+      subBadge = `<span class="badge badge-warning"><span class="badge-dot"></span> فترة تجريبية</span>${trialDaysHtml}`;
     } else {
       subBadge = '<span class="badge badge-neutral"><span class="badge-dot"></span> منتهي التجربة</span>';
     }
@@ -536,6 +547,7 @@ function renderDevicesTab() {
     const eng = window.FilterEngine.getEngagementStatus(dev);
     const shortUuid = dev.uuid ? `${dev.uuid.substring(0, 8)}...` : 'N/A';
     const lastSeenRelative = formatRelativeTime(dev.lastSeen);
+    const countryHtml = formatCountryBadge(dev.countryCode, dev.currency);
 
     return `
       <tr>
@@ -548,6 +560,7 @@ function renderDevicesTab() {
           <strong>${escapeHtml(dev.deviceModel || 'Unknown')}</strong>
           ${dev.appVersion ? `<div style="margin-top:2px;"><span class="badge badge-purple" style="font-size:0.7rem; padding:1px 6px;">v${escapeHtml(dev.appVersion)}</span></div>` : ''}
         </td>
+        <td>${countryHtml}</td>
         <td>
           <span class="badge ${eng.badgeClass}">${eng.label}</span>
           <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">${eng.subLabel}</div>
@@ -1126,15 +1139,18 @@ function setupExportActions() {
         window.appState.deviceFilters
       );
       exportToCsv('devices_report.csv', [
-        ['UUID', 'Device Model', 'App Version', 'Language', 'OS Version', 'Is Subscribed', 'Is Trial', 'Employees', 'Projects', 'Attendance Records', 'First Seen', 'Last Seen'],
+        ['UUID', 'Device Model', 'Country', 'App Version', 'Language', 'Currency', 'OS Version', 'Is Subscribed', 'Is Trial', 'Remaining Trial Days', 'Employees', 'Projects', 'Attendance Records', 'First Seen', 'Last Seen'],
         ...filtered.map(d => [
           d.uuid,
           d.deviceModel,
+          d.countryCode || 'Unknown',
           d.appVersion || 'Unknown',
           d.appLanguage || 'ar',
+          d.currency || 'EGP',
           d.osVersion,
           d.isSubscribed ? 'Yes' : 'No',
           d.isTrial ? 'Yes' : 'No',
+          d.isSubscribed ? 0 : (d.remainingTrialDays !== undefined && d.remainingTrialDays !== null ? d.remainingTrialDays : ''),
           d.employeeCount,
           d.projectsCount,
           d.attendanceCount || 0,
@@ -1181,6 +1197,50 @@ function exportToCsv(filename, rows) {
 }
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
+
+const COUNTRY_NAMES_AR = {
+  EG: 'مصر', SA: 'السعودية', AE: 'الإمارات', KW: 'الكويت', QA: 'قطر',
+  OM: 'عُمان', BH: 'البحرين', IQ: 'العراق', JO: 'الأردن', LY: 'ليبيا',
+  DZ: 'الجزائر', MA: 'المغرب', TN: 'تونس', SD: 'السودان', YE: 'اليمن',
+  LB: 'لبنان', SY: 'سوريا', PS: 'فلسطين', US: 'أمريكا', GB: 'بريطانيا',
+  DE: 'ألمانيا', FR: 'فرنسا', IT: 'إيطاليا', ES: 'إسبانيا', TR: 'تركيا',
+  CA: 'كندا', AU: 'أستراليا', CH: 'سويسرا', RU: 'روسيا', CN: 'الصين',
+  JP: 'اليابان', IN: 'الهند', PK: 'باكستان', BD: 'بنغلاديش', PH: 'الفلبين',
+  MY: 'ماليزيا', ID: 'إندونيسيا', BR: 'البرازيل', ZA: 'جنوب أفريقيا',
+  NL: 'هولندا', SE: 'السويد', NO: 'النرويج', AT: 'النمسا', BE: 'بلجيكا'
+};
+
+function getCountryFlagEmoji(code) {
+  if (!code || code.length !== 2) return '🌍';
+  const upper = code.toUpperCase();
+  return String.fromCodePoint(...[...upper].map(c => 127397 + c.charCodeAt(0)));
+}
+
+function getCountryNameAr(code) {
+  if (!code) return '';
+  const upper = code.toUpperCase();
+  if (COUNTRY_NAMES_AR[upper]) return COUNTRY_NAMES_AR[upper];
+  try {
+    const regionNames = new Intl.DisplayNames(['ar'], { type: 'region' });
+    return regionNames.of(upper) || upper;
+  } catch (_) {
+    return upper;
+  }
+}
+window.getCountryNameAr = getCountryNameAr;
+
+function formatCountryBadge(countryCode, currency) {
+  if (!countryCode) {
+    return `<span style="color:var(--text-muted); font-size:0.8rem;">🌍 غير محدد</span>${currency ? `<div style="font-size:0.68rem; color:var(--text-muted);">${escapeHtml(currency)}</div>` : ''}`;
+  }
+  const upper = countryCode.toUpperCase();
+  const flag = getCountryFlagEmoji(upper);
+  const name = getCountryNameAr(upper);
+  return `
+    <span class="badge" style="background:rgba(255,255,255,0.06); font-size:0.78rem;">${flag} ${escapeHtml(name)}</span>
+    ${currency ? `<div style="font-size:0.68rem; color:var(--text-muted); margin-top:2px;">💱 ${escapeHtml(currency)}</div>` : ''}
+  `;
+}
 
 function formatRelativeTime(dateStr) {
   if (!dateStr) return 'غير محدد';

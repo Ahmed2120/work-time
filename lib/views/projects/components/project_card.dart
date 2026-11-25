@@ -138,7 +138,7 @@ class ProjectCard extends StatelessWidget {
                             _StatItem(
                               label: context.l10n.wages,
                               value: stats != null
-                                  ? '${stats.totalWages.toStringAsFixed(0)} ${context.l10n.currency}'
+                                  ? '${stats.totalWages.toStringAsFixed(0)} ${context.currency}'
                                   : '...',
                               icon: Icons.payments_outlined,
                               color: AppColors.success,
@@ -147,7 +147,7 @@ class ProjectCard extends StatelessWidget {
                             _StatItem(
                               label: context.l10n.advances,
                               value: stats != null
-                                  ? '${stats.totalAdvances.toStringAsFixed(0)} ${context.l10n.currency}'
+                                  ? '${stats.totalAdvances.toStringAsFixed(0)} ${context.currency}'
                                   : '...',
                               icon: Icons.account_balance_wallet_outlined,
                               color: AppColors.warning,

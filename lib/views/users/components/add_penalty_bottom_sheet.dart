@@ -67,7 +67,7 @@ class _AddPenaltyBottomSheetState extends State<AddPenaltyBottomSheet> {
                 children: [
                   CustomTextField(
                     controller: _amountController,
-                    label: '${context.l10n.penaltyAmount} (${context.l10n.currency})',
+                    label: '${context.l10n.penaltyAmount} (${context.currency})',
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   ),
                   const SizedBox(height: 14),

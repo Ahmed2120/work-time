@@ -12,7 +12,7 @@ class ProjectSummaryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currency = context.l10n.currency;
+    final currency = context.currency;
     return Column(
       children: [
         // الصف الأول: إجمالي المدفوعات + إجمالي الإنفاق

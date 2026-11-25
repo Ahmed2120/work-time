@@ -67,7 +67,7 @@ class DrawFinance extends StatelessWidget {
                     );
                     attendanceViewModel.updateAttendance(attendance: attendance);
                     attendanceViewModel.getAttendanceUserToDay(userId: user.id!);
-                    showToast(context, '${context.l10n.withdrawn} ${_salaryController.text} ${context.l10n.currency}');
+                    showToast(context, '${context.l10n.withdrawn} ${_salaryController.text} ${context.currencyRead}');
                     pop(context);
                   },
                 ),

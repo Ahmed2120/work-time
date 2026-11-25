@@ -92,7 +92,7 @@ class _OverTimeState extends State<OverTime> {
               ),
               const SizedBox(height: 6),
               Text(
-                '${context.l10n.baseDailyWage}: ${widget.user.salary} ${context.l10n.currency}',
+                '${context.l10n.baseDailyWage}: ${widget.user.salary} ${context.currency}',
                 style: TextStyle(
                   fontSize: 13,
                   color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -119,7 +119,7 @@ class _OverTimeState extends State<OverTime> {
                     backgroundColor: isDark ? AppColors.darkBackground : AppColors.lightAmber,
                     side: const BorderSide(color: AppColors.primaryAmber, width: 1),
                     label: Text(
-                      '×$multiplier ($calculated ${context.l10n.currency})',
+                      '×$multiplier ($calculated ${context.currency})',
                       style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontWeight: FontWeight.bold,
@@ -154,7 +154,7 @@ class _OverTimeState extends State<OverTime> {
                       style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
                         hintText: context.l10n.overtimeHintAmount,
-                        suffixText: context.l10n.currency,
+                        suffixText: context.currency,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                       ),
@@ -245,7 +245,7 @@ class _OverTimeState extends State<OverTime> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '${model.salary} ${context.l10n.currency}',
+                          '${model.salary} ${context.currency}',
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,

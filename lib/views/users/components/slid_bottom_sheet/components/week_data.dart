@@ -132,13 +132,13 @@ class WeekData extends StatelessWidget {
                 children: [
                   _FinancialRow(
                     label: context.l10n.totalAmount,
-                    value: '$totalSalary ${context.l10n.currency}',
+                    value: '$totalSalary ${context.currency}',
                     isDark: isDark,
                   ),
                   const SizedBox(height: 8),
                   _FinancialRow(
                     label: context.l10n.paidAmount,
-                    value: '$sumReceived ${context.l10n.currency}',
+                    value: '$sumReceived ${context.currency}',
                     isDark: isDark,
                   ),
                   Padding(
@@ -162,7 +162,7 @@ class WeekData extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '$remaining ${context.l10n.currency}',
+                        '$remaining ${context.currency}',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

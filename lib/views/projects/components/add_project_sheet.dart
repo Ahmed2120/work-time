@@ -152,7 +152,7 @@ class _AddProjectSheetState extends State<AddProjectSheet> {
                   label: context.l10n.projectBudgetOptional,
                   hint: '50000',
                   icon: Icons.account_balance_wallet_outlined,
-                  suffix: context.l10n.currency,
+                  suffix: context.currency,
                 ),
               ),
               const SizedBox(height: 24),

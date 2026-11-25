@@ -17,6 +17,7 @@ import 'package:work_time/view_models/project_view_model.dart';
 import 'package:work_time/view_models/work_place_view_model.dart';
 import 'package:work_time/view_models/whats_new_view_model.dart';
 import 'package:work_time/view_models/theme_view_model.dart';
+import 'package:work_time/view_models/currency_view_model.dart';
 import 'package:work_time/view_models/locale_view_model.dart';
 import 'package:work_time/views/splash_view.dart';
 
@@ -104,6 +105,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => sl<LocaleViewModel>(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => sl<CurrencyViewModel>()..initCurrency(),
         ),
       ],
       child: Consumer2<ThemeViewModel, LocaleViewModel>(

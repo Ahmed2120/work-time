@@ -85,7 +85,7 @@ AppBar appBar(UserViewModel userViewModel, BuildContext context, User user, Glob
             context,
             report: report,
             monthTitle: monthTitle,
-            currency: context.l10n.currency,
+            currency: context.currencyRead,
           );
         },
       ),

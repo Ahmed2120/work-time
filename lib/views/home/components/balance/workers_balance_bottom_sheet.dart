@@ -41,7 +41,7 @@ class _WorkersBalanceBottomSheetState extends State<WorkersBalanceBottomSheet> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final reportsVM = Provider.of<ReportsViewModel>(context);
     final summary = reportsVM.reportSummary;
-    final currency = context.l10n.currency;
+    final currency = context.currency;
 
     final String monthName = _getMonthName(reportsVM.selectedMonth.month, context);
     final String monthTitle = '$monthName ${reportsVM.selectedMonth.year}';

@@ -176,7 +176,7 @@ class _SettingsViewState extends State<SettingsView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            context.isArabic ? 'عُمَّالي - كشف حضور ورواتب' : 'WorkTime - Attendance & Wages',
+                            context.isArabic ? 'عُمَّالي - كشف حضور ورواتب' : 'Ommali - Attendance & Wages',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,

@@ -78,7 +78,7 @@ class CurrencyDrawer extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     const Icon(
-                      Icons.arrow_drop_down_rounded,
+                      Icons.arrow_drop_down,
                       size: 18,
                       color: AppColors.primary,
                     ),

@@ -16,12 +16,23 @@ class SplashView extends StatefulWidget {
 }
 
 class _SplashViewState extends State<SplashView> {
+  bool _precached = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _navigateAfterSplash();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_precached) {
+      _precached = true;
+      precacheImage(const AssetImage('assets/images/logo.png'), context);
+    }
   }
 
   Future<void> _navigateAfterSplash() async {
@@ -69,6 +80,8 @@ class _SplashViewState extends State<SplashView> {
               'assets/images/logo.png',
               width: 160,
               height: 160,
+              cacheWidth: 480,
+              cacheHeight: 480,
             ),
             const SizedBox(height: 24),
             Text(

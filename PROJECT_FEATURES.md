@@ -1,3 +1,10 @@
+## [2026-11-28] Splash & Login Logo Rendering Optimization (تحسين سرعة ظهور الشعار)
+- **Scope & Objective**: Fixed missing splash logo on real Android devices caused by slow async decoding of oversized (~2 MB, 1254×1254) PNG assets during cold app startup.
+- **Asset & Code Updates**:
+  - Resized `assets/images/logo.png` and `assets/images/transparent-logo.png` to `512×512` (preserving alpha transparency for the transparent logo).
+  - Updated `SplashView` (`lib/views/splash_view.dart`) to precache `logo.png` in `didChangeDependencies()` and decode at `480×480` (`cacheWidth`/`cacheHeight`).
+  - Updated `LoginView` (`lib/views/login_view.dart`) to decode `transparent-logo.png` at `360×360` (`cacheWidth`/`cacheHeight`).
+
 ## [2026-11-25] Dashboard User Country & Remaining Trial Days Tracking (تتبع الدولة والأيام المتبقية في التجربة)
 - **Scope & Objective**: Extended silent telemetry and the Admin Dashboard (`docs/`) to display each user's country (with flag and Arabic name) and exact remaining days in their 14-day free trial.
 - **Telemetry (`TelemetryService`)**:

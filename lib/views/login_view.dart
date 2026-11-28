@@ -61,6 +61,8 @@ class _LoginViewState extends State<LoginView> {
                     child: Image.asset(
                       'assets/images/transparent-logo.png',
                       fit: BoxFit.contain,
+                      cacheWidth: 360,
+                      cacheHeight: 360,
                     ),
                   ),
                 ),
